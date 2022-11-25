@@ -10,7 +10,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '23-11-2022'
+__date__ = '25-11-2022'
 __status__ = 'Development'
 
 #imports
@@ -39,10 +39,10 @@ TRealTuple = Tuple[TReal, ...]
 
 class Polynomial:
     """
-    Implementation of polynomials. This class must be instantiated with an
+    Implementation of a polynomial. This class must be instantiated with an
     unpacked sequence of real numbers, which will be set as the coefficients
-    from the highest to the zeroth power. All leading zeroes in the sequence are
-    ignored.
+    from the zero-th to the highest power. The last positional argument of the
+    initialization method must be non-zero.
     
     An instance of this class supports index access to the individual
     coefficients (read only) and arithmetical operations with a real number or
@@ -77,13 +77,15 @@ class Polynomial:
     def fromRoots(cls, *args) -> TPolynomial:
         """
         Creates a polynomial from its roots, i.e. performs the inverse of the
-        factorization: (x-x_1)*...*(x-x_N) -> a_0
+        factorization: (x-x_1)*...*(x-x_N) -> a_0 + a_1 * x + a_2 * x^2 + ...
+        + a_N * x^N
         
         Signature:
             *tuple(int OR float) -> Polynomial
         
         Args:
-            *args: *tuple(int OR float); any number of real numbers
+            *args: *tuple(int OR float); any number of integer or floating
+                point arguments
         
         Version 1.0.0.0
         """
@@ -95,16 +97,15 @@ class Polynomial:
         """
         Initialization. Stores the passed coefficients in an internal state. All
         passed arguments must be real numbers, which are treated as the
-        polynomial coefficients sorted in the descending power. All first zero
-        arguments are ignored untill a non-zero is encountered. The length of
-        the remaining sub-sequence (starting from the first non-zero value) must
-        exceed 1.
+        polynomial coefficients sorted in the ascending order of the power. The
+        last positional argument must be non-zero.
         
         Signature:
             *tuple(int OR float) -> None
         
         Args:
-            *args: *tuple(int OR float); any number of real numbers
+            *args: *tuple(int OR float); any number of integer or floating
+                point arguments
         
         Raises:
             
@@ -115,6 +116,10 @@ class Polynomial:
     
     def __str__(self) -> str:
         """
+        Magic method to produce a human readable representation of the
+        polynomial in the form "a_0 + a_1 * x + a_2 * x^2 + ... + a_N * x^N",
+        whith all zero coefficient value terms being ommited.
+
         Singature:
             None -> str
         
@@ -124,6 +129,9 @@ class Polynomial:
     
     def __repr__(self) -> str:
         """
+        Magic method to produce a human readable representation of the
+        polynomial in the form "'Polynomial(a_0, a_1, ..., a_N)'".
+
         Singature:
             None -> str
         
@@ -133,8 +141,8 @@ class Polynomial:
     
     def __call__(self, Value: TReal) -> TReal:
         """
-        Evaluates the value of the polynomial at the given value of the
-        argument.
+        Magic method. Evaluates the value of the polynomial at the given value
+        of the argument.
         
         Signature:
             int OR float -> int OR float
@@ -151,8 +159,20 @@ class Polynomial:
     
     def __getitem__(self, Index: int) -> TReal:
         """
+        Magic method implementing read access to the stored coefficients by
+        an integer index.
+
         Signature:
             int -> int OR float
+        
+        Args:
+            Index: int; index of the coefficient, must be within the range
+                - (N + 1) to N, where N is the polynomial's power
+        
+        Returns:
+            int OR float: the value of the corresponding coefficient
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -160,44 +180,84 @@ class Polynomial:
     
     def __copy__(self) -> TPolynomial:
         """
+        Magic method implementing shallow copy of the object.
+
         Signature:
             None -> Polynomial
         
+        Returns:
+            Polynomal: a copy of itself
+
         Version 1.0.0.0
         """
         pass
     
     def __neg__(self) -> TPolynomial:
         """
+        Magic method implementing a unary '-' operator (negation).
+
         Signature:
             None -> Polynomial
         
+        Returns:
+            Polynomal: a copy of itself with all coefficients negated
+                (multiplied by -1)
+
         Version 1.0.0.0
         """
         pass
     
     def __pos__(self) -> TPolynomial:
         """
+        Magic method implementing a unary '+' operator (identity).
+
         Signature:
             None -> Polynomial
         
+        Returns:
+            Polynomal: a copy of itself
+
         Version 1.0.0.0
         """
         pass
     
     def __add__(self, Value: TRealPoly) -> TIntPoly:
         """
+        Magic method implementing right addition of another polynomial or a 
+        scalar: P(x) + a OR P(x) + Q(X).
+
         Signature:
-            int OR float OR Polynomial -> Polynomial OR 0
+            int OR float OR Polynomial -> Polynomial OR int
         
+        Args:
+            Value: int OR float OR Polynomial; the second operand
+        
+        Returns:
+            Polynomial: result of operation except for the case P(x) + (-P(x))
+            int: zero value for the exeptional case
+        
+        Raises:
+
         Version 1.0.0.0
         """
         pass
     
     def __sub__(self, Value: TRealPoly) -> TIntPoly:
         """
+        Magic method implementing substraction of a scalar or another polynomial
+        from the current one: P(x) - a OR P(x) - Q(X).
+
         Signature:
-            int OR float OR Polynomial -> Polynomial OR 0
+            int OR float OR Polynomial -> Polynomial OR int
+        
+        Args:
+            Value: int OR float OR Polynomial; the second operand
+        
+        Returns:
+            Polynomial: result of operation except for the case P(x) - P(x)
+            int: zero value for the exeptional case
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -205,8 +265,20 @@ class Polynomial:
     
     def __mul__(self, Value: TRealPoly) -> TIntPoly:
         """
+        Magic method implementing right multiplication by another polynomial or
+        a scalar: P(x) * a OR P(x) * Q(X).
+
         Signature:
-            int OR float OR Polynomial -> Polynomial OR 0
+            int OR float OR Polynomial -> Polynomial OR int
+        
+        Args:
+            Value: int OR float OR Polynomial; the second operand
+        
+        Returns:
+            Polynomial: result of operation except for the case P(x) * 0
+            int: zero value for the exeptional case
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -214,17 +286,41 @@ class Polynomial:
     
     def __truediv__(self, Value: TReal) -> TPolynomial:
         """
+        Magic method implementing division of a polynomial by a scalar: P(x) /a.
+
         Signature:
             int OR float -> Polynomial
         
+        Args:
+            Value: int OR float; the second operand
+        
+        Returns:
+            Polynomial: the result of operation
+        
+        Raises
+
         Version 1.0.0.0
         """
         pass
     
     def __floordiv__(self, Value: TPolynomial) -> TRealPoly:
         """
+        Magic method implementing 'integer' division of a polynomial by another
+        polynomial: P(x) // Q(x) - which return the quotient of the division.
+
         Signature:
             Polynomial -> Polynomial OR int OR float
+        
+        Args:
+            Value: Polinomial; the second polynomial (divisor)
+        
+        Returns:
+            Polynomial: power of the divident is greater than the power of the
+                divisor
+            int OR float: power of the divident is less than or equal to the
+                power of the divisor
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -232,17 +328,43 @@ class Polynomial:
     
     def __mod__(self, Value: TPolynomial) -> TRealPoly:
         """
+        Magic method implementing 'mod' division of a polynomial by another
+        polynomial: P(x) % Q(x) - which return the remainder of the division.
+
         Signature:
             Polynomial -> Polynomial OR int OR float
         
+        Args:
+            Value: Polinomial; the second polynomial (divisor)
+        
+        Returns:
+            Polynomial: P(x) = a * Q(x) + R(X) or P(x) = T(X) * Q(x) + R(x)
+                than the R(x) is the remainder (power <= than of Q(x))
+            int OR float: P(x) = a * Q(x) + b or P(x) = T(X) * Q(x) + b than
+                b is the remainder
+        
+        Raises:
+
         Version 1.0.0.0
         """
         pass
     
     def __divmod__(self, Value: TPolynomial) -> Tuple[TRealPoly, TRealPoly]:
         """
+        Magic method implementing function call divmod(P(x), Q(x)), which
+        returns both quotient and remainder of the division of P(x) by Q(x).
+
         Signature:
             Polynomial -> Polynomial OR int OR float, Polynomial OR int OR float
+        
+        Args:
+            Value: Polinomial; the second polynomial (divisor)
+        
+        Returns:
+            Polynomial OR int OR float, Polynomial OR int OR float: an unpacked
+                tuple of the quotient and remainder
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -250,8 +372,19 @@ class Polynomial:
     
     def __pow__(self, Value: int) -> TPolynomial:
         """
+        Magic method implementing expontiation of a polynomial to a positive
+        intger power: P(x)^k
+
         Signature:
             int > 0 -> Polynomial
+        
+        Args:
+            Value: int > 0; the second operand
+        
+        Returns:
+            Polynomial: the result of operation
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -259,8 +392,19 @@ class Polynomial:
     
     def __radd__(self, Value: TReal) -> TPolynomial:
         """
+        Magic method implementing left addition of a scalar to the polynomial:
+        a + P(x).
+
         Signature:
-            int OR float OR Polynomial -> Polynomial
+            int OR float -> Polynomial
+
+        Args:
+            Value: int OR float; the second operand (left)
+        
+        Returns:
+            Polynomial: the result of operation
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -268,8 +412,19 @@ class Polynomial:
     
     def __rsub__(self, Value: TReal) -> TPolynomial:
         """
+        Magic method implementing substraction of the polynomial from a scalar:
+        a - P(x).
+
         Signature:
-            int OR float OR Polynomial -> Polynomial
+            int OR float -> Polynomial
+        
+        Args:
+            Value: int OR float; the second operand (left)
+        
+        Returns:
+            Polynomial: the result of operation
+        
+        Raises:
         
         Version 1.0.0.0
         """
@@ -277,9 +432,21 @@ class Polynomial:
     
     def __rmul__(self, Value: TReal) -> TPolynomial:
         """
+        Magic method implementing multiplication of a scalar by the polynomial:
+        a * P(x)
+
         Signature:
-            int OR float OR Polynomial -> Polynomial
+            int OR float -> Polynomial or int
+
+        Args:
+            Value: int OR float; the second operand (left)
         
+        Returns:
+            Polynomial: result of operation except for the case 0 * P(x)
+            int: zero value for the exeptional case
+        
+        Raises:
+
         Version 1.0.0.0
         """
         pass
@@ -289,6 +456,8 @@ class Polynomial:
     @property
     def Power(self) -> int:
         """
+        Read-only property returning the power of the polynomial.
+
         Signature:
             None -> int > 0
         
@@ -377,8 +546,7 @@ class RationalFunction:
     class must be instantiated with two arguments representing the divident and
     the divisor polynomials, with either or both being an instance of the
     Polynomial class or a sequence of real numbers as the respective
-    coefficients from the highest to the zeroth power. All leading zeroes in the
-    sequences are ignored.
+    coefficients from the zer0-th to the highest power.
     
     An instance is also callable returning the value of the function at the
     passed value of the argument.
@@ -414,7 +582,8 @@ class RationalFunction:
     
     def __call__(self, Value: TReal) -> TReal:
         """
-        Evaluates the value of the function at the given value of the argument.
+        Magic method. Evaluates the value of the function at the given value of
+        the argument.
         
         Signature:
             int OR float -> int OR float

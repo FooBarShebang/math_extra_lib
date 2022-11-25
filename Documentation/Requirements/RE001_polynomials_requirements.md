@@ -29,7 +29,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Polynomials instantiation.
 
-**Description:** A generic polynomial should be implemented as a class, with the coefficients being defined during instantiation. They should be passed as (unpacked) sequence of real numbers in the order from the highest to the lowest (zero) power coefficient. The actual power of the created polynomial is defined by the first non-zero coefficient position, and it may be less than the length of the passed sequence minus 1, but the power cannot be below 1.
+**Description:** A generic polynomial should be implemented as a class, with the coefficients being defined during instantiation. They should be passed as (unpacked) sequence of real numbers in the either descending order from the highest to the lowest (zero) power coefficient, or in the ascending oreder of the coefficients - from the free to the N-th power coefficient. The actual power of the polynomial is defined by the highest power non-zero coefficient.
 
 **Verification Method:** T
 
