@@ -40,6 +40,8 @@ On other hand, given *N* real roots (treating the roots with multiplicity *k* as
 
 For a polynomial $P(x) = \sum_{i=0}^{N}{a_i*x^i}$ the *first derivative* is $\frac{dP(x)}{dx} = \sum_{i=1}^{N}{a_i*i*x^{i-1}}$. Recursively, the K-th derivative $(K<N)$ is $\frac{d^K P(x)}{dx^K} = \sum_{i=K}^{N}{\left( a_i*x^{i-K} * \prod_{j=0}^{K-1}{(i-j)}\right)}$. Finally, the first anti-derivative is $\int{P(x)} = const + \sum_{i=0}^{N}{\frac{a_i}{i+1}*x^{i+1}}$, where the constant of the indefinte integral becomes a new free coefficient (zero-th power), and it can be chosen arbitrary, even being zero.
 
+A ratio of two polynomials is also known as a *rational function*, which is often used for approximation of some functions that cannot be expressed in simple analytical form. The rational functions are especially useful in the cases than the functions to be approximated show assymptotical behaviour, which cannot be achieved with a single polynomial approximation. Therefore, the polynomials used as the divident and divisor must result in a non-zero residual.
+
 ## Design of the implementation
 
 The described arithmetics can be implemented using the standard Python arithmetics operators by implementing the *magical* methods of a class representing a polynomial:
@@ -104,7 +106,7 @@ Construction of a polynomial from its roots is, in essence, N-1 multiplications,
 
 Considering the polynomial division, the quotient should be calculated only if the degree of the divident is greater than or equal to the degree of the divisor. First, the coefficient $c = a_{N_1} /  b_{N_2}$ is calculated, which is the coefficient of the $N_1 -N_2$ power term of the quotient (highest). Then the difference is calculated $P_1(x) - x^{N_1-N_2}*P_2(x) \rightarrow (a_0, \dots, a_{N_1-N_2 - 1}, a_{N_1-N_2} - c * b_0, \dots, a_{N_1-1} - c * b_{N_2-1})$ (length $N_1 - 1$). Then the procedure is repeated recursively with substitution of the $P_1(x)$ by the reuslt of the previous step and respective adjustment of the degree $N_1$. The process continues until the length of the sequence resulting from the substraction reaches $N_2 -1$. All right-side consecutive zero values are removed, and the remaining sequence represents the residuals, whereas all accumulated coefficients *c* (in each respected step) are the coefficients of the quotient (in the reverse order!). **Note**, that a sequence of only one element (including zero value) is not a polynomial, but a scalar (numeric) value.
 
-Calculation of the first derivative and anti-derivative are also straight forward per-element sequence manipulations: $\frac{dP(x)}{dx} \rightarrow (a_1, 2 * a_2, \dots, N*a_N)$ and $\int{P(x)} \rightarrow (0, a_0, a_1 / 2, \dots, a_N /(N+1))$, with the free coeffient (integration constant) being chosen as zero. The generic K-th derivative $(K \leq N)$ can be calculated recursively or directly using either the looped correction factors calculation (as in the definition) or the factorial expressions as $\frac{d^KP(x)}{dx^K} \rightarrow (K! * a_K, (K+1)! * a_{K+1}, \frac{(K+2)!}{2!} * a_{K+2}, \dots, \frac{N!}{K!} * a_N)$, where $0!=1!=1$. And for $K > N$ the derivative is zero.
+Calculation of the first derivative and anti-derivative are also straight forward per-element sequence manipulations: $\frac{dP(x)}{dx} \rightarrow (a_1, 2 * a_2, \dots, N*a_N)$ and $\int{P(x)} \rightarrow (0, a_0, a_1 / 2, \dots, a_N /(N+1))$, with the free coeffient (integration constant) being chosen as zero. The generic K-th derivative $(K \leq N)$ can be calculated recursively or directly using either the looped correction factors calculation (as in the definition) or the factorial expressions as $\frac{d^KP(x)}{dx^K} \rightarrow (K! * a_K, (K+1)! * a_{K+1}, \frac{(K+2)!}{2!} * a_{K+2}, \dots, \frac{N!}{(N-K)!} * a_N)$, where $0!=1!=1$. And for $K > N$ the derivative is zero.
 
 Finally, considering the evaluation of a polynomial it is possible to calculate the sum of power directly, however, an alternative algorithm is preferable, which is based on the following expression
 
@@ -114,3 +116,5 @@ P(x) = a_0 + a_1 * x + a_2 * x^2 + ... + a_N * x^N = \newline
 $$
 
 Apparently, this algorithm can be implemented iteratively given the sequence representation of the polynomial.
+
+The *rational functions* can also be implemented as instances of a respective class. The coefficients of the respective polynomials should be defined during instantiation (i.e. passed as arguments of the initialization method). The created instance should create and store internally two instances of the polynomial class for the evaluation of the own value at the given value of the argument. Thus, the magic method '\_\_call\_\_()' should be implemented for that purpose.

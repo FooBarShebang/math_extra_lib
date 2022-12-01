@@ -153,6 +153,84 @@ Unary '+' (identity) and '-' (negation) operations are equivalent to addition / 
 
 **Title:** Evaluation of a rational function.
 
-**Description:** A rational function should be able to evaluate itself, i.e. calculate  own value, at a given value of its argument.
+**Description:** A rational function should be able to evaluate itself, i.e. calculate  own value, at a given value of its argument. If both the divident and divisor are evaluated to zero the conflict should be resolved with the L'Hospital's / Bernoulli's rule using derivatives, until either of or both terms as non-zero.
+
+**Verification Method:** T
+
+## Alarms, warnings and operator messages
+
+**Requirement ID:** REQ-AWM-100
+
+**Title:** TypeError - polynomials instantiation
+
+**Description:** An exception compatible to the standard TypeError should be raised by the initialization method and the construction from roots method if any of the passed arguments is not a real number.
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-101
+
+**Title:** ValueError - polynomials instantiation
+
+**Description:** An exception compatible to the standard ValueError should be raised by the initialization method if it recieves less than 2 positional arguments, or the last argument is zero. The construction from roots method should also raise such exception is it called without arguments.
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-102
+
+**Title:** TypeError - polynomials arithmetics and calculus
+
+**Description:** An exception compatible to the standard TypeError should be raised by using any data type except real numbers and polynomials (when allowed) as the second operand of arithmetics with a polynomial. The same exception must be raised in the following situations:
+
+* not an integer power in exponentiation operation
+* not integer argument for the derivative method
+* not polynomial argument for the convolution method
+* not a real number as an argument for evaluation method
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-103
+
+**Title:** TypeError - polynomials arithmetics and calculus
+
+**Description:** An exception compatible to the standard ValueError should be raised  in the following situations:
+
+* zero scalar divisor in the division operation
+* not positive power in the exponentiation operation
+* not positive argument of the derivative method
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-110
+
+**Title:** TypeError - fractional function instantiation
+
+**Description:** An exception compatible to the standard TypeError should be raised  in the following situations:
+
+* at least one argument of the initialization method is neither polynomial nor a sequence (but not a string!)
+* an element of a sequence type argument is not a real number
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-111
+
+**Title:** ValueError - fractional function instantiation
+
+**Description:** An exception compatible to the standard ValueError should be raised if the last element of a sequence type argument is zero
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-112
+
+**Title:** TypeError - fractional function evaluation
+
+**Description:** An exception compatible to the standard TypeError should be raised  if anything but a real number is passed as the argument of the evaluation method.
+
+**Verification Method:** T
+
+**Requirement ID:** REQ-AWM-113
+
+**Title:** ValueError - fractional function evaluation
+
+**Description:** An exception compatible to the standard ValueError should be raised if the passed argument results in the division by zero situation with non-zero divident.
 
 **Verification Method:** T
