@@ -1,4 +1,4 @@
-# Test Report on the Module statistics_lib.polynomials
+# Test Report on the Module math_extra_lib.polynomials
 
 ## Conventions
 
@@ -235,11 +235,19 @@ ___
 
 **Verification method:** T
 
-**Test goal:** ?
+**Test goal:** Improper data types as operands (arithmetics) or arguments of methods are rejected.
 
-**Expected result:** ?
+**Expected result:** An exception compatible with TypeError is raised in the following cases:
 
-**Test steps:** ?
+* Right operand of multiplication, substraction or addition is neither real number nor an instance of polynomial
+* Left operand of multiplication, substraction or addition is not a real number
+* Right operand of the true division is not a real number
+* Right operand of the integer or mod division is not a polynomial
+* Right operand of exponentiation is not an integer number
+* Argument of convolution or divmod method is not a polynomial
+* Optional argument (order) of the derivative method is not an integer number
+
+**Test steps:** Instantiate a random polynomial. Try to use different data types except for the allowed as the respective (left or right) second operand in all described arithmetical operations, as well as the argument of the respective methods. Check that the expected exception is raised in each case.
 
 **Test result:** PASS / FAIL
 
@@ -251,27 +259,95 @@ ___
 
 **Verification method:** T
 
-**Test goal:** ?
+**Test goal:** Improper values (of the proper data types) as operands (arithmetics) or arguments of methods are rejected.
 
-**Expected result:** ?
+**Expected result:** An exception compatible with ValueError is raised in the following cases:
 
-**Test steps:** ?
+* Zero or negative integer is used as the power in the exponentiation operation
+* Zero or negative integer is passed as the required order of the derivative
+* Zero value (integer or floating point) is used as the right operand of the true division operations
+
+**Test steps:** Instantiate a random polynomial. Try to raise it to 0-th power, and few negative (random) integer powers. Try to divide this polynomial by zero integer and zero floating point. Try to call the derivate method with zero, and few negative integer values as its argument. Check that the expected exception is raised in each case.
 
 **Test result:** PASS / FAIL
 ___
 
-**Test Identifier:** TEST-T-100
+**Test Identifier:** TEST-T-110
 
-**Requirement ID(s)**: REQ-FUN-100, REQ-FUN-102
+**Requirement ID(s)**: REQ-FUN-110, REQ-FUN-111, REQ-FUN-112
 
 **Verification method:** T
 
-**Test goal:** ?
+**Test goal:** Instantiation and evaluation of rational function.
 
-**Expected result:** ?
+**Expected result:** An instance of rational function class can be instantiated with two arguments, each of these can be either an instance of polynomial class or a sequence of real numbers with the last element being non-zero. 
 
-**Test steps:** ?
+**Test steps:** Generate two random sequences of real numbers, both of the length 2 or more elements, with the last element in each sequence being non-zero. Instantiate two polynomials - one from the first sequence, and the second polynomials - from the second sequence. Generate a number of random real numbers, check that none of them is a root of the second polynomial - remove all roots from the sequence. Instantiate a fractional function from two original sequence and evaluate it at each of the generated real numbers. Check that in each case the function evaluated to the same value as the ratio of the values of the respective polynomials at the same value of the argument. Repeat test using instantiation with two polynomials, sequence + polynomial and polinomial + sequence combination of the arguments.
+
+Select one of the values - $x_r$ - from the check sequence of numbers, at which the just tested rational function evaluates to a non-zero value *y*. Multiply the both polynomials by $(x-x_r)$ polynomial and use the returned polynomials for the instantiation of a new rational function. Evaluate the new function at $x_r$ - it should return *y* value. Repeat using $(x-x_r)^2$ and $(x-x_r)^3$ multipliers of the original polynomials.
 
 **Test result:** PASS / FAIL
 
 ___
+
+**Test Identifier:** TEST-T-111
+
+**Requirement ID(s)**: REQ-AWM-110
+
+**Verification method:** T
+
+**Test goal:** Improper type of an argument of the initialization method of the rational function class is rejected.
+
+**Expected result:** An exception compatible with TypeError is raised if, at least, one of the arguments of the initialization method is neither a sequence of real numbers nor an instance of polynomial class.
+
+**Test steps:** Generate a random sequence of real numbers with the last element being non-zero. Try to instantiate a rational function class using this sequence as the first argument, and a number of improper data types for the second argument. Check that the expected exception is raised in each case. Repeat the test using the reversed order of the arguments (first is improper, the second if the generated numbers sequence). Also try both arguments being of improper data type.
+
+**Test result:** PASS / FAIL
+
+___
+
+**Test Identifier:** TEST-T-112
+
+**Requirement ID(s)**: REQ-AWM-111
+
+**Verification method:** T
+
+**Test goal:** Improper definition of either divident or divisor polynomial is rejected.
+
+**Expected result:** An exception compatible with ValueError is raised if, at least, one of the initialization method arguments is a sequence of real numbers with the last element being zero.
+
+**Test steps:** Generate a random sequence of real numbers with the last element being non-zero, and the second random sequence of real numbers with the last element being zero. Try to intantiate the rational function class using the first and the second sequence as its arguments. Check that the expected exception is raised. Swap the arguments and repeat. Also try using the second sequence (zero as the last element) for the both arguments.
+
+**Test result:** PASS / FAIL
+
+___
+
+**Test Identifier:** TEST-T-113
+
+**Requirement ID(s)**: REQ-AWM-112
+
+**Verification method:** T
+
+**Test goal:** Only real numbers are accepted as the arguments of the rational function evaluation method.
+
+**Expected result:** An exception compatible with TypeError is raised when a rational function's evaluation method receives an argument of any data type except for a real number.
+
+**Test steps:** Instantiate a random rational function. Try to call its evaluation method with an argument of an improper data type, e.g. string, list, tuple, etc. Check that the expected exception is raised. Try with a number of improper data types.
+
+**Test result:** PASS / FAIL
+
+___
+
+**Test Identifier:** TEST-T-114
+
+**Requirement ID(s)**: REQ-AWM-113
+
+**Verification method:** T
+
+**Test goal:** Treatement of singularity point by rational function.
+
+**Expected result:** An exception compatible with ValueError is raised (instead of ZeroDivision) if the argument passed into the evaluation method of a rational function is a root of the divisor but not the divident polynomial, i.e. this value is a singularity point of the rational function.
+
+**Test steps:** Intantiate a rational function with two polynomials, with known real roots, at least - one known root for the divisor polynomial, at which the divident is not zero. Try to evaluate the rational function at this value (divisor's root). Check that the expected exception is raised.
+
+**Test result:** PASS / FAIL
