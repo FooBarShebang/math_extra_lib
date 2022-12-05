@@ -10,7 +10,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '25-11-2022'
+__date__ = '05-12-2022'
 __status__ = 'Development'
 
 #imports
@@ -18,6 +18,8 @@ __status__ = 'Development'
 #+ standard libraries
 
 from typing import Sequence, Union, Tuple
+
+from math import log2
 
 #types
 
@@ -52,7 +54,7 @@ class Polynomial:
     passed value of the argument.
     
     Properties:
-        Power: (read-only) int > 1
+        Degree: (read-only) int > 1
     
     Class methods:
         fromRoots(*args)
@@ -61,7 +63,7 @@ class Polynomial:
     Methods:
         getCoefficients()
             None -> tuple(int OR float)
-        getAntiderivative(Power = 1)
+        getAntiderivative(Degree = 1)
             /int >= 1/ -> Polynomial OR int OR float
         getAntiderivative()
             None -> Polynomial
@@ -89,7 +91,13 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Coefficients = [-args[0], 1]
+        for Index in range(1, len(args)):
+            NextCoefficients = [-args[Index]*Value for Value in Coefficients]
+            Coefficients.insert(0,0)
+            for Position, Value in enumerate(NextCoefficients):
+                Coefficients[Position] += Value
+        return cls(*Coefficients)
     
     #special methods
     
@@ -112,7 +120,7 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        self._Coefficients = tuple(args)
     
     def __str__(self) -> str:
         """
@@ -155,7 +163,12 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        a = self._Coefficients[-1]
+        for Index in range(self.Degree - 1, -1, -1):
+            b = self._Coefficients[Index]
+            Result = b + a * Value
+            a = Result
+        return Result
     
     def __getitem__(self, Index: int) -> TReal:
         """
@@ -176,7 +189,7 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        return self._Coefficients[Index]
     
     def __copy__(self) -> TPolynomial:
         """
@@ -190,7 +203,7 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        return self.__class__(*self._Coefficients)
     
     def __neg__(self) -> TPolynomial:
         """
@@ -205,7 +218,8 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        Coefficients = [-Value for Value in self._Coefficients]
+        return self.__class__(*Coefficients)
     
     def __pos__(self) -> TPolynomial:
         """
@@ -219,7 +233,7 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        return self.__class__(*self._Coefficients)
     
     def __add__(self, Value: TRealPoly) -> TIntPoly:
         """
@@ -240,7 +254,12 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            Coefficients = [Item for Item in self._Coefficients]
+            Coefficients[0] += Value
+            Result = self.__class__(*Coefficients)
+        return Result
     
     def __sub__(self, Value: TRealPoly) -> TIntPoly:
         """
@@ -261,7 +280,12 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            Coefficients = [Item for Item in self._Coefficients]
+            Coefficients[0] -= Value
+            Result = self.__class__(*Coefficients)
+        return Result
     
     def __mul__(self, Value: TRealPoly) -> TIntPoly:
         """
@@ -282,7 +306,24 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            if not Value:
+                Result = 0
+            else:
+                Coefficients = [Item * Value for Item in self._Coefficients]
+                Result = self.__class__(*Coefficients)
+        elif isinstance(Value, self.__class__):
+            Result = [Value[-1] * Item for Item in self._Coefficients]
+            Power = Value.Degree
+            for _ in range(Power):
+                Result.insert(0,0)
+            for Index in range(Power - 1, -1, -1):
+                Coeff = Value[Index]
+                for Pos, Val in enumerate(self._Coefficients):
+                    Result[Index + Pos] += Val * Coeff
+            Result = self.__class__(*Result)
+        return Result
     
     def __truediv__(self, Value: TReal) -> TPolynomial:
         """
@@ -301,7 +342,14 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            if not Value:
+                Result = 0 #raise exception!
+            else:
+                Coefficients = [Item / Value for Item in self._Coefficients]
+                Result = self.__class__(*Coefficients)
+        return Result
     
     def __floordiv__(self, Value: TPolynomial) -> TRealPoly:
         """
@@ -373,7 +421,7 @@ class Polynomial:
     def __pow__(self, Value: int) -> TPolynomial:
         """
         Magic method implementing expontiation of a polynomial to a positive
-        intger power: P(x)^k
+        intger power: P(x)**k
 
         Signature:
             int > 0 -> Polynomial
@@ -388,7 +436,19 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, int):
+            Degree2 = int(log2(Value))
+            Temp  = self.__class__(*self._Coefficients)
+            Result = Temp
+            for _ in range(Degree2):
+                Result = Temp * Temp
+                Temp = Result
+            RestDegree = Value - 2**Degree2
+            for _ in range(RestDegree):
+                Result = Temp * self
+                Temp = Result
+        return Result
     
     def __radd__(self, Value: TReal) -> TPolynomial:
         """
@@ -408,7 +468,12 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            Coefficients = [Item for Item in self._Coefficients]
+            Coefficients[0] += Value
+            Result = self.__class__(*Coefficients)
+        return Result
     
     def __rsub__(self, Value: TReal) -> TPolynomial:
         """
@@ -428,7 +493,12 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            Coefficients = [-Item for Item in self._Coefficients]
+            Coefficients[0] += Value
+            Result = self.__class__(*Coefficients) 
+        return Result
     
     def __rmul__(self, Value: TReal) -> TPolynomial:
         """
@@ -449,21 +519,28 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Value, (int, float)):
+            if not Value:
+                Result = 0
+            else:
+                Coefficients = [Item * Value for Item in self._Coefficients]
+                Result = self.__class__(*Coefficients)
+        return Result
     
     #properties
     
     @property
-    def Power(self) -> int:
+    def Degree(self) -> int:
         """
-        Read-only property returning the power of the polynomial.
+        Read-only property returning the degree of the polynomial.
 
         Signature:
             None -> int > 0
         
         Version 1.0.0.0
         """
-        pass
+        return len(self._Coefficients) - 1
     
     #public instance methods
     
@@ -480,14 +557,18 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        return tuple(self._Coefficients)
     
-    def getDerivative(self, Power: int = 1) -> TRealPoly:
+    def getDerivative(self, Degree: int = 1) -> TRealPoly:
         """
         Calculates the K-th (K >= 1) derivative of the polynomial.
         
         Signature:
             /int >= 1/ -> Polynomial OR int OR float
+        
+        Args:
+            Degree: (optional) int >= 1; degree of the derivative, defaults to
+                1
         
         Returns:
             Polynomial: instance of, the K-th derivative for K < N

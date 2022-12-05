@@ -35,7 +35,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test Identifier:** TEST-T-100
 
-**Requirement ID(s)**: REQ-FUN-100, REQ-FUN-102
+**Requirement ID(s)**: REQ-FUN-100, REQ-FUN-102, REQ-FUN-103
 
 **Verification method:** T
 
@@ -49,9 +49,13 @@ Use the generated polynomial as left / right operand in all implemented arithmet
 
 Call other defined methods of the polynomial - derivative / antiderivative and convolution - with arbitrary but proper arguments. Check that the polynomial is not changed. In the case of the convolution (argument is also a polynomial) check that the second polynomial is not changed either.
 
+Try to assign random value to each of the stored coefficients using index access - check that an exception is raised each time, whereas the coefficients are not changed.
+
+Evaluate the polynomial at several random values. Check that the result is a number with the expected value (calculated manually), whereas the coefficients are not changed.
+
 Repeat these steps multiple times (> 10).
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -99,7 +103,7 @@ ___
 
 **Test steps:** Check that the polynomial with the expected coefficients is created for a number of pre-defined cases with the known roots. Vary the order of the roots during passing into the respective method, the result should not change. Generate an arbitrary sequence of real numbers and create a polynomial from it. Check that it has the expected degree and evaluates to zero at each root value.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -162,7 +166,7 @@ Check exponentiation in the following steps:
 * Pre-calculate 2nd and 3rd powers of some simple polynomials (2nd - 3rd power) manually and compare with the implemented exponentiation operator
 * Generate a random polynomial and raise it to an arbitrary postive integer power > 1 - check that its degree is as expected; evaluate the first polynomial at some random value and raise this value to the same power, evaluate the value of the raised to power polynomial at the same argument / variable and compare to the previous value - should be (almost) equal; repeat several times at the different values of argument.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -351,3 +355,34 @@ ___
 **Test steps:** Intantiate a rational function with two polynomials, with known real roots, at least - one known root for the divisor polynomial, at which the divident is not zero. Try to evaluate the rational function at this value (divisor's root). Check that the expected exception is raised.
 
 **Test result:** PASS / FAIL
+
+## Traceability
+
+For traceability the relation between tests and requirements is summarized in the table below:
+
+| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
+| :----------------- | :--------------------- | :----------------------- |
+| REQ-FUN-100        | TEST-T-100             | YES                      |
+| REQ-FUN-101        | TEST-T-103             | YES                      |
+| REQ-FUN-102        | TEST-T-100             | YES                      |
+| REQ-FUN-103        | TEST-T-100             | YES                      |
+| REQ-FUN-104        | TEST-T-106, TEST-T-107 | NO                       |
+| REQ-FUN-105        | TEST-T-107             | NO                       |
+| REQ-FUN-106        | TEST-T-108             | NO                       |
+| REQ-FUN-107        | TEST-T-108             | NO                       |
+| REQ-FUN-108        | TEST-T-109             | NO                       |
+| REQ-AWM-100        | TEST-T-101, TEST-T-104 | NO                       |
+| REQ-AWM-101        | TEST-T-102, TEST-T-105 | NO                       |
+| REQ-AWM-102        | TEST-T-10A             | NO                       |
+| REQ-AWM-103        | TEST-T-10B             | NO                       |
+| REQ-FUN-110        | TEST-T-110             | NO                       |
+| REQ-FUN-111        | TEST-T-110             | NO                       |
+| REQ-FUN-112        | TEST-T-110             | NO                       |
+| REQ-AWM-110        | TEST-T-111             | NO                       |
+| REQ-AWM-111        | TEST-T-112             | NO                       |
+| REQ-AWM-112        | TEST-T-113             | NO                       |
+| REQ-AWM-113        | TEST-T-114             | NO                       |
+
+| **Software ready for production \[YES/NO\]** | **Rationale**                 |
+| :------------------------------------------: | :---------------------------- |
+| NO                                           | Under development             |

@@ -66,7 +66,7 @@ The described arithmetics can be implemented using the standard Python arithmeti
 * '\\' (true division) '\_\_truediv\_\_()' for the division by a scalar
 * '\\\\' (integer division) '\_\_floordiv\_\_()' for the division of a polynomial by another polynomial returning the *quotient* of the division
 * '%' (mod division) '\_\_mod\_\_()' for the division of a polynomial by another polynomial returning the *remainder* of the division
-* '^' (exponentiation) to raise a polynomial to a positive integer power; note, that this method also hooks the call of the built-in function **pow**()
+* '\*\*' (exponentiation) to raise a polynomial to a positive integer power; note, that this method also hooks the call of the built-in function **pow**()
 
 In addition, the call to the built-in function **divmod**() is hooked by the magic method '\_\_divmod\_\_()', which should return a tuple of both *quotient* and *remainder* of the division of a polynomial by another polynomial.
 

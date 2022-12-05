@@ -21,11 +21,10 @@
 | REQ-IAR-001        |                                                              | NO                       |
 | REQ-IAR-002        |                                                              | NO                       |
 | REQ-UDR-000        |                                                              | NO                       |
-| REQ-FUN-100        |                                                              | NO                       |
-| REQ-FUN-100        | TEST-T-100                                                   | NO                       |
-| REQ-FUN-101        | TEST-T-103                                                   | NO                       |
-| REQ-FUN-102        | TEST-T-100                                                   | NO                       |
-| REQ-FUN-103        | TEST-T-100                                                   | NO                       |
+| REQ-FUN-100        | TEST-T-100                                                   | YES                      |
+| REQ-FUN-101        | TEST-T-103                                                   | YES                      |
+| REQ-FUN-102        | TEST-T-100                                                   | YES                      |
+| REQ-FUN-103        | TEST-T-100                                                   | YES                      |
 | REQ-FUN-104        | TEST-T-106, TEST-T-107                                       | NO                       |
 | REQ-FUN-105        | TEST-T-107                                                   | NO                       |
 | REQ-FUN-106        | TEST-T-108                                                   | NO                       |
