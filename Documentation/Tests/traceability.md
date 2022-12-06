@@ -25,18 +25,18 @@
 | REQ-FUN-101        | TEST-T-103                                                   | YES                      |
 | REQ-FUN-102        | TEST-T-100                                                   | YES                      |
 | REQ-FUN-103        | TEST-T-100                                                   | YES                      |
-| REQ-FUN-104        | TEST-T-106, TEST-T-107                                       | NO                       |
-| REQ-FUN-105        | TEST-T-107                                                   | NO                       |
-| REQ-FUN-106        | TEST-T-108                                                   | NO                       |
-| REQ-FUN-107        | TEST-T-108                                                   | NO                       |
-| REQ-FUN-108        | TEST-T-109                                                   | NO                       |
+| REQ-FUN-104        | TEST-T-106, TEST-T-107                                       | YES                      |
+| REQ-FUN-105        | TEST-T-107                                                   | YES                      |
+| REQ-FUN-106        | TEST-T-108                                                   | YES                      |
+| REQ-FUN-107        | TEST-T-108                                                   | YES                      |
+| REQ-FUN-108        | TEST-T-109                                                   | YES                      |
 | REQ-AWM-100        | TEST-T-101, TEST-T-104                                       | NO                       |
 | REQ-AWM-101        | TEST-T-102, TEST-T-105                                       | NO                       |
 | REQ-AWM-102        | TEST-T-10A                                                   | NO                       |
 | REQ-AWM-103        | TEST-T-10B                                                   | NO                       |
-| REQ-FUN-110        | TEST-T-110                                                   | NO                       |
-| REQ-FUN-111        | TEST-T-110                                                   | NO                       |
-| REQ-FUN-112        | TEST-T-110                                                   | NO                       |
+| REQ-FUN-110        | TEST-T-110                                                   | YES                      |
+| REQ-FUN-111        | TEST-T-110                                                   | YES                      |
+| REQ-FUN-112        | TEST-T-110                                                   | YES                      |
 | REQ-AWM-110        | TEST-T-111                                                   | NO                       |
 | REQ-AWM-111        | TEST-T-112                                                   | NO                       |
 | REQ-AWM-112        | TEST-T-113                                                   | NO                       |

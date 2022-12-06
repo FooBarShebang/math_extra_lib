@@ -10,16 +10,18 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '05-12-2022'
+__date__ = '06-12-2022'
 __status__ = 'Development'
 
 #imports
 
 #+ standard libraries
 
+import collections.abc as c_abc
+
 from typing import Sequence, Union, Tuple
 
-from math import log2
+from math import log2, factorial
 
 #types
 
@@ -125,7 +127,7 @@ class Polynomial:
     def __str__(self) -> str:
         """
         Magic method to produce a human readable representation of the
-        polynomial in the form "a_0 + a_1 * x + a_2 * x^2 + ... + a_N * x^N",
+        polynomial in the form "a_N * x**N + ... + a_1 * x + a_0",
         whith all zero coefficient value terms being ommited.
 
         Singature:
@@ -133,7 +135,35 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Terms = list()
+        NDegree = self.Degree
+        Index = self.Degree
+        while Index >= 0:
+            Coefficient = self[Index]
+            if Coefficient < 0:
+                Sign = '-'
+            elif Index == NDegree:
+                Sign = ''
+            else:
+                Sign = '+'
+            if not Index:
+                Term = ''
+            elif Index == 1:
+                Term = 'x'
+            else:
+                Term = 'x**{}'.format(Index)
+            AbsCoef = abs(Coefficient)
+            if len(Term) and (AbsCoef == 1 or AbsCoef == 1.0):
+                strCoefficient = ''
+            elif not Index:
+                strCoefficient = str(AbsCoef)
+            else:
+                strCoefficient ='{}*'.format(AbsCoef)
+            if AbsCoef:
+                Terms.append('{}{}{}'.format(Sign, strCoefficient, Term))
+            Index -= 1
+        Result = ''.join(Terms)
+        return Result
     
     def __repr__(self) -> str:
         """
@@ -145,7 +175,8 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = "'{}{}'".format(self.__class__.__name__, self._Coefficients)
+        return Result
     
     def __call__(self, Value: TReal) -> TReal:
         """
@@ -259,6 +290,26 @@ class Polynomial:
             Coefficients = [Item for Item in self._Coefficients]
             Coefficients[0] += Value
             Result = self.__class__(*Coefficients)
+        elif isinstance(Value, self.__class__):
+            Degree = max(self.Degree, Value.Degree)
+            Left = list(self.getCoefficients())
+            Right = list(Value.getCoefficients())
+            for _ in range(len(Left), Degree + 1):
+                Left.append(0)
+            for _ in range(len(Right), Degree + 1):
+                Right.append(0)
+            Sum = [Item + Right[Index] for Index, Item in enumerate(Left)]
+            while len(Sum):
+                if not Sum[-1]:
+                    Sum.pop()
+                else:
+                    break
+            if not len(Sum):
+                Result = 0
+            elif len(Sum) == 1:
+                Result = Sum[0]
+            else:
+                Result = self.__class__(*Sum)
         return Result
     
     def __sub__(self, Value: TRealPoly) -> TIntPoly:
@@ -285,6 +336,26 @@ class Polynomial:
             Coefficients = [Item for Item in self._Coefficients]
             Coefficients[0] -= Value
             Result = self.__class__(*Coefficients)
+        elif isinstance(Value, self.__class__):
+            Degree = max(self.Degree, Value.Degree)
+            Left = list(self.getCoefficients())
+            Right = list(Value.getCoefficients())
+            for _ in range(len(Left), Degree + 1):
+                Left.append(0)
+            for _ in range(len(Right), Degree + 1):
+                Right.append(0)
+            Sum = [Item - Right[Index] for Index, Item in enumerate(Left)]
+            while len(Sum):
+                if not Sum[-1]:
+                    Sum.pop()
+                else:
+                    break
+            if not len(Sum):
+                Result = 0
+            elif len(Sum) == 1:
+                Result = Sum[0]
+            else:
+                Result = self.__class__(*Sum)
         return Result
     
     def __mul__(self, Value: TRealPoly) -> TIntPoly:
@@ -372,7 +443,8 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result, _ = self.__divmod__(Value)
+        return Result
     
     def __mod__(self, Value: TPolynomial) -> TRealPoly:
         """
@@ -395,7 +467,8 @@ class Polynomial:
 
         Version 1.0.0.0
         """
-        pass
+        _, Result = self.__divmod__(Value)
+        return Result
     
     def __divmod__(self, Value: TPolynomial) -> Tuple[TRealPoly, TRealPoly]:
         """
@@ -403,20 +476,53 @@ class Polynomial:
         returns both quotient and remainder of the division of P(x) by Q(x).
 
         Signature:
-            Polynomial -> Polynomial OR int OR float, Polynomial OR int OR float
+            Polynomial
+                -> tuple(Polynomial OR int OR float, Polynomial OR int OR float)
         
         Args:
             Value: Polinomial; the second polynomial (divisor)
         
         Returns:
-            Polynomial OR int OR float, Polynomial OR int OR float: an unpacked
-                tuple of the quotient and remainder
+            Polynomial OR int OR float, Polynomial OR int OR float: a tuple of
+                the quotient and remainder
         
         Raises:
         
         Version 1.0.0.0
         """
-        pass
+        Degree1 = self.Degree
+        Degree2 = Value.Degree
+        if Degree1 < Degree2:
+            Quotient = 0
+            Remainder = self.__copy__()
+        else:
+            Divident = list(self.getCoefficients())
+            Divisor = list(Value.getCoefficients())
+            Quotient = list()
+            #Remainder = list()
+            while len(Divident) >= len(Divisor):
+                Coefficient = Divident[-1] / Divisor[-1]
+                Quotient.insert(0, Coefficient)
+                Shift = len(Divident) - len(Divisor)
+                for Index, Item in enumerate(Divisor):
+                    Divident[Index + Shift] -= Item * Coefficient
+                Divident.pop()
+            if len(Quotient) > 1:
+                Quotient = self.__class__(*Quotient)
+            else:
+                Quotient = Quotient[0]
+            while len(Divident):
+                if not Divident[-1]:
+                    Divident.pop()
+                else:
+                    break
+            if not len(Divident):
+                Remainder = 0
+            elif len(Divident) == 1:
+                Remainder = Divident[0]
+            else:
+                Remainder = self.__class__(*Divident)
+        return (Quotient, Remainder)
     
     def __pow__(self, Value: int) -> TPolynomial:
         """
@@ -552,8 +658,8 @@ class Polynomial:
             None -> tuple(int OR float)
         
         Returns:
-            tuple(int OR float): the coefficients from the highest towards the
-                zero-th power
+            tuple(int OR float): the coefficients from the zero-th towards the
+                highest power
         
         Version 1.0.0.0
         """
@@ -580,7 +686,20 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        if Degree > self.Degree:
+            Result = 0
+        elif Degree == self.Degree:
+            Result = factorial(Degree) * self[-1]
+        else:
+            StartIndex = Degree
+            Coefficients = list()
+            for Index in range(StartIndex, self.Degree + 1):
+                Coeff = self[Index]
+                for Power in range(Degree):
+                    Coeff *= (Index - Power)
+                Coefficients.append(Coeff)
+            Result = self.__class__(*Coefficients)
+        return Result
     
     def getAntiderivative(self) -> TPolynomial:
         """
@@ -596,7 +715,10 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Coefficients = [Value / (Index + 1)
+                            for Index, Value in enumerate(self._Coefficients)]
+        Coefficients.insert(0, 0)
+        return self.__class__(*Coefficients)
     
     def getConvolution(self, Other: TPolynomial) -> TPolynomial:
         """
@@ -619,7 +741,10 @@ class Polynomial:
         
         Version 1.0.0.0
         """
-        pass
+        Result = self[0] + self[1] * Other
+        for Power in range(2, self.Degree + 1):
+            Result = Result + self[Power] * (Other ** Power)
+        return Result
 
 class RationalFunction:
     """
@@ -641,8 +766,8 @@ class RationalFunction:
     
     #special methods
     
-    def __init__(self, PolyDivident: TRealSequencePoly,
-                                        PolyDivisor: TRealSequencePoly) -> None:
+    def __init__(self, Divident: TRealSequencePoly,
+                                        Divisor: TRealSequencePoly) -> None:
         """
         Initialization. Creates the internally stored instances of the
         Polynomial class to store the respective polynomials.
@@ -652,14 +777,25 @@ class RationalFunction:
                 -> None
         
         Args:
-            PolyDivident: Polynomial OR seq(int OR float); divident polynomial
+            Divident: Polynomial OR seq(int OR float); divident polynomial
                 or a sequence of the respective coefficients
-            PolyDivisor: Polynomial OR seq(int OR float); divisor polynomial
+            Divisor: Polynomial OR seq(int OR float); divisor polynomial
                 or a sequence of the respective coefficients
         
         Version 1.0.0.0
         """
-        pass
+        if isinstance(Divident, Polynomial):
+            self._Divident = Divident.__copy__()
+        elif (isinstance(Divident, c_abc.Sequence)
+                                        and (not isinstance(Divident, str))):
+            #TODO - check elements
+            self._Divident = Polynomial(*Divident)
+        if isinstance(Divisor, Polynomial):
+            self._Divisor = Divisor.__copy__()
+        elif (isinstance(Divisor, c_abc.Sequence)
+                                        and (not isinstance(Divisor, str))):
+            #TODO - check elements
+            self._Divisor = Polynomial(*Divisor)
     
     def __call__(self, Value: TReal) -> TReal:
         """
@@ -677,7 +813,61 @@ class RationalFunction:
         
         Version 1.0.0.0
         """
-        pass
+        Divident = self._Divident(Value)
+        Divisor = self._Divisor(Value)
+        if abs(Divisor) > 1E-8:
+            Result = Divident / Divisor
+        else:
+            if abs(Divident) > 1E-8:
+                pass #raise exception
+            else:
+                NDegree = min(self._Divident.Degree, self._Divisor.Degree)
+                Degree = 1
+                while Degree < (NDegree + 1):
+                    Divident=self._Divident.getDerivative(Degree=Degree)
+                    if isinstance(Divident, Polynomial):
+                        Divident = Divident(Value)
+                    Divisor = self._Divisor.getDerivative(Degree=Degree)
+                    if isinstance(Divisor, Polynomial):
+                        Divisor = Divisor(Value)
+                    if abs(Divident) > 1E-8 or abs(Divisor) > 1E-8:
+                        break
+                    Degree += 1
+                if Divisor:
+                    Result = Divident / Divisor
+                else:
+                    pass #raise exception
+        return Result
+    
+    def __str__(self) -> str:
+        """
+        Magic method to produce a human readable representation of the rational
+        function in the form "P(x)/Q(X)", where P(x) and Q(x) are string
+        representations of the divident and divisor polynomilas respectively
+        whith all zero coefficient value terms being ommited.
+
+        Singature:
+            None -> str
+        
+        Version 1.0.0.0
+        """
+        Result = '({})/({})'.format(self._Divident, self._Divisor)
+        return Result
+    
+    def __repr__(self) -> str:
+        """
+        Magic method to produce a human readable representation of the rational
+        function in the compact form listing two coefficients tuples as
+        "'RationalFunction((a_0, ..., a_N),(b_0, ..., b_N))'".
+
+        Singature:
+            None -> str
+        
+        Version 1.0.0.0
+        """
+        Result = "'{}({}, {})'".format(self.__class__.__name__,
+                    self._Divident._Coefficients, self._Divisor._Coefficients)
+        return Result
     
     #public instance methods
     
@@ -692,9 +882,9 @@ class RationalFunction:
         Returns:
             tuple(int OR float), tuple(int OR float): unpacked tuple of two
                 tuples listing the coefficients of the divident and divisor
-                polynomials respectively, from the highest to the zero-th
+                polynomials respectively, from the zero-th to the highest
                 power sorted
         
         Version 1.0.0.0
         """
-        pass
+        return self._Divident._Coefficients, self._Divisor._Coefficients

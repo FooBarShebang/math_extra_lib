@@ -158,6 +158,8 @@ ___
 
 The results of the operations conform the definitions made in the respective design document [DE001](../Design/DE001_polynomials.md).
 
+*Note* that the checks on exponentiation can fail in < 0.1% of the cases due to rounding errors. This is acceptable.
+
 **Test steps:** Create an arbitrary polynomial (random degree and coeffiecients values). Generate a random integer and a random floating point numbers. Use these numbers as left and right addition operand and right substraction operand. Check that the result is a polynomial of the same degree, and all coefficients except the free one are the same as of the original polynomial, whereas the free coefficient has the expected different value. Use the same numbers as the left operand in substraction. Check that the result is a polynomial of the same degree, and all coefficients except the free one are the same absolute values as of the original polynomial but the opposite sign, whereas the free coefficient has the expected different value. Use the same numbers as left and right operands in multiplication and right operand in division (unless zero). Check that the result is a polynomial of the same degree and all coefficients are scaled as expected. Repeat several time with the different polynomials.
 
 Check exponentiation in the following steps:
@@ -185,13 +187,15 @@ ___
 * Multiplication of two polynomials
 * Division of a polynomial by another polynomial, which results in a tuple of two objects: quotient and remainder - with both or either being a real number or a polynomial
 
+*Note* that the checks on multpiplication can fail in < 0.1% of the cases due to rounding errors. This is acceptable.
+
 **Test steps:** Check the operations using few pre-computed (manually) examples, including addition and substraction of equal and unequal degree polynomials, as well as the case of the cancelation of the highest power coefficient(s). Check the generated results against the pre-computed ones.
 
 For the addition, substraction and multiplication - generate a number of pairs of random polynomials. Additionally verify using evaluation check. Sum / difference / product of two polynomials must evaluate to the same value at the same argument's value as the sum / difference / product of the evaluations of the original polynomials at the same value of the argument.
 
 Finally, generate a random polynomial of degree > 2. Mutliply it by itself 2, 3 and 4 times and compare the result with the explicit expontiation.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -209,7 +213,7 @@ ___
 
 Repeat this test multiple times.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -225,11 +229,11 @@ ___
 
 **Test steps:** Check the method using few manually pre-computed examples.
 
-Then, generate two random 2-nd and / or 3-rd degree polynomials. Calculate their convolution 'manually' using the coefficients of the 'outer' polynomial and the already tested multiplication, addition and exponentiation operations on the 'inner' polynomial. Calculate the convolution using the respective methode of the 'outer' polynomial and the 'inner' polynomial as the argument. Compare the two calculated polynomials per coefficient - must be the same. Also evaluate the convolution at a number of random values of argument / variable, and compare them with the results of the step-wise evaluation P(x = Q(x)) - must be the same.
+Then, generate two random 2-nd and / or 3-rd degree polynomials. Calculate their convolution 'manually' using the coefficients of the 'outer' polynomial and the already tested multiplication, addition and exponentiation operations on the 'inner' polynomial. Calculate the convolution using the respective method of the 'outer' polynomial and the 'inner' polynomial as the argument. Compare the two calculated polynomials per coefficient - must be the same. Also evaluate the convolution at a number of random values of argument / variable, and compare them with the results of the step-wise evaluation P(x = Q(x)) - must be the same.
 
 Repeat the random testing approach several times.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -284,13 +288,13 @@ ___
 
 **Test goal:** Instantiation and evaluation of rational function.
 
-**Expected result:** An instance of rational function class can be instantiated with two arguments, each of these can be either an instance of polynomial class or a sequence of real numbers with the last element being non-zero. 
+**Expected result:** An instance of rational function class can be instantiated with two arguments, each of these can be either an instance of polynomial class or a sequence of real numbers with the last element being non-zero.
 
 **Test steps:** Generate two random sequences of real numbers, both of the length 2 or more elements, with the last element in each sequence being non-zero. Instantiate two polynomials - one from the first sequence, and the second polynomials - from the second sequence. Generate a number of random real numbers, check that none of them is a root of the second polynomial - remove all roots from the sequence. Instantiate a fractional function from two original sequence and evaluate it at each of the generated real numbers. Check that in each case the function evaluated to the same value as the ratio of the values of the respective polynomials at the same value of the argument. Repeat test using instantiation with two polynomials, sequence + polynomial and polinomial + sequence combination of the arguments.
 
 Select one of the values - $x_r$ - from the check sequence of numbers, at which the just tested rational function evaluates to a non-zero value *y*. Multiply the both polynomials by $(x-x_r)$ polynomial and use the returned polynomials for the instantiation of a new rational function. Evaluate the new function at $x_r$ - it should return *y* value. Repeat using $(x-x_r)^2$ and $(x-x_r)^3$ multipliers of the original polynomials.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -366,18 +370,18 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-101        | TEST-T-103             | YES                      |
 | REQ-FUN-102        | TEST-T-100             | YES                      |
 | REQ-FUN-103        | TEST-T-100             | YES                      |
-| REQ-FUN-104        | TEST-T-106, TEST-T-107 | NO                       |
-| REQ-FUN-105        | TEST-T-107             | NO                       |
-| REQ-FUN-106        | TEST-T-108             | NO                       |
-| REQ-FUN-107        | TEST-T-108             | NO                       |
-| REQ-FUN-108        | TEST-T-109             | NO                       |
+| REQ-FUN-104        | TEST-T-106, TEST-T-107 | YES                      |
+| REQ-FUN-105        | TEST-T-107             | YES                      |
+| REQ-FUN-106        | TEST-T-108             | YES                      |
+| REQ-FUN-107        | TEST-T-108             | YES                      |
+| REQ-FUN-108        | TEST-T-109             | YES                      |
 | REQ-AWM-100        | TEST-T-101, TEST-T-104 | NO                       |
 | REQ-AWM-101        | TEST-T-102, TEST-T-105 | NO                       |
 | REQ-AWM-102        | TEST-T-10A             | NO                       |
 | REQ-AWM-103        | TEST-T-10B             | NO                       |
-| REQ-FUN-110        | TEST-T-110             | NO                       |
-| REQ-FUN-111        | TEST-T-110             | NO                       |
-| REQ-FUN-112        | TEST-T-110             | NO                       |
+| REQ-FUN-110        | TEST-T-110             | YES                      |
+| REQ-FUN-111        | TEST-T-110             | YES                      |
+| REQ-FUN-112        | TEST-T-110             | YES                      |
 | REQ-AWM-110        | TEST-T-111             | NO                       |
 | REQ-AWM-111        | TEST-T-112             | NO                       |
 | REQ-AWM-112        | TEST-T-113             | NO                       |
