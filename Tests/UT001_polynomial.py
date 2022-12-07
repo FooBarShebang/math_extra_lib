@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.polynomial, see TE001.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "06-12-2022"
+__date__ = "07-12-2022"
 __status__ = "Testing"
 
 #imports
@@ -52,6 +52,7 @@ class Test_Polynomial(unittest.TestCase):
         Preparation for the test cases, done only once.
         """
         cls.TestClass = testmodule.Polynomial
+        cls.NotRealNumber = ['1', (1, 1), [1, 1], {1 : 1}, int, float, bool]
     
     def setUp(self):
         """
@@ -177,6 +178,53 @@ class Test_Polynomial(unittest.TestCase):
             self.tearDown()
             self.setUp()
     
+    def test_init_TypeError(self):
+        """
+        Checks that the init method rejects non real number type arguments.
+        
+        Test ID: TEST-T-101
+        Covers requirements: REQ-AWM-100
+        """
+        for Item in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestClass(Item, 1, 1, 1, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass(1, Item, 1, 1, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass(1, 1, Item, 1, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass(1, 1, 1, Item, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass(1, 1, 1, 1, Item)
+        with self.assertRaises(TypeError):
+            self.TestClass(1, 1, 1, 1, self.TestObject)
+        with self.assertRaises(TypeError):
+            self.TestClass(self.SecondObject, 1, 1, 1)
+    
+    def test_init_ValueError(self):
+        """
+        Checks that the init method rejects 0 or 1 arguments call as well as
+        zero as the last argument.
+        
+        Test ID: TEST-T-102
+        Covers requirements: REQ-AWM-101
+        """
+        Args = []
+        with self.assertRaises(ValueError):
+            self.TestClass(*Args)
+        with self.assertRaises(ValueError):
+            self.TestClass()
+        with self.assertRaises(ValueError):
+            self.TestClass(1)
+        for Length in range(10):
+            Coefficients = [1 for _ in range(Length)]
+            Coefficients.append(0)
+            with self.assertRaises(ValueError):
+                self.TestClass(*Coefficients)
+            Coefficients[-1] = 0.0
+            with self.assertRaises(ValueError):
+                self.TestClass(*Coefficients)
+    
     def test_FromRoots(self):
         """
         Checks creation of a polynomial from its roots.
@@ -246,6 +294,55 @@ class Test_Polynomial(unittest.TestCase):
                 for Index, Value in enumerate(CheckCoefficients):
                     self.assertAlmostEqual(Value, NewCoefficients[Index])
                 del TestObject
+    
+    def test_FromRoot_TypeError(self):
+        """
+        Checks that the method rejects non real number type arguments.
+        
+        Test ID: TEST-T-104
+        Covers requirements: REQ-AWM-100
+        """
+        for Item in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestClass.fromRoots(Item, 1, 1, 1, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass.fromRoots(1, Item, 1, 1, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass.fromRoots(1, 1, Item, 1, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass.fromRoots(1, 1, 1, Item, 1)
+            with self.assertRaises(TypeError):
+                self.TestClass.fromRoots(1, 1, 1, 1, Item)
+        with self.assertRaises(TypeError):
+            self.TestClass.fromRoots(1, 1, 1, 1, self.TestObject)
+        with self.assertRaises(TypeError):
+            self.TestClass.fromRoots(self.SecondObject, 1, 1, 1)
+    
+    def test_FromRoots_ValueError(self):
+        """
+        Checks that the method rejects call without arguments.
+        
+        Test ID: TEST-T-105
+        Covers requirements: REQ-AWM-101
+        """
+        Args = []
+        with self.assertRaises(ValueError):
+            self.TestClass.fromRoots(*Args)
+        with self.assertRaises(ValueError):
+            self.TestClass.fromRoots()
+    
+    def test_call_TypeError(self):
+        """
+        Checks that non real numbers cannot be evaluated.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject(Value)
+        with self.assertRaises(TypeError):
+            self.TestObject(self.SecondObject)
     
     def test_addScalar(self):
         """
@@ -581,21 +678,25 @@ class Test_Polynomial(unittest.TestCase):
                 self.assertIsInstance(Test, self.TestClass)
                 self.assertEqual(Test.Degree, self.NDegree * Power)
                 TestValue = Test(iValue)
-                if abs(CheckValue) > 0.001:
+                if abs(CheckValue) > 10:
                     self.assertAlmostEqual(TestValue, CheckValue,
                                                             delta= RelPrecision)
+                elif abs(CheckValue) > 0.01:
+                    self.assertAlmostEqual(TestValue, CheckValue, places = 3)
                 else:
-                    self.assertAlmostEqual(TestValue - CheckValue, 0, places= 5)
+                    self.assertLess(abs(TestValue - CheckValue), 0.001)
                 del Test
                 Test = pow(self.TestObject, Power)
                 self.assertIsInstance(Test, self.TestClass)
                 self.assertEqual(Test.Degree, self.NDegree * Power)
                 TestValue = Test(iValue)
-                if abs(CheckValue) > 0.001:
+                if abs(CheckValue) > 10:
                     self.assertAlmostEqual(TestValue, CheckValue,
                                                             delta= RelPrecision)
+                elif abs(CheckValue) > 0.01:
+                    self.assertAlmostEqual(TestValue, CheckValue, places = 3)
                 else:
-                    self.assertAlmostEqual(TestValue - CheckValue, 0, places= 5)
+                    self.assertLess(abs(TestValue - CheckValue), 0.001)
                 del Test
                 fValue = randint(-5,5) + random()
                 CheckValue = (self.TestObject(fValue))**Power
@@ -607,21 +708,25 @@ class Test_Polynomial(unittest.TestCase):
                 self.assertIsInstance(Test, self.TestClass)
                 self.assertEqual(Test.Degree, self.NDegree * Power)
                 TestValue = Test(fValue)
-                if abs(CheckValue) > 0.001:
+                if abs(CheckValue) > 10:
                     self.assertAlmostEqual(TestValue, CheckValue,
                                                             delta= RelPrecision)
+                elif abs(CheckValue) > 0.01:
+                    self.assertAlmostEqual(TestValue, CheckValue, places = 3)
                 else:
-                    self.assertAlmostEqual(TestValue - CheckValue, 0, places= 5)
+                    self.assertLess(abs(TestValue - CheckValue), 0.001)
                 del Test
                 Test = pow(self.TestObject, Power)
                 self.assertIsInstance(Test, self.TestClass)
                 self.assertEqual(Test.Degree, self.NDegree * Power)
                 TestValue = Test(fValue)
-                if abs(CheckValue) > 0.001:
+                if abs(CheckValue) > 10:
                     self.assertAlmostEqual(TestValue, CheckValue,
                                                             delta= RelPrecision)
+                elif abs(CheckValue) > 0.01:
+                    self.assertAlmostEqual(TestValue, CheckValue, places = 3)
                 else:
-                    self.assertAlmostEqual(TestValue - CheckValue, 0, places= 5)
+                    self.assertLess(abs(TestValue - CheckValue), 0.001)
                 del Test
     
     def test_mulPoly(self):
@@ -690,7 +795,7 @@ class Test_Polynomial(unittest.TestCase):
                     self.assertAlmostEqual(Value3, Value1 * Value2,
                                                         delta = RelPrecision)
                 else:
-                    self.assertAlmostEqual(0, Value3)
+                    self.assertAlmostEqual(0, Value3, places = 5)
             del Test
             self.tearDown()
             self.setUp()
@@ -1041,6 +1146,187 @@ class Test_Polynomial(unittest.TestCase):
         del Test
         del Poly2
         del Poly1
+        Test = self.TestObject.getConvolution(self.SecondObject)
+        for _ in range(100):
+            Value = randint(-5,5) + random()
+            YValue = self.SecondObject(Value)
+            CheckValue = self.TestObject(YValue)
+            TestValue = Test(Value)
+            if abs(CheckValue) < 1:
+                self.assertAlmostEqual(CheckValue, TestValue, places = 3)
+            elif abs(CheckValue) < 1E8:
+                self.assertAlmostEqual(CheckValue, TestValue,
+                                            delta = 0.01 * abs(CheckValue))
+            else:
+                self.assertAlmostEqual(CheckValue, TestValue,
+                                            delta = 0.1 * abs(CheckValue))
+        del Test
+        
+    def test_add_TypeError(self):
+        """
+        Checks that improper type operands are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject + Value
+            with self.assertRaises(TypeError):
+                Value + self.TestObject
+    
+    def test_sub_TypeError(self):
+        """
+        Checks that improper type operands are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject - Value
+            with self.assertRaises(TypeError):
+                Value - self.TestObject
+    
+    def test_mul_TypeError(self):
+        """
+        Checks that improper type operands are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject * Value
+            with self.assertRaises(TypeError):
+                Value * self.TestObject
+    
+    def test_div_TypeError(self):
+        """
+        Checks that improper type operands are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject / Value
+            with self.assertRaises(TypeError):
+                self.TestObject // Value
+            with self.assertRaises(TypeError):
+                self.TestObject % Value
+            with self.assertRaises(TypeError):
+                divmod(self.TestObject, Value)
+        with self.assertRaises(TypeError):
+            self.TestObject / self.SecondObject
+        with self.assertRaises(TypeError):
+            self.TestObject // 1
+        with self.assertRaises(TypeError):
+            self.TestObject % 1
+        with self.assertRaises(TypeError):
+            self.TestObject // 1.0
+        with self.assertRaises(TypeError):
+            self.TestObject % 1.0
+        with self.assertRaises(TypeError):
+            divmod(self.TestObject, 1)
+        with self.assertRaises(TypeError):
+            divmod(self.TestObject, 1.0)
+    
+    def test_pow_TypeError(self):
+        """
+        Checks that improper type operands are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject ** Value
+            with self.assertRaises(TypeError):
+                pow(self.TestObject, Value)
+        with self.assertRaises(TypeError):
+            self.TestObject ** self.SecondObject
+        with self.assertRaises(TypeError):
+            pow(self.TestObject, self.SecondObject)
+        with self.assertRaises(TypeError):
+            self.TestObject ** 0.5
+        with self.assertRaises(TypeError):
+            pow(self.TestObject, 0.5)
+    
+    def test_div_ValueError(self):
+        """
+        Checks the proper capturing of division by zero (scalar).
+        
+        Test ID: TEST-T-10B
+        Covers requirements: REQ-AWM-103
+        """
+        with self.assertRaises(ValueError):
+            self.TestObject / 0
+        with self.assertRaises(ValueError):
+            self.TestObject / 0.0
+    
+    def test_pow_ValueError(self):
+        """
+        Checks the proper capturing of zero or negative power for the
+        exponentiation.
+        
+        Test ID: TEST-T-10B
+        Covers requirements: REQ-AWM-103
+        """
+        with self.assertRaises(ValueError):
+            self.TestObject ** 0
+        with self.assertRaises(ValueError):
+            pow(self.TestObject, 0)
+        for _ in range(10):
+            Value = randint(-5, 0)
+            with self.assertRaises(ValueError):
+                self.TestObject ** Value
+            with self.assertRaises(ValueError):
+                pow(self.TestObject, Value)
+    
+    def test_derivative_TypeError(self):
+        """
+        Checks that improper type arguments are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject.getDerivative(Value)
+        with self.assertRaises(TypeError):
+            self.TestObject.getDerivative(1.0)
+        with self.assertRaises(TypeError):
+            self.TestObject.getDerivative(self.SecondObject)
+    
+    def test_derivative_ValueError(self):
+        """
+        Checks the rejection of non-positive derviative order.
+        
+        Test ID: TEST-T-10B
+        Covers requirements: REQ-AWM-103
+        """
+        with self.assertRaises(ValueError):
+            self.TestObject.getDerivative(0)
+        for _ in range(10):
+            Value = randint(-5, 0)
+            with self.assertRaises(ValueError):
+                self.TestObject.getDerivative(Value)
+    
+    def test_convolution_TypeError(self):
+        """
+        Checks that improper type arguments are rejected.
+        
+        Test ID: TEST-T-10A
+        Covers requirements: REQ-AWM-102
+        """
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                self.TestObject.getConvolution(Value)
+        with self.assertRaises(TypeError):
+            self.TestObject.getConvolution(1.0)
+        with self.assertRaises(TypeError):
+            self.TestObject.getConvolution(1)
 
 class Test_Rational(unittest.TestCase):
     """
@@ -1058,6 +1344,7 @@ class Test_Rational(unittest.TestCase):
         Preparation for the test cases, done only once.
         """
         cls.TestClass = testmodule.RationalFunction
+        cls.NotRealNumber = ['1', (1, 1), [1, 1], {1 : 1}, int, float, bool]
     
     def test_init(self):
         """
@@ -1121,10 +1408,10 @@ class Test_Rational(unittest.TestCase):
     
     def test_evaluate(self):
         """
-        Checks the instantiation of a rational function.
+        Checks the evaluation of a rational function.
         
-        Test ID: TEST-T-110
-        Covers requirements: REQ-FUN-111, REQ-FUN-112
+        Test ID: TEST-T-110, TEST-T-114
+        Covers requirements: REQ-FUN-111, REQ-FUN-112, REQ-AWM-113
         """
         Poly1 = testmodule.Polynomial(1,1)**3
         Poly2 = testmodule.Polynomial(1,1)**3
@@ -1143,8 +1430,13 @@ class Test_Rational(unittest.TestCase):
         del TestObject
         Poly2 = testmodule.Polynomial(1,1)**4
         TestObject = self.TestClass(Poly1, Poly2)
-        #Check = TestObject(-1) - check for singularity
+        with self.assertRaises(ValueError):
+            Check = TestObject(-1) #singularity is expected!
         del Poly2
+        del TestObject
+        TestObject = self.TestClass((1,1), (-1, 0, 1))
+        with self.assertRaises(ValueError):
+            Check = TestObject(1) #singularity is expected!
         del TestObject
         for _ in range(10):
             Degree1 = randint(1, 5)
@@ -1190,6 +1482,68 @@ class Test_Rational(unittest.TestCase):
             self.assertIsInstance(TestValue, (int, float))
             self.assertAlmostEqual(CheckValue, TestValue)
             del TestObject
+    
+    def test_call_TypeError(self):
+        """
+        Checks rejection of improper type arguments.
+        
+        Test ID: TEST-T-113
+        Covers requirements: REQ-AWM-112
+        """
+        TestObject = self.TestClass((1,1), (-1, 0, 1))
+        for Value in self.NotRealNumber:
+            with self.assertRaises(TypeError):
+                TestObject(Value)
+        with self.assertRaises(TypeError):
+            TestObject(testmodule.Polynomial(1,1))
+        del TestObject
+    
+    def test_init_TypeError(self):
+        """
+        Checks rejection of improper type arguments.
+        
+        Test ID: TEST-T-111
+        Covers requirements: REQ-AWM-110
+        """
+        for Value in self.NotRealNumber:
+            if isinstance(Value, (list, tuple)):
+                continue
+            with self.assertRaises(TypeError):
+                self.TestClass(Value, (1, 1))
+            with self.assertRaises(TypeError):
+                self.TestClass((1, 1), Value)
+            with self.assertRaises(TypeError):
+                self.TestClass((Value, 1), (1, 1))
+            with self.assertRaises(TypeError):
+                self.TestClass((1, 1), (1, Value))
+        with self.assertRaises(TypeError):
+            self.TestClass(1, (1, 1))
+        with self.assertRaises(TypeError):
+            self.TestClass(1.0, (1, 1))
+        with self.assertRaises(TypeError):
+            self.TestClass((1, 1), 1)
+        with self.assertRaises(TypeError):
+            self.TestClass((1, 1), 1.0)
+    
+    def test_init_ValueError(self):
+        """
+        Checks rejection of improper values arguments.
+        
+        Test ID: TEST-T-112
+        Covers requirements: REQ-AWM-111
+        """
+        with self.assertRaises(ValueError):
+            self.TestClass([], (1, 1))
+        with self.assertRaises(ValueError):
+            self.TestClass([1], (1, 1))
+        with self.assertRaises(ValueError):
+            self.TestClass([1, 0], (1, 1))
+        with self.assertRaises(ValueError):
+            self.TestClass((1, 1), [])
+        with self.assertRaises(ValueError):
+            self.TestClass((1, 1), [1])
+        with self.assertRaises(ValueError):
+            self.TestClass((1, 1), [1, 0])
 
 #+ test suites
 

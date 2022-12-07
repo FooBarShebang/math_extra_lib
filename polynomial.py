@@ -10,18 +10,30 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '06-12-2022'
-__status__ = 'Development'
+__date__ = '07-12-2022'
+__status__ = 'Production'
 
 #imports
 
 #+ standard libraries
+
+import sys
+import os
 
 import collections.abc as c_abc
 
 from typing import Sequence, Union, Tuple
 
 from math import log2, factorial
+
+#+ my libraries
+
+ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+if not (ROOT_FOLDER) in sys.path:
+    sys.path.append(ROOT_FOLDER)
+
+from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
 
 #types
 
@@ -56,7 +68,7 @@ class Polynomial:
     passed value of the argument.
     
     Properties:
-        Degree: (read-only) int > 1
+        Degree: (read-only) int >= 1
     
     Class methods:
         fromRoots(*args)
@@ -85,14 +97,29 @@ class Polynomial:
         + a_N * x^N
         
         Signature:
-            *tuple(int OR float) -> Polynomial
+            *seq(int OR float) -> Polynomial
         
         Args:
-            *args: *tuple(int OR float); any number of integer or floating
+            *args: *seq(int OR float); any number of integer or floating
                 point arguments
+        
+        Raises:
+            UT_TypeError: any of the arguments is not a real number
+            UT_ValueError: no arguments are provided
         
         Version 1.0.0.0
         """
+        for Index, Value in enumerate(args):
+            if not isinstance(Value, (int, float)):
+                objError = UT_TypeError(Value, (int, float), SkipFrames = 1)
+                strMessage = objError.args[0]
+                strMessage = '{} - argument {} at position {}'.format(
+                                                    strMessage, Value, Index)
+                objError.args = (strMessage, )
+                raise objError
+        if not len(args):
+            raise UT_ValueError(len(args), '>= 1 - number of arguments',
+                                                                SkipFrames = 1)
         Coefficients = [-args[0], 1]
         for Index in range(1, len(args)):
             NextCoefficients = [-args[Index]*Value for Value in Coefficients]
@@ -111,17 +138,33 @@ class Polynomial:
         last positional argument must be non-zero.
         
         Signature:
-            *tuple(int OR float) -> None
+            *seq(int OR float) -> None
         
         Args:
-            *args: *tuple(int OR float); any number of integer or floating
+            *args: *seq(int OR float); any number of integer or floating
                 point arguments
         
         Raises:
-            
+            UT_TypeError: any of the arguments is not a real number
+            UT_ValueError: number of arguments is less than 2, OR the last
+                argument is zero
         
         Version 1.0.0.0
         """
+        for Index, Value in enumerate(args):
+            if not isinstance(Value, (int, float)):
+                objError = UT_TypeError(Value, (int, float), SkipFrames = 1)
+                strMessage = objError.args[0]
+                strMessage = '{} - argument {} at position {}'.format(
+                                                    strMessage, Value, Index)
+                objError.args = (strMessage, )
+                raise objError
+        if len(args) < 2:
+            raise UT_ValueError(len(args), '>= 2 - number of arguments',
+                                                                SkipFrames = 1)
+        if not args[-1]:
+            raise UT_ValueError(len(args), '<> 0 - highest power coefficient',
+                                                                SkipFrames = 1)
         self._Coefficients = tuple(args)
     
     def __str__(self) -> str:
@@ -192,8 +235,13 @@ class Polynomial:
         Returns:
             int OR float: the value of the polynomial
         
+        Raises:
+            UT_TypeError: argument is not a real number
+        
         Version 1.0.0.0
         """
+        if not isinstance(Value, (int, float)):
+            raise UT_TypeError(Value, (int, float), SkipFrames = 1)
         a = self._Coefficients[-1]
         for Index in range(self.Degree - 1, -1, -1):
             b = self._Coefficients[Index]
@@ -217,9 +265,17 @@ class Polynomial:
             int OR float: the value of the corresponding coefficient
         
         Raises:
+            UT_TypeError: passed argument is not an integer
+            UT_ValueError: passed index is out of range
         
         Version 1.0.0.0
         """
+        if not isinstance(Index, int):
+            raise UT_TypeError(Index, (int, ), SkipFrames = 1)
+        Length = len(self._Coefficients)
+        if Index >= Length or Index < - Length:
+            raise UT_ValueError(Index, 'in range [-{}, {}] - index'.format(
+                                                            Length, Length - 1))
         return self._Coefficients[Index]
     
     def __copy__(self) -> TPolynomial:
@@ -282,6 +338,8 @@ class Polynomial:
             int: zero value for the exeptional case
         
         Raises:
+            UT_TypeError: arguments is not a real number neither another
+                polynomial
 
         Version 1.0.0.0
         """
@@ -310,6 +368,9 @@ class Polynomial:
                 Result = Sum[0]
             else:
                 Result = self.__class__(*Sum)
+        else:
+            raise UT_TypeError(Value, (int, float, self.__class__),
+                                                                SkipFrames = 1)
         return Result
     
     def __sub__(self, Value: TRealPoly) -> TIntPoly:
@@ -328,6 +389,8 @@ class Polynomial:
             int: zero value for the exeptional case
         
         Raises:
+            UT_TypeError: arguments is not a real number neither another
+                polynomial
         
         Version 1.0.0.0
         """
@@ -356,6 +419,9 @@ class Polynomial:
                 Result = Sum[0]
             else:
                 Result = self.__class__(*Sum)
+        else:
+            raise UT_TypeError(Value, (int, float, self.__class__),
+                                                                SkipFrames = 1)
         return Result
     
     def __mul__(self, Value: TRealPoly) -> TIntPoly:
@@ -374,6 +440,8 @@ class Polynomial:
             int: zero value for the exeptional case
         
         Raises:
+            UT_TypeError: arguments is not a real number neither another
+                polynomial
         
         Version 1.0.0.0
         """
@@ -394,6 +462,9 @@ class Polynomial:
                 for Pos, Val in enumerate(self._Coefficients):
                     Result[Index + Pos] += Val * Coeff
             Result = self.__class__(*Result)
+        else:
+            raise UT_TypeError(Value, (int, float, self.__class__),
+                                                                SkipFrames = 1)
         return Result
     
     def __truediv__(self, Value: TReal) -> TPolynomial:
@@ -409,17 +480,22 @@ class Polynomial:
         Returns:
             Polynomial: the result of operation
         
-        Raises
+        Raises:
+            UT_TypeError: the second (right) operand is not a real number
+            UT_ValueError: division by zero
 
         Version 1.0.0.0
         """
         Result = None
         if isinstance(Value, (int, float)):
             if not Value:
-                Result = 0 #raise exception!
+                raise UT_ValueError(Value, '<> 0 - division by zero',
+                                                                SkipFrames = 1)
             else:
                 Coefficients = [Item / Value for Item in self._Coefficients]
                 Result = self.__class__(*Coefficients)
+        else:
+            raise UT_TypeError(Value, (int, float), SkipFrames = 1)
         return Result
     
     def __floordiv__(self, Value: TPolynomial) -> TRealPoly:
@@ -440,9 +516,12 @@ class Polynomial:
                 power of the divisor
         
         Raises:
+            UT_TypeError: the second operand is not a polynomial
         
         Version 1.0.0.0
         """
+        if not isinstance(Value, self.__class__):
+            raise UT_TypeError(Value, (self.__class__, ), SkipFrames = 1)
         Result, _ = self.__divmod__(Value)
         return Result
     
@@ -464,9 +543,12 @@ class Polynomial:
                 b is the remainder
         
         Raises:
+            UT_TypeError: the second operand is not a polynomial
 
         Version 1.0.0.0
         """
+        if not isinstance(Value, self.__class__):
+            raise UT_TypeError(Value, (self.__class__, ), SkipFrames = 1)
         _, Result = self.__divmod__(Value)
         return Result
     
@@ -487,9 +569,12 @@ class Polynomial:
                 the quotient and remainder
         
         Raises:
+            UT_TypeError: the second operand is not a polynomial
         
         Version 1.0.0.0
         """
+        if not isinstance(Value, self.__class__):
+            raise UT_TypeError(Value, (self.__class__, ), SkipFrames = 1)
         Degree1 = self.Degree
         Degree2 = Value.Degree
         if Degree1 < Degree2:
@@ -539,11 +624,15 @@ class Polynomial:
             Polynomial: the result of operation
         
         Raises:
+            UT_TypeError: the second (right) operand is not an integer number
+            UT_ValueError: the second (right) operand is zero or negative
         
         Version 1.0.0.0
         """
         Result = None
         if isinstance(Value, int):
+            if Value < 1:
+                raise UT_ValueError(Value, '>= 1', SkipFrames = 1)
             Degree2 = int(log2(Value))
             Temp  = self.__class__(*self._Coefficients)
             Result = Temp
@@ -554,6 +643,8 @@ class Polynomial:
             for _ in range(RestDegree):
                 Result = Temp * self
                 Temp = Result
+        else:
+            raise UT_TypeError(Value, (int), SkipFrames = 1)
         return Result
     
     def __radd__(self, Value: TReal) -> TPolynomial:
@@ -571,6 +662,7 @@ class Polynomial:
             Polynomial: the result of operation
         
         Raises:
+            UT_TypeError: the second (left) operand is not a real number
         
         Version 1.0.0.0
         """
@@ -579,6 +671,8 @@ class Polynomial:
             Coefficients = [Item for Item in self._Coefficients]
             Coefficients[0] += Value
             Result = self.__class__(*Coefficients)
+        else:
+            raise UT_TypeError(Value, (int, float), SkipFrames = 1)
         return Result
     
     def __rsub__(self, Value: TReal) -> TPolynomial:
@@ -596,6 +690,7 @@ class Polynomial:
             Polynomial: the result of operation
         
         Raises:
+            UT_TypeError: the second (left) operand is not a real number
         
         Version 1.0.0.0
         """
@@ -604,6 +699,8 @@ class Polynomial:
             Coefficients = [-Item for Item in self._Coefficients]
             Coefficients[0] += Value
             Result = self.__class__(*Coefficients) 
+        else:
+            raise UT_TypeError(Value, (int, float), SkipFrames = 1)
         return Result
     
     def __rmul__(self, Value: TReal) -> TPolynomial:
@@ -622,6 +719,7 @@ class Polynomial:
             int: zero value for the exeptional case
         
         Raises:
+            UT_TypeError: the second (left) operand is not a real number
 
         Version 1.0.0.0
         """
@@ -632,6 +730,8 @@ class Polynomial:
             else:
                 Coefficients = [Item * Value for Item in self._Coefficients]
                 Result = self.__class__(*Coefficients)
+        else:
+            raise UT_TypeError(Value, (int, float), SkipFrames = 1)
         return Result
     
     #properties
@@ -642,7 +742,7 @@ class Polynomial:
         Read-only property returning the degree of the polynomial.
 
         Signature:
-            None -> int > 0
+            None -> int >= 1
         
         Version 1.0.0.0
         """
@@ -667,7 +767,7 @@ class Polynomial:
     
     def getDerivative(self, Degree: int = 1) -> TRealPoly:
         """
-        Calculates the K-th (K >= 1) derivative of the polynomial.
+        Calculates the K-th (K >= 1) derivative of the polynomial of degree N.
         
         Signature:
             /int >= 1/ -> Polynomial OR int OR float
@@ -682,10 +782,15 @@ class Polynomial:
                 zero for K > N
         
         Raises:
-            
+            UT_TypeError: passed argument is not an integer
+            UT_ValueError: passed argument is zero or negative
         
         Version 1.0.0.0
         """
+        if not isinstance(Degree, int):
+            raise UT_TypeError(Degree, (int, ), SkipFrames = 1)
+        if Degree < 1:
+            raise UT_ValueError(Degree, '>= 1', SkipFrames = 1)
         if Degree > self.Degree:
             Result = 0
         elif Degree == self.Degree:
@@ -703,7 +808,7 @@ class Polynomial:
     
     def getAntiderivative(self) -> TPolynomial:
         """
-        Calcualates the first antiderivate (primitive function) of the
+        Calculates the first antiderivate (primitive function) of the
         polynomial.
         
         Signature:
@@ -737,10 +842,12 @@ class Polynomial:
             Polynomial: instance of, the result of the convolution
         
         Raises:
-            
+            UT_TypeError: argument is not a polynomial
         
         Version 1.0.0.0
         """
+        if not isinstance(Other, self.__class__):
+            raise UT_TypeError(Other, (self.__class__, ), SkipFrames = 1)
         Result = self[0] + self[1] * Other
         for Power in range(2, self.Degree + 1):
             Result = Result + self[Power] * (Other ** Power)
@@ -782,20 +889,66 @@ class RationalFunction:
             Divisor: Polynomial OR seq(int OR float); divisor polynomial
                 or a sequence of the respective coefficients
         
+        Raises:
+            UT_TypeError: either of the arguments is neither real numbers
+                sequence nor a polynomial
+            UT_ValueError: any of the arguments passed as a sequence has length
+                less than 2, OR its last element has zero value
+        
         Version 1.0.0.0
         """
         if isinstance(Divident, Polynomial):
             self._Divident = Divident.__copy__()
         elif (isinstance(Divident, c_abc.Sequence)
                                         and (not isinstance(Divident, str))):
-            #TODO - check elements
+            for Index, Value in enumerate(Divident):
+                if not isinstance(Value, (int, float)):
+                    objError = UT_TypeError(Value, (int, float),
+                                                                SkipFrames = 1)
+                    strMessage = '{} - first argument, index {}'.format(
+                                                        objError.args[0], Index)
+                    objError.args = (strMessage, )
+                    raise objError
+            if len(Divident) < 2:
+                raise UT_ValueError(len(Divident), '>= 2 first argument length',
+                                                                SkipFrames = 1)
+            if not Divident[-1]:
+                raise UT_ValueError(Divident[-1],
+                            '<> 0 first argument, highest power coefficient',
+                                                                SkipFrames = 1)
             self._Divident = Polynomial(*Divident)
+        else:
+            objError = UT_TypeError(Divident, (Polynomial, c_abc.Sequence),
+                                                                SkipFrames = 1)
+            strMessage = '{} - first argument'.format(objError.args[0])
+            objError.args = (strMessage, )
+            raise objError
         if isinstance(Divisor, Polynomial):
             self._Divisor = Divisor.__copy__()
         elif (isinstance(Divisor, c_abc.Sequence)
                                         and (not isinstance(Divisor, str))):
-            #TODO - check elements
+            for Index, Value in enumerate(Divisor):
+                if not isinstance(Value, (int, float)):
+                    objError = UT_TypeError(Value, (int, float),
+                                                                SkipFrames = 1)
+                    strMessage = '{} - second argument, index {}'.format(
+                                                        objError.args[0], Index)
+                    objError.args = (strMessage, )
+                    raise objError
+            if len(Divisor) < 2:
+                raise UT_ValueError(len(Divisor), '>= 2 second argument length',
+                                                                SkipFrames = 1)
+            if not Divisor[-1]:
+                raise UT_ValueError(Divisor[-1],
+                            '<> 0 second argument, highest power coefficient',
+                                                                SkipFrames = 1)
             self._Divisor = Polynomial(*Divisor)
+        else:
+            objError = UT_TypeError(Divident, (Polynomial, c_abc.Sequence),
+                                                                SkipFrames = 1)
+            strMessage = '{} - second argument'.format(objError.args[0])
+            objError.args = (strMessage, )
+            raise objError
     
     def __call__(self, Value: TReal) -> TReal:
         """
@@ -811,15 +964,24 @@ class RationalFunction:
         Returns:
             int OR float: the value of the function
         
+        Raises:
+            UT_TypeError: argument is neither integer nor floating point number
+            UT_ValueError: function has a singularity point at the value of
+                the argument - division by zero
+        
         Version 1.0.0.0
         """
+        if not isinstance(Value, (int, float)):
+            raise UT_TypeError(Value, (int, float), SkipFrames = 1)
         Divident = self._Divident(Value)
         Divisor = self._Divisor(Value)
         if abs(Divisor) > 1E-8:
             Result = Divident / Divisor
         else:
-            if abs(Divident) > 1E-8:
-                pass #raise exception
+            if abs(Divident) > 1E-8 and abs(Divisor) < 1E-12:
+                raise UT_ValueError(Value,
+                                'not a singularity point (division by zero)',
+                                                                SkipFrames = 1)
             else:
                 NDegree = min(self._Divident.Degree, self._Divisor.Degree)
                 Degree = 1
@@ -836,7 +998,9 @@ class RationalFunction:
                 if Divisor:
                     Result = Divident / Divisor
                 else:
-                    pass #raise exception
+                    raise UT_ValueError(Value,
+                                'not a singularity point (division by zero)',
+                                                                SkipFrames = 1)
         return Result
     
     def __str__(self) -> str:

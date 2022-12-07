@@ -10,7 +10,7 @@ demonstrate the exceptions' descriptions.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "06-12-2022"
+__date__ = "07-12-2022"
 __status__ = "Testing"
 
 #imports
@@ -29,6 +29,12 @@ if not (ROOT_FOLDER) in sys.path:
     sys.path.append(ROOT_FOLDER)
 
 import math_extra_lib.polynomial as testmodule
+
+#helper functions
+
+def PrintError(Error: Exception) -> None:
+    print(Error.__class__.__name__, ':', Error)
+    print(Error.Traceback.Info)
 
 #test area
 
@@ -60,7 +66,6 @@ if __name__=='__main__':
     print('Check... Q(x) * (P(x)//Q(x)) + P(x)%Q(x)=', Poly2*Quot + Rem)
     del Quot
     del Rem
-    #TODO - derivatives and anti-derivative
     print('P`(x)=', Poly1.getDerivative())
     print('P``(x)=', Poly1.getDerivative(Degree = 2))
     print('P```(x)=', Poly1.getDerivative(Degree = 3))
@@ -79,5 +84,82 @@ if __name__=='__main__':
     print('f(-1)=', RatFunc(-1), 'P(-1)=', Poly1(-1), 'Q(-1)=', Poly2(-1),
                                             'P(-1)/Q(-1)=', Poly1(-1)/Poly2(-1))
     del Poly2
+    del RatFunc
+    input('Exceptions demonstration...Press Enter')
+    try:
+        Poly = testmodule.Polynomial(-2, 1, '0', -3.2, 2.0)
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        Poly = testmodule.Polynomial(-2)
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        Poly = testmodule.Polynomial(-2, 1, 0, -3.2, 0)
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        Poly = testmodule.Polynomial.fromRoots(1, '-1', 0.0)
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        Poly = testmodule.Polynomial.fromRoots()
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        Poly1('abc')
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        print(Poly1+'abc')
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        print(Poly1/0)
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        print(Poly1**(-1))
+    except Exception as err:
+        PrintError(err)
     del Poly1
+    input('Press Enter')
+    try:
+        RatFunc = testmodule.RationalFunction(1, (-1, 0, 1))
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        RatFunc = testmodule.RationalFunction((1, 1), (-1, 'abc', 1))
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        RatFunc = testmodule.RationalFunction((1, ), (-1, 1, 1))
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        RatFunc = testmodule.RationalFunction((1, 1), (-1, 1, 0))
+    except Exception as err:
+        PrintError(err)
+    RatFunc = testmodule.RationalFunction((1,1), (-1, 0, 1))
+    input('Press Enter')
+    try:
+        print(RatFunc('abc'))
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        print(RatFunc(1))
+    except Exception as err:
+        PrintError(err)
     del RatFunc

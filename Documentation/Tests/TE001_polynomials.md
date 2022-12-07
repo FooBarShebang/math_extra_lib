@@ -71,7 +71,7 @@ ___
 
 **Test steps:** Try to instantiate polynomial with varying number 1 - 10 arguments (random) of real number type and 1 argument of some other data type. Try the wrong data type argument at all posible positions. In all cases the expected exception must be raised. Repeat with multiple different data types at the same positions.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -87,7 +87,7 @@ ___
 
 **Test steps:** Try to instantiate polynomial with out arguments, with 1 non-zero real number argument, and an arbitrary number of real number arguments followed by zero (try int and float both) as the last positional argument. In all cases the expected exception must be raised. Repeat the last scenario several time with varying number of positional arguments.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -119,7 +119,7 @@ ___
 
 **Test steps:** Try to call the respective method with the varying number of 0-10 arguments (random) of real number type and 1 argument of some other data type. Try the wrong data type argument at all posible positions. In all cases the expected exception must be raised. Repeat with multiple different data types at the same positions.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -129,13 +129,13 @@ ___
 
 **Verification method:** T
 
-**Test goal:** Improper values are not acceptable for the initialization of a polynomial.
+**Test goal:** No arguments for construction from roots.
 
 **Expected result:** An exception compatible with ValueError is raised if no arguments are passed.
 
 **Test steps:** Try to call the respective method without arguments or using unpacked empty sequence as the argument. In the both cases the expected exception is raised.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -158,7 +158,7 @@ ___
 
 The results of the operations conform the definitions made in the respective design document [DE001](../Design/DE001_polynomials.md).
 
-*Note* that the checks on exponentiation can fail in < 0.1% of the cases due to rounding errors. This is acceptable.
+*Note* that the checks on exponentiation can fail eventually due to rounding errors. This is acceptable.
 
 **Test steps:** Create an arbitrary polynomial (random degree and coeffiecients values). Generate a random integer and a random floating point numbers. Use these numbers as left and right addition operand and right substraction operand. Check that the result is a polynomial of the same degree, and all coefficients except the free one are the same as of the original polynomial, whereas the free coefficient has the expected different value. Use the same numbers as the left operand in substraction. Check that the result is a polynomial of the same degree, and all coefficients except the free one are the same absolute values as of the original polynomial but the opposite sign, whereas the free coefficient has the expected different value. Use the same numbers as left and right operands in multiplication and right operand in division (unless zero). Check that the result is a polynomial of the same degree and all coefficients are scaled as expected. Repeat several time with the different polynomials.
 
@@ -187,7 +187,7 @@ ___
 * Multiplication of two polynomials
 * Division of a polynomial by another polynomial, which results in a tuple of two objects: quotient and remainder - with both or either being a real number or a polynomial
 
-*Note* that the checks on multpiplication can fail in < 0.1% of the cases due to rounding errors. This is acceptable.
+*Note* that the checks on multpiplication can fail eventually due to rounding errors. This is acceptable.
 
 **Test steps:** Check the operations using few pre-computed (manually) examples, including addition and substraction of equal and unequal degree polynomials, as well as the case of the cancelation of the highest power coefficient(s). Check the generated results against the pre-computed ones.
 
@@ -227,6 +227,8 @@ ___
 
 **Expected result:** An instance of polynomial class has a method, which accepts another instance of polynomial class as its argument and returns another polynomial, which is a convolution of these two. I.e. P(x) and Q(x) are two polynomials. Then, at any value of argument x the second polynomial evaluates to Q(x) -> y. The first polynomial evaluates to P(x = y) -> z. So, the polynomial R(x) which is a convolution P(Q(x)) must evaluate to the same value z at the same value x, for any arbitrary chosen value x.
 
+*Note* that the test can fail eventually due to rounding errors. This is acceptable.
+
 **Test steps:** Check the method using few manually pre-computed examples.
 
 Then, generate two random 2-nd and / or 3-rd degree polynomials. Calculate their convolution 'manually' using the coefficients of the 'outer' polynomial and the already tested multiplication, addition and exponentiation operations on the 'inner' polynomial. Calculate the convolution using the respective method of the 'outer' polynomial and the 'inner' polynomial as the argument. Compare the two calculated polynomials per coefficient - must be the same. Also evaluate the convolution at a number of random values of argument / variable, and compare them with the results of the step-wise evaluation P(x = Q(x)) - must be the same.
@@ -257,7 +259,7 @@ ___
 
 **Test steps:** Instantiate a random polynomial. Try to use different data types except for the allowed as the respective (left or right) second operand in all described arithmetical operations, as well as the argument of the respective methods. Check that the expected exception is raised in each case.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -277,7 +279,7 @@ ___
 
 **Test steps:** Instantiate a random polynomial. Try to raise it to 0-th power, and few negative (random) integer powers. Try to divide this polynomial by zero integer and zero floating point. Try to call the derivate method with zero, and few negative integer values as its argument. Check that the expected exception is raised in each case.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 ___
 
 **Test Identifier:** TEST-T-110
@@ -310,7 +312,7 @@ ___
 
 **Test steps:** Generate a random sequence of real numbers with the last element being non-zero. Try to instantiate a rational function class using this sequence as the first argument, and a number of improper data types for the second argument. Check that the expected exception is raised in each case. Repeat the test using the reversed order of the arguments (first is improper, the second if the generated numbers sequence). Also try both arguments being of improper data type.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -326,7 +328,7 @@ ___
 
 **Test steps:** Generate a random sequence of real numbers with the last element being non-zero, and the second random sequence of real numbers with the last element being zero. Try to intantiate the rational function class using the first and the second sequence as its arguments. Check that the expected exception is raised. Swap the arguments and repeat. Also try using the second sequence (zero as the last element) for the both arguments.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -342,7 +344,7 @@ ___
 
 **Test steps:** Instantiate a random rational function. Try to call its evaluation method with an argument of an improper data type, e.g. string, list, tuple, etc. Check that the expected exception is raised. Try with a number of improper data types.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ___
 
@@ -358,7 +360,7 @@ ___
 
 **Test steps:** Intantiate a rational function with two polynomials, with known real roots, at least - one known root for the divisor polynomial, at which the divident is not zero. Try to evaluate the rational function at this value (divisor's root). Check that the expected exception is raised.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Traceability
 
@@ -375,18 +377,18 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-106        | TEST-T-108             | YES                      |
 | REQ-FUN-107        | TEST-T-108             | YES                      |
 | REQ-FUN-108        | TEST-T-109             | YES                      |
-| REQ-AWM-100        | TEST-T-101, TEST-T-104 | NO                       |
-| REQ-AWM-101        | TEST-T-102, TEST-T-105 | NO                       |
-| REQ-AWM-102        | TEST-T-10A             | NO                       |
-| REQ-AWM-103        | TEST-T-10B             | NO                       |
+| REQ-AWM-100        | TEST-T-101, TEST-T-104 | YES                      |
+| REQ-AWM-101        | TEST-T-102, TEST-T-105 | YES                      |
+| REQ-AWM-102        | TEST-T-10A             | YES                      |
+| REQ-AWM-103        | TEST-T-10B             | YES                      |
 | REQ-FUN-110        | TEST-T-110             | YES                      |
 | REQ-FUN-111        | TEST-T-110             | YES                      |
 | REQ-FUN-112        | TEST-T-110             | YES                      |
-| REQ-AWM-110        | TEST-T-111             | NO                       |
-| REQ-AWM-111        | TEST-T-112             | NO                       |
-| REQ-AWM-112        | TEST-T-113             | NO                       |
-| REQ-AWM-113        | TEST-T-114             | NO                       |
+| REQ-AWM-110        | TEST-T-111             | YES                      |
+| REQ-AWM-111        | TEST-T-112             | YES                      |
+| REQ-AWM-112        | TEST-T-113             | YES                      |
+| REQ-AWM-113        | TEST-T-114             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
-| NO                                           | Under development             |
+| YES                                          | All tests are passed          |
