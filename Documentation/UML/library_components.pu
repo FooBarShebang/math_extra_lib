@@ -10,5 +10,11 @@ $library(math_extra_lib) {
     !if $is_not_defined("$POLYNOMIAL_COMPONENTS")
         !include ./polynomial/polynomial_components.iuml
     !endif
+    
+    !if $is_not_defined("$SPECIAL_FUNCTIONS")
+        !include ./special_functions/special_functions_components.iuml
+    !endif
+    
+    polynomial <--- special_functions
 }
 @enduml

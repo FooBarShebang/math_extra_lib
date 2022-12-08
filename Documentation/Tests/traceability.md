@@ -6,6 +6,7 @@
 * module **polynomial** - 1xx
   * 10x - class **Polynomial**
   * 11x - class **RationalFunction**
+* module **special_functions** - 2xy
 
 ## Requirements vs Tests Traceability
 
@@ -41,6 +42,15 @@
 | REQ-AWM-111        | TEST-T-112                                                   | YES                      |
 | REQ-AWM-112        | TEST-T-113                                                   | YES                      |
 | REQ-AWM-113        | TEST-T-114                                                   | YES                      |
+| REQ-FUN-200        | TEST-A-200                                                   | YES                      |
+| REQ-FUN-210        | TEST-T-210                                                   | YES                      |
+| REQ-FUN-220        | TEST-T-220                                                   | YES                      |
+| REQ-FUN-230        | TEST-T-230                                                   | YES                      |
+| REQ-FUN-240        | TEST-T-240                                                   | YES                      |
+| REQ-FUN-250        | TEST-T-250                                                   | YES                      |
+| REQ-FUN-260        | TEST-T-260                                                   | YES                      |
+| REQ-AWM-200        | TEST-T-200                                                   | YES                      |
+| REQ-AWM-201        | TEST-T-201                                                   | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
