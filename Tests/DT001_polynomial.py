@@ -1,6 +1,6 @@
 #usr/bin/python3
 """
-Module math_extra_lib.Tests.UT001_polynomial
+Module math_extra_lib.Tests.DT001_polynomial
 
 Implements demonstration testing of the module math_extra_lib.polynomial, which
 are auxilary to the functional unit tests see TE00 and TE001 documents.

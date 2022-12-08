@@ -49,11 +49,6 @@ __status__ = 'Testing'
 import sys
 import os
 import math
-import functools
-
-import collections.abc as c_abc
-
-from typing import Union, Sequence
 
 #+ custom modules
 
