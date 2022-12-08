@@ -1,0 +1,40 @@
+!$POLYNOMIAL = "v2"
+
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
+!endif
+
+class Polynomial {
+    ..private attributes..
+    - {field} _Coefficients: tuple(int OR float)
+    ..properties..
+    # Degree: int > 1
+    __
+    ..special methods..
+    # __init__(*args): *seq(int OR float) -> None
+    # __call__(Value): int OR float -> int OR float
+    # __str__(): None -> str
+    # __repr__(): None -> str
+    # __copy__(): None -> Polynomial
+    # __getitem__(): int -> int OR float
+    # __pos__(): None -> Polynomial
+    # __neg__(): None -> Polynomial
+    # __add__(): Polynomial OR int OR float -> Polynomial OR int OR float
+    # __radd__(): int OR float -> Polynomial
+    # __sub__(): Polynomial OR int OR float -> Polynomial OR int OR float
+    # __rsub__(): int OR float -> Polynomial
+    # __mul__(): Polynomial OR int OR float -> Polynomial OR int
+    # __rmul__(): int OR float -> Polynomial OR int
+    # __truediv__(): int <> 0 OR float <> 0 -> Polynomial
+    # __floordiv__(): Polynomial -> Polynomial OR int OR float
+    # __mod__(): Polynomial -> Polynomial OR int OR float
+    # __divmod__(): Polynomial -> tuple(Polynomial OR int OR float, Polynomial OR int OR float)
+    # __pow__(): int > 0 -> Polynomial
+    ..class methods..
+    + $static_method("fromRoots", "*args"): *seq(int OR float) -> Polynomial
+    ..instance methods..
+    + getCoefficients(): None -> tuple(int OR float)
+    + getDerivative(Degree = 1): /int > 0/ -> Polynomial OR int OR float
+    + getAntiderivative(): None -> Polynomial
+    + getConvolution(Other): Polynomial -> Polynomial
+}

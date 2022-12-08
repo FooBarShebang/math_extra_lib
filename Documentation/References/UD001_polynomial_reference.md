@@ -11,7 +11,41 @@ The functional objects covered in this document are:
 
 ## Intended Use and Functionality
 
-This module defines classes implementing a *polynomial* and a *rational function* (see [DE001](../Design/DE001_polynomials.md) document).
+This module defines classes implementing a *polynomial* and a *rational function* (see [DE001](../Design/DE001_polynomials.md) document). A polynomial of *degree N* is a function of a single argument, which is expressed as a sum of different powers $\leq N$ of the argument (usually, the *x* variable, but any other symbol may be used as well) weighted with coefficients as $P(x) = a_0 + a_1*x + a_2*x^2 + \dots + a_n*x^N = \sum_{i=0}^N{a_i*x^i} \; : \; a_N \neq 0$. Note that some powers may not be present, which means zero respective coefficient in the previous expression. A rational function is a ratio of two polynomials.
+
+A polynomial represents a non-linear data transformation (e.g. mapping), and they are widely used together with the rational functions for approximation of other functions; therefore polynomials are very useful tool in the data and signal processing.
+
+Due to its simple algebraic nature of a polynimal the result of the majority of arithmetical operations (such as addition, summation and multiplication) between a polynomial and a scalar number or even between two polynomials is another polynomial itself or a scalar number, which can be easily proven using commutativity, associativity and distributivity properties of the respective operators.
+
+Division of a polynomial by a number is equivalent to multiplication of the same polynomial by the multiplicative reciprocal of that number. Division of a scalar by polynomial is a degenerative rational function with a constant divident. Division of a polynomial by another polynomial is a rational function (by definition), but in some cases it can be reduced to a polynomial or a scalar number. However, in the general case, polynomial - polynomial division is similar to the integer division, with its result being a combination of a *quotient* and a *remainder*.
+
+Since a positive integer power of an argument is equivalent to a product of multiple instances of the same argument, the exponentiation of a polynomial to a positive integer power results again a polynomial. Hence does the convolution of polynomials, which is, basically, substitution of the argument of one (outer) polynomial by another (inner) polymial.
+
+Furthermore, the anti-derivative (indefinite integral) of a polynomial has a simple analytical expression, which is a polynomial of degree *N+1*. Similarly, the K-th derivative of a polynomial of degree N is either a polynomial of degree N-K or a number (for $K \geq N$).
+
+Considering these properties of the polynomials it is very convenient if their Python implementation can be used in standard arithmetics same as numeric types yet providing the additional functionality such as convolution, derivative and anti-derivative computation and evaluation of the polynomial at the given value of its argument. The data model / classes implementation of Python language suits well this purpose. An example of the intended use of the polynomial implementation as a class is given below.
+
+```python
+Poly1 = Polynomial(1, 0, 1) #instantiaton of x**2 + 1 polynomial
+Poly2 = Polynomial(-1, -0.5, 2) #instantiation of 2x**2 - x/2 - 1 polynomial
+Poly3 = 0.3 * Poly1 + Poly2**2 #construction of another, more complex polynomial
+print(Poly3(2.4)) #evaluation of its value at x = 2.4
+print(Poly3) #prints the human readable expression of the polynomial
+```
+
+The table below lists the allowed (and implemented) arithmetical operations between polynomials and scalar numbers.
+
+| Op | Left operand             | Right operand             | Description              |
+| -- | ------------------------ | ------------------------- | ------------------------ |
+| +  | polynomial / real number |  polynomial / real number | addition                 |
+| -  | polynomial / real number |  polynomial / real number | subtraction              |
+| *  | polynomial / real number |  polynomial / real number | multiplication           |
+| /  | polynomial               |  non-zero real number     | true division            |
+| // | polynomial               | polynomial                | floor (integer) division |
+| %  | polynomial               | polynomial                | mod division (remainder) |
+| ** | polynomial               | positive integer number   | exponentiation           |
+
+The implementation of a rational function as a class instead of simple function provides a number of advantages. The coefficients of the respective divident and divisor polynomials msut be defined only once during instantiation, and then they are stored as the respective class instance state, thus there is no need to pass them each time the respective function requires evaluation. Secondly, the proper resolution of zero by zero division (when divident and divisor polynomial have the same root value, at which the function is being evaluated) is quaranteed for each instance. Finally, such instances can provide human readable expression of the respective rational function.
 
 ## Design and Implementation
 
@@ -48,7 +82,7 @@ As discussed in the [DE001](../Design/DE001_polynomials.md) document the zero by
   * only divisor value is above the threshold - their ratio is returned
   * only divident is above the threshold - singularity, exception is raised
 
-Both classes perform input data sanity check and raise the following exceptions (defined in the library *introspection\_lib*)
+The both classes perform input data sanity check and raise the following exceptions (defined in the library *introspection\_lib*)
 
 * **UT_TypeError** - sub-class of the standard **TypeError** with added introspection functionality; raised when
   * method argument or arithmetics operand is of improper data type

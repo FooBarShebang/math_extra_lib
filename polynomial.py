@@ -472,10 +472,10 @@ class Polynomial:
         Magic method implementing division of a polynomial by a scalar: P(x) /a.
 
         Signature:
-            int OR float -> Polynomial
+            int <> 0 OR float <> 0 -> Polynomial
         
         Args:
-            Value: int OR float; the second operand
+            Value: int <> 0 OR float <> 0; the second operand
         
         Returns:
             Polynomial: the result of operation

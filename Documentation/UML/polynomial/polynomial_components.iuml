@@ -1,0 +1,13 @@
+!$POLYNOMIAL_COMPONENTS = "v2"
+
+!if %not(%variable_exists("$COMPONENTS"))
+    !include ../Templates/Components2.cuml
+!endif
+
+$module(polynomial) {
+    $class(Polynomial)
+    
+    $class(RationalFunction)
+    
+    Polynomial "2" -* RationalFunction
+}

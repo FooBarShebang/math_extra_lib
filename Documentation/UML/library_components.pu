@@ -1,0 +1,14 @@
+@startuml library_components
+
+!if %not(%variable_exists("$COMPONENTS"))
+    !include ./Templates/Components2.cuml
+!endif
+
+title Components diagram of the library math_extra_lib. $generated()
+
+$library(math_extra_lib) {
+    !if $is_not_defined("$POLYNOMIAL_COMPONENTS")
+        !include ./polynomial/polynomial_components.iuml
+    !endif
+}
+@enduml

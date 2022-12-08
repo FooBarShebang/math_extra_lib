@@ -38,11 +38,11 @@ $git submodule update --recursive --remote
 
 This library is written in Python 3 programming language (>= v3.6) and is intended to be OS platform independent. At least, it is tested under MS Windows and GNU Linux OSes, see [Documentation/Tests/tested_OS.md](./Documentation/Tests/tested_OS.md).
 
-This library does not depend on any other Python library / package except for the Standard Library (see [Dependencies.md](./Dependencies.md)).
+This library depends on the Python library **introspection\_lib** (see [Dependencies.md](./Dependencies.md)).
 
 ## Library structure
 
-#TODO
+![Components diagram](./Documentation/UML/library_components.png)
 
 ## Documentation
 
