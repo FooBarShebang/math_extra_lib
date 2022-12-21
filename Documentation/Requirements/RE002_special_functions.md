@@ -103,8 +103,6 @@ The function *upper_gamma*(x > 0, y >= 0) should return the value of the upper i
 
 **Verification Method:** T
 
-___
-
 ## Alarms, warnings and operator messages
 
 **Requirement ID:** REQ-AWM-200

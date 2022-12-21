@@ -39,7 +39,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Special functions
 
-**Description:** The library should provide *callable* objects capable of evaluation of the value of a number of special mathematical functions (such as beta, gamma functions and their incomplete variants, as well as inverse error function, etc.). See document [RE002](./RE002_special_functions_requirements.md).
+**Description:** The library should provide *callable* objects capable of evaluation of the value of a number of special mathematical functions (such as beta, gamma functions and their incomplete variants, as well as inverse error function, etc.). See document [RE002](./RE002_special_functions.md).
 
 ---
 
@@ -47,7 +47,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Vectors
 
-**Description:** The library should implement a generic vector of length N (with real coefficients) supporting arithmetics on the field of real numbers, as well as inner and outer vector products. See document [RE003](./RE003_vectors_requirements.md).
+**Description:** The library should implement a generic vector of length N (with real coefficients) supporting arithmetics on the field of real numbers, as well as inner and outer vector products. See document [RE003](./RE003_vectors_and_matrices.md).
 
 **Verification Method:** T
 
@@ -57,7 +57,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Matrices
 
-**Description:** The library should implement column and row vectors, and matrices, supporting the corresponding vector-matrix and matrix-matrix arithmetics. See document [RE004](./RE004_matrices_requirements.md).
+**Description:** The library should implement column and row vectors, and matrices, supporting the corresponding vector-matrix and matrix-matrix arithmetics. See document [RE003](./RE003_vectors_and_matrices.md).
 
 **Verification Method:** T
 

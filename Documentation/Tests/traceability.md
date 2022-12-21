@@ -7,6 +7,11 @@
   * 10x - class **Polynomial**
   * 11x - class **RationalFunction**
 * module **special_functions** - 2xy
+* module **vectors_matrices** - 3xy
+  * 31x - class **Vector**
+  * 32x - class **Column**
+  * 33x - class **Row**
+  * 34x - class **SquareMatrix**
 
 ## Requirements vs Tests Traceability
 
@@ -51,6 +56,24 @@
 | REQ-FUN-260        | TEST-T-260                                                   | YES                      |
 | REQ-AWM-200        | TEST-T-200                                                   | YES                      |
 | REQ-AWM-201        | TEST-T-201                                                   | YES                      |
+| REQ-FUN-300        |                                                              | NO                       |
+| REQ-FUN-301        |                                                              | NO                       |
+| REQ-FUN-302        |                                                              | NO                       |
+| REQ-FUN-303        |                                                              | NO                       |
+| REQ-FUN-304        |                                                              | NO                       |
+| REQ-FUN-305        |                                                              | NO                       |
+| REQ-FUN-306        |                                                              | NO                       |
+| REQ-FUN-307        |                                                              | NO                       |
+| REQ-FUN-310        |                                                              | NO                       |
+| REQ-FUN-320        |                                                              | NO                       |
+| REQ-FUN-330        |                                                              | NO                       |
+| REQ-FUN-340        |                                                              | NO                       |
+| REQ-AWM-300        |                                                              | NO                       |
+| REQ-AWM-301        |                                                              | NO                       |
+| REQ-AWM-302        |                                                              | NO                       |
+| REQ-AWM-303        |                                                              | NO                       |
+| REQ-AWM-304        |                                                              | NO                       |
+| REQ-AWM-340        |                                                              | NO                       |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

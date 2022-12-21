@@ -40,7 +40,7 @@ Functions:
 
 __version__= '1.0.0.0'
 __date__ = '08-12-2022'
-__status__ = 'Testing'
+__status__ = 'Production'
 
 #imports
 
