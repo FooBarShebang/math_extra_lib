@@ -10,7 +10,7 @@ demonstrate the exceptions' descriptions.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "07-12-2022"
+__date__ = "22-12-2022"
 __status__ = "Testing"
 
 #imports
@@ -86,6 +86,21 @@ if __name__=='__main__':
     del Poly2
     del RatFunc
     input('Exceptions demonstration...Press Enter')
+    try:
+        print(Poly1[2.0])
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        print(Poly1[5])
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
+    try:
+        print(Poly1[-6])
+    except Exception as err:
+        PrintError(err)
+    input('Press Enter')
     try:
         Poly = testmodule.Polynomial(-2, 1, '0', -3.2, 2.0)
     except Exception as err:

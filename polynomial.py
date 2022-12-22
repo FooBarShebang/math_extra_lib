@@ -10,7 +10,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '07-12-2022'
+__date__ = '22-12-2022'
 __status__ = 'Production'
 
 #imports
@@ -34,6 +34,7 @@ if not (ROOT_FOLDER) in sys.path:
     sys.path.append(ROOT_FOLDER)
 
 from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
+from introspection_lib.base_exceptions import UT_IndexError
 
 #types
 
@@ -274,8 +275,8 @@ class Polynomial:
             raise UT_TypeError(Index, (int, ), SkipFrames = 1)
         Length = len(self._Coefficients)
         if Index >= Length or Index < - Length:
-            raise UT_ValueError(Index, 'in range [-{}, {}] - index'.format(
-                                                            Length, Length - 1))
+            raise UT_IndexError('{}({})'.format(self.__class__.__name__,
+                                                Length), Index, SkipFrames = 1)
         return self._Coefficients[Index]
     
     def __copy__(self) -> TPolynomial:

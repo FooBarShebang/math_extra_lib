@@ -85,7 +85,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Description:** The both matrix classes are, in essence, immutable sequences of immutable sequences of equal number of real number elements, but they must be considered to be not sequences in 'IS A' type checks. Functionally, they should:
 
-* Support read-only access to the individual columns (nested sequences) via integer indexing, but not slices; therefore an idividual element can be accessed (read-only) using two indexes - inner (left) for the column and outer (right) for the row
+* Support read-only access to any individual element using two indexes as *obj[i,j]* - inner (left) for the column and outer (right) for the row
 * Do not support iterator protocol and 'value in' checks
 * Be able to 'serialize' all their elements' values into a standard Python nested sequence
 * Provide read-only access to own individual columns and rows as instances of the column and row vectors respectively
@@ -298,6 +298,59 @@ In the both cases (nested and flat sequences) the default interpretation of the 
 
 ---
 
+**Requirement ID:** REQ-AWM-305
+
+**Title:** Improper argument type for orthogonal base vector generator
+
+**Description:** An exception compatible with TypeError should be raised the respective method of a vector class receives any other type than an integer as any of its two arguments - length of the vector and / or index of the unity, non-zero element.
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-AWM-306
+
+**Title:** Improper argument value for orthogonal base vector generator
+
+**Description:** An exception compatible with ValueError should be raised by the respective method if:
+
+* The requested length of a vector is zero or negative
+* The requested index of the non-zero, unity element is:
+  * Negative, OR
+  * Greater than the requested length - 1
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-AWM-307
+
+**Title:** Improper argument type used for indexing
+
+**Description:** An exception compatible with TypeError should be raised if:
+
+* Any other data type except the integer is used in the index access to a vector's element, as in *obj[i]*
+* Any other data type except of two integers (unpacked tuple of integers with 2 elements) is used in the index access to an element of a matrix, as in *obj[i,j]*
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-AWM-308
+
+**Title:** Improper argument value used for indexing
+
+**Description:** An exception compatible with IndexError should be raised:
+
+* The integer index in accessing an element of a vector of length N is not in the (inclusive) range [-N, N-1]
+* In the index access to an element of a matrix of N x M dimentions
+  * The first (inner) integer index - for column - is not in the (inclusive) range [-N, N-1]
+  * The second (outer) integer index - for row - is not in the (inclusive) range [-M, M-1]
+
+**Verification Method:** T
+
+---
+
 **Requirement ID:** REQ-AWM-340
 
 **Title:** Singular square matrix or square matrix with a complex (not real number) eigenvalue
@@ -306,5 +359,34 @@ In the both cases (nested and flat sequences) the default interpretation of the 
 
 * The square matrix is singular (determinant is zero), thus inverse matrix does not exist
 * At least one of the eigen values of the matrix is not a real number, but a complex one - thus the eigen values - eigen vectors combinations cannot be computed properly on the field of the real numbers
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-AWM-341
+
+**Title:** Square matrix generator methods - improper argument(s) type
+
+**Description:** An exception compatible with TypeError should be raised when:
+
+* A non-integer argument is passed into the method of generation of an identity matrix
+* The argument of the method to generate a permutation matrix is not a sequence of integer numbers
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-AWM-342
+
+**Title:** Square matrix generator methods - improper argument(s) values
+
+**Description:** An exception compatible with ValueError should be raised when:
+
+* The argument of the method to generate an identity matrix is zero or negative
+* Any element of the argument of the method to generate a permutation matrix is:
+  * Negative, OR
+  * Greater than the length of the permutation sequence - 1, OR
+  * Non-unique, i.e. the same number has been used already
 
 **Verification Method:** T

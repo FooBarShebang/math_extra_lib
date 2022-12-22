@@ -73,7 +73,13 @@
 | REQ-AWM-302        |                                                              | NO                       |
 | REQ-AWM-303        |                                                              | NO                       |
 | REQ-AWM-304        |                                                              | NO                       |
+| REQ-AWM-305        |                                                              | NO                       |
+| REQ-AWM-306        |                                                              | NO                       |
+| REQ-AWM-307        |                                                              | NO                       |
+| REQ-AWM-308        |                                                              | NO                       |
 | REQ-AWM-340        |                                                              | NO                       |
+| REQ-AWM-341        |                                                              | NO                       |
+| REQ-AWM-342        |                                                              | NO                       |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

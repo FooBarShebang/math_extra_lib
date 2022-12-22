@@ -25,7 +25,7 @@ import os
 
 import collections.abc as c_abc
 
-from typing import Sequence, Union, Tuple, Any, List
+from typing import Sequence, Union, Tuple, Any, List, Optional, Dict
 
 #+ custom modules
 
@@ -82,8 +82,9 @@ class Array2D:
     
     #special methods
     
-    def __init__(self, seqValues, *, Width = None, Height = None,
-                                            isColumnsFirst : bool = True):
+    def __init__(self, seqValues, *, Width : Optional[int] = None,
+                                    Height : Optional[int] = None,
+                                        isColumnsFirst : bool = True) -> None:
         """
         """
         pass
@@ -98,7 +99,7 @@ class Array2D:
         """
         pass
     
-    def __getitem__(self, Index: int) -> TRealTuple:
+    def __getitem__(self, Indexes : Tuple[int, int]) -> TReal:
         """
         """
         pass
@@ -128,7 +129,7 @@ class Vector:
     
     #special methods
     
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         """
         """
         pass
@@ -323,7 +324,8 @@ class SquareMatrix(Matrix):
     
     #special methods
     
-    def __init__(self, seqValues, *, Size = None, isColumnsFirst : bool = True):
+    def __init__(self, seqValues, *, Size : int = None,
+                                        isColumnsFirst : bool = True) -> None:
         """
         """
         pass
@@ -365,12 +367,12 @@ class SquareMatrix(Matrix):
         """
         pass
     
-    def getEigenValues(self) -> TRealTuple:
+    def getEigenValues(self) -> Union[TRealTuple, None]:
         """
         """
         pass
     
-    def getEigenVectors(self) -> Tuple[TColumn, ...]:
+    def getEigenVectors(self) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
         """
         """
         pass

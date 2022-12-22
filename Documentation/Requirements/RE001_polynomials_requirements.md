@@ -190,7 +190,7 @@ Unary '+' (identity) and '-' (negation) operations are equivalent to addition / 
 
 **Requirement ID:** REQ-AWM-103
 
-**Title:** TypeError - polynomials arithmetics and calculus
+**Title:** ValueError - polynomials arithmetics and calculus
 
 **Description:** An exception compatible to the standard ValueError should be raised  in the following situations:
 
