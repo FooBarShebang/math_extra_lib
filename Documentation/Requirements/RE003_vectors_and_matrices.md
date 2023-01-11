@@ -214,7 +214,7 @@ In the both cases (nested and flat sequences) the default interpretation of the 
 **Description:** An exception compatible with TypeError should be raised in the following cases:
 
 * At least, one mandatory positional argument of the instantation / initialization of any vector classes is not a real number (int or float type)
-* The mandatory argument argument of the instantation / initialization of any matrix class is neither a flat sequence of real numbers nor a sequence of nested sequences of real numbers
+* The mandatory argument of the instantation / initialization of any matrix class is neither a flat sequence of real numbers nor a sequence of nested sequences of real numbers
 * Any optional, keyword argument of the instantation / initialization of any matrix class describing the size(s) of a matrix is not an integer number
 
 **Verification Method:** T
@@ -229,6 +229,7 @@ In the both cases (nested and flat sequences) the default interpretation of the 
 
 * Any optional, keyword argument of the instantation / initialization of any matrix class describing the size(s) of a matrix is an integer number but not positive
 * The total number of the flat or nested sequence argument of the same method is less than required number defined by the declared size of the matrix
+* Number of arguments in vector instantiation is less then 2
 
 **Verification Method:** T
 
