@@ -269,7 +269,7 @@ The elements of the involved vector operands are not changed in the process.
 
 **Test steps:** Generate a random vector of the class being tested. Try to divide it by 0 and by 0.0 - check that a sub-class of ValueError exception is raised in the both cases. This test should be applied to each of the vector classes.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 

@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.polynomial, see TE003.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "11-01-2023"
+__date__ = "12-01-2023"
 __status__ = "Testing"
 
 #imports
@@ -39,9 +39,12 @@ class Test_Vector(unittest.TestCase):
     """
     Unit tests for the generic vector class.
     
-    Test IDs: TEST-T-300
+    Test IDs: TEST-T-300, TEST-T-301, TEST-T-302, TEST-T-303, TEST-T-304,
+        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308
     
-    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-AWM-307, REQ-AWM-308
+    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-310, REQ-AWM-300,
+        REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304, REQ-AWM-307,
+        REQ-AWM-308
 
     Version 1.0.0.0
     """
@@ -337,7 +340,7 @@ class Test_Vector(unittest.TestCase):
         Other = self.TestClass(*Elements)
         TestCheck = [self.TestObject[Index] + Item
                                         for Index, Item in enumerate(Elements)]
-        Data = self.TestObject.Data
+        Data = list(self.TestObject.Data)
         Temp = self.TestObject + Other
         self.assertIsInstance(Temp, self.TestClass)
         self.assertIs(Temp.__class__, self.TestClass)
@@ -367,7 +370,7 @@ class Test_Vector(unittest.TestCase):
         TestCheck = [self.TestObject[Index] - Item
                                         for Index, Item in enumerate(Elements)]
         TestCheck2 = [-Item for Item in TestCheck]
-        Data = self.TestObject.Data
+        Data = list(self.TestObject.Data)
         Temp = self.TestObject - Other
         self.assertIsInstance(Temp, self.TestClass)
         self.assertIs(Temp.__class__, self.TestClass)
@@ -383,14 +386,221 @@ class Test_Vector(unittest.TestCase):
         self.assertListEqual(Other.Data, Elements)
         del Temp
         del Other
+        
+    def test_mul_TypeError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-306
+        
+        Covers requirements: REQ-AWM-302
+        """
+        for Item in self.NotScalar:
+            if isinstance(Item, self.TestClass):
+                if not (Item.__class__ is self.TestClass):
+                    with self.assertRaises(TypeError):
+                        Temp = self.TestObject * Item
+                    with self.assertRaises(TypeError):
+                        Temp = Item * self.TestObject
+            else:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject * Item
+                with self.assertRaises(TypeError):
+                    Temp = Item * self.TestObject
+    
+    def test_mul_ValueError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-307
+        
+        Covers requirements: REQ-AWM-303
+        """
+        Elements = [random.random()
+                for _ in range(self.TestObject.Size + random.randint(1, 10))]
+        Other = self.TestClass(*Elements)
+        with self.assertRaises(ValueError):
+            Temp = self.TestObject * Other
+        with self.assertRaises(ValueError):
+            Temp = Other * self.TestObject
+        del Other
+    
+    def test_mul(self):
+        """
+        Checks the dot multiplication of two generic vectors and generic
+        vector left and right multiplication by a scalar
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        Data = list(self.TestObject.Data)
+        Other = random.random()
+        Elements = [Item * Other for Item in self.TestObject.Data]
+        TestCheck = self.TestObject * Other
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        TestCheck = Other * self.TestObject
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        Other = random.randint(-10, 10)
+        Elements = [Item * Other for Item in self.TestObject.Data]
+        TestCheck = self.TestObject * Other
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        TestCheck = Other * self.TestObject
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        Elements = [random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Size)]
+        Other = self.TestClass(*Elements)
+        TestCheck = sum(Item * self.TestObject[Index]
+                                        for Index, Item in enumerate(Elements))
+        Test = self.TestObject * Other
+        self.assertIsInstance(Test, (int, float))
+        self.assertAlmostEqual(Test, TestCheck)
+        self.assertListEqual(self.TestObject.Data, Data)
+        Test = Other * self.TestObject
+        self.assertIsInstance(Test, (int, float))
+        self.assertAlmostEqual(Test, TestCheck)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Other
+    
+    def test_matmul_TypeError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-306
+        
+        Covers requirements: REQ-AWM-302
+        """
+        for Item in self.NotScalar:
+            if isinstance(Item, self.TestClass):
+                if not (Item.__class__ is self.TestClass):
+                    with self.assertRaises(TypeError):
+                        Temp = self.TestObject @ Item
+                    with self.assertRaises(TypeError):
+                        Temp = Item @ self.TestObject
+            else:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject @ Item
+                with self.assertRaises(TypeError):
+                    Temp = Item @ self.TestObject
+        for Item in [1, 1.0]:
+            with self.assertRaises(TypeError):
+                Temp = self.TestObject @ Item
+            with self.assertRaises(TypeError):
+                Temp = Item @ self.TestObject
+    
+    def test_matmul(self):
+        """
+        Checks the implementation of the outer generic vectors product.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        Data = list(self.TestObject.Data)
+        Elements = [random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Size)]
+        Other = self.TestClass(*Elements)
+        Test = self.TestObject @ Other
+        self.assertIsInstance(Test, testmodule.Array2D)
+        #TODO - check Matrix size and content!
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Test
+        Test = Other @ self.TestObject
+        self.assertIsInstance(Test, testmodule.Array2D)
+        #TODO - check Matrix size and content!
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Test
+        del Other
+        #TODO - also check for the unequal sizes!
+    
+    def test_div_TypeError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-306
+        
+        Covers requirements: REQ-AWM-302
+        """
+        for Item in self.NotScalar:
+            with self.assertRaises(TypeError):
+                Temp = self.TestObject / Item
+            with self.assertRaises(TypeError):
+                Temp = Item / self.TestObject
+        with self.assertRaises(TypeError):
+            Temp = 1 / self.TestObject
+        with self.assertRaises(TypeError):
+            Temp = 1.0 / self.TestObject
+    
+    def test_div_ValueError(self):
+        """
+        Checks treatment of division by zero
+        
+        Test ID: TEST-T-308
+        
+        Covers requirements: REQ-AWM-304
+        """
+        with self.assertRaises(ValueError):
+            Temp = self.TestObject / 0
+        with self.assertRaises(ValueError):
+            Temp = self.TestObject / 0.0
+    
+    def test_div(self):
+        """
+        Checks the implementation of the division of a vector by a scalar.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Other = random.random()
+            if not Other:
+                Other = 0.1
+            Test = self.TestObject / Other
+            self.assertIsInstance(Test, self.TestClass)
+            self.assertIs(Test.__class__, self.TestClass)
+            self.assertEqual(Test.Size, self.TestObject.Size)
+            for Index, Item in enumerate(Data):
+                self.assertAlmostEqual(Test[Index], Item / Other)
+            del Test
+            Other += random.randint(-10, 10)
+            Test = self.TestObject / Other
+            self.assertIsInstance(Test, self.TestClass)
+            self.assertIs(Test.__class__, self.TestClass)
+            self.assertEqual(Test.Size, self.TestObject.Size)
+            for Index, Item in enumerate(Data):
+                self.assertAlmostEqual(Test[Index], Item / Other)
+            del Test
+            self.tearDown()
+            self.setUp()
 
 class Test_Column(Test_Vector):
     """
     Unit tests for the column vector class.
     
-    Test IDs: TEST-T-300
+    Test IDs: TEST-T-300, TEST-T-301, TEST-T-302, TEST-T-303, TEST-T-304,
+        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308
     
-    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-AWM-307, REQ-AWM-308
+    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-320, REQ-AWM-300,
+        REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304, REQ-AWM-307,
+        REQ-AWM-308
 
     Version 1.0.0.0
     """
@@ -402,14 +612,110 @@ class Test_Column(Test_Vector):
         """
         super().setUpClass()
         cls.TestClass = testmodule.Column
+    
+    def test_mul_TypeError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-306
+        
+        Covers requirements: REQ-AWM-302
+        """
+        for Item in self.NotScalar:
+            if isinstance(Item, testmodule.Vector):
+                if not (Item.__class__ is testmodule.Row):
+                    with self.assertRaises(TypeError):
+                        Temp = self.TestObject * Item
+                    with self.assertRaises(TypeError):
+                        Temp = Item * self.TestObject
+            else:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject * Item
+                if not isinstance(Item, testmodule.Matrix):
+                    with self.assertRaises(TypeError):
+                        Temp = Item * self.TestObject
+    
+    def test_mul_ValueError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-307
+        
+        Covers requirements: REQ-AWM-303
+        """
+        Elements = [random.random()
+                for _ in range(self.TestObject.Size + random.randint(1, 10))]
+        Other = testmodule.Row(*Elements)
+        with self.assertRaises(ValueError):
+            Temp = Other * self.TestObject
+        del Other
+    
+    def test_mul(self):
+        """
+        Checks the column vector left and right multiplication by a scalar
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-320
+        """
+        Data = list(self.TestObject.Data)
+        Other = random.random()
+        Elements = [Item * Other for Item in self.TestObject.Data]
+        TestCheck = self.TestObject * Other
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        TestCheck = Other * self.TestObject
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        Other = random.randint(-10, 10)
+        Elements = [Item * Other for Item in self.TestObject.Data]
+        TestCheck = self.TestObject * Other
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        TestCheck = Other * self.TestObject
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+    
+    def test_matmul(self):
+        """
+        Checks that the outer product is not defined for the column vectors.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        Data = list(self.TestObject.Data)
+        Elements = [random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Size)]
+        Other = self.TestClass(*Elements)
+        with self.assertRaises(TypeError):
+            Test = self.TestObject @ Other
+        with self.assertRaises(TypeError):
+            Test = Other @ self.TestObject
+        del Other
 
 class Test_Row(Test_Vector):
     """
     Unit tests for the row vector class.
     
-    Test IDs: TEST-T-300
+    Test IDs: TEST-T-300, TEST-T-301, TEST-T-302, TEST-T-303, TEST-T-304,
+        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308
     
-    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-AWM-307, REQ-AWM-308
+    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-320, REQ-FUN-330,
+        REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304,
+        REQ-AWM-307, REQ-AWM-308
 
     Version 1.0.0.0
     """
@@ -421,6 +727,116 @@ class Test_Row(Test_Vector):
         """
         super().setUpClass()
         cls.TestClass = testmodule.Row
+    
+    def test_mul_TypeError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-306
+        
+        Covers requirements: REQ-AWM-302
+        """
+        for Item in self.NotScalar:
+            if isinstance(Item, testmodule.Vector):
+                if not (Item.__class__ is testmodule.Column):
+                    with self.assertRaises(TypeError):
+                        Temp = self.TestObject * Item
+                    with self.assertRaises(TypeError):
+                        Temp = Item * self.TestObject
+            else:
+                if not isinstance(Item, testmodule.Matrix):
+                    with self.assertRaises(TypeError):
+                        Temp = self.TestObject * Item
+                with self.assertRaises(TypeError):
+                    Temp = Item * self.TestObject
+    
+    def test_mul_ValueError(self):
+        """
+        Checks treatment of operands incompatibility
+        
+        Test ID: TEST-T-307
+        
+        Covers requirements: REQ-AWM-303
+        """
+        Elements = [random.random()
+                for _ in range(self.TestObject.Size + random.randint(1, 10))]
+        Other = testmodule.Column(*Elements)
+        with self.assertRaises(ValueError):
+            Temp = self.TestObject * Other
+        del Other
+    
+    def test_mul(self):
+        """
+        Checks the row vector left and right multiplication by a scalar, and
+        row x column and column x row vector multiplications.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-320, REQ-FUN-330
+        """
+        Data = list(self.TestObject.Data)
+        Other = random.random()
+        Elements = [Item * Other for Item in self.TestObject.Data]
+        TestCheck = self.TestObject * Other
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        TestCheck = Other * self.TestObject
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        Other = random.randint(-10, 10)
+        Elements = [Item * Other for Item in self.TestObject.Data]
+        TestCheck = self.TestObject * Other
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        TestCheck = Other * self.TestObject
+        self.assertIsInstance(TestCheck, self.TestClass)
+        self.assertIs(TestCheck.__class__, self.TestClass)
+        self.assertListEqual(TestCheck.Data, Elements)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del TestCheck
+        Elements = [random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Size)]
+        Other = testmodule.Column(*Elements)
+        TestCheck = sum(Item * self.TestObject[Index]
+                                        for Index, Item in enumerate(Elements))
+        Test = self.TestObject * Other
+        self.assertIsInstance(Test, (int, float))
+        self.assertAlmostEqual(Test, TestCheck)
+        self.assertListEqual(self.TestObject.Data, Data)
+        Test = Other * self.TestObject
+        self.assertIsInstance(Test, testmodule.SquareMatrix)
+        #TODO - check Matrix size and content!
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Test
+        del Other
+        #TODO - also check for the unequal sizes!
+    
+    def test_matmul(self):
+        """
+        Checks that the outer product is not defined for the row vectors.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        Data = list(self.TestObject.Data)
+        Elements = [random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Size)]
+        Other = self.TestClass(*Elements)
+        with self.assertRaises(TypeError):
+            Test = self.TestObject @ Other
+        with self.assertRaises(TypeError):
+            Test = Other @ self.TestObject
+        del Other
 
 #+ test suites
 

@@ -12,7 +12,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '11-01-2023'
+__date__ = '12-01-2023'
 __status__ = 'Development'
 
 #imports
@@ -64,7 +64,7 @@ TSquareMatrix = "SquareMatrix"
 
 #helper functions
 
-def _ChechIfRealSequence(Value: Any) -> None:
+def _CheckIfRealSequence(Value: Any) -> None:
     """
     Helper function designed to be used inside initialization methods to check
     if the passed argument is a generic sequence of integers or floating point
@@ -88,7 +88,7 @@ def _ChechIfRealSequence(Value: Any) -> None:
             Error.args = (Message, )
             raise Error
 
-def _ChechIfSequenceRealSequence(Value: Any) -> None:
+def _CheckIfSequenceRealSequence(Value: Any) -> None:
     """
     """
     pass
@@ -104,7 +104,7 @@ class Array2D:
     def __init__(self, seqValues: Union[TRealSequence, TSequenceRealSequence],
                                 *, Width : Optional[int] = None,
                                     Height : Optional[int] = None,
-                                        isColumnsFirst : bool = True) -> None:
+                                        isColumnsFirst : bool = False) -> None:
         """
         """
         pass
@@ -183,7 +183,7 @@ class Vector:
         
         Version 1.0.0.0
         """
-        _ChechIfRealSequence(args)
+        _CheckIfRealSequence(args)
         if len(args) < 2:
             raise UT_ValueError(len(args), '>= 2 - number of arguments',
                                                                 SkipFrames = 1)
@@ -299,19 +299,7 @@ class Vector:
         Elements = [self._Elements[Index] + Item
                                     for Index, Item in enumerate(Other.Data)]
         return self.__class__(*Elements)
-    
-    def __radd__(self, Other: Any) -> NoReturn:
-        """
-        Magic method implementing addition of two vectors of the same type,
-        specifically that it prohibits other types as left operand.
-        
-        Raises:
-            UT_TypeError: always, unconditionally
-        
-        Version 1.0.0.0
-        """
-        raise UT_TypeError(Other, self.__class__, SkipFrames = 1)
-    
+
     def __sub__(self, Other: TVector) -> TVector:
         """
         Magic method implementing subtraction of two vectors of the same type.
@@ -343,38 +331,131 @@ class Vector:
         Elements = [self._Elements[Index] - Item
                                     for Index, Item in enumerate(Other.Data)]
         return self.__class__(*Elements)
-    
-    def __rsub__(self, Other: Any) -> NoReturn:
+
+    def __mul__(self, Other: Union[TReal, TVector]) -> Union[TReal, TVector]:
         """
-        Magic method implementing subtraction of two vectors of the same type,
-        specifically that it prohibits other types as left operand.
+        Magic method implementing dot multiplication of two generic vectors and
+        the generic vector times scalar operation.
+        
+        Signature:
+            Vector OR int OR float -> Vector OR int OR float
+        
+        Args:
+            Other: Vector OR int OR float; another instance of the same vector
+                class of the same size or a real number as the right operand
+        
+        Returns:
+            Vector: instance of the same class, which is the result of the
+                operation with the real number right operand
+            int OR float: result of the dot product of two generic vectors
         
         Raises:
-            UT_TypeError: always, unconditionally
+            UT_TypeError: the second operand is not an instance of the same
+                vector class nor a real number
+            UT_ValueError: different sizes of the vectors in the case of the
+                dot product
         
         Version 1.0.0.0
         """
-        raise UT_TypeError(Other, self.__class__, SkipFrames = 1)
-    
-    def __mul__(self, Other: Union[TReal, TVector]) -> Union[TReal, TVector]:
-        """
-        """
-        pass
+        Result = None
+        if isinstance(Other, (int, float)):
+            Elements = [Item * Other for Item in self._Elements]
+            Result = self.__class__(*Elements)
+        elif (isinstance(Other, self.__class__)
+                                    and (Other.__class__ is self.__class__)):
+            if Other.Size != self.Size:
+                raise UT_ValueError(Other.Size,
+                    '{} - vectors dimensions'.format(self.Size), SkipFrames = 1)
+            Result = sum(Item * Other[Index]
+                                for Index, Item in enumerate(self._Elements))
+        else:
+            raise UT_TypeError(Other, (int, float, self.__class__),
+                                                                SkipFrames = 1)
+        return Result
     
     def __rmul__(self, Other: TReal) -> TVector:
         """
+        Magic method implementing scalar times generic vector operation.
+        
+        Signature:
+            int OR float -> Vector
+        
+        Args:
+            Other: int OR float; the left (scalar) operand
+        
+        Returns:
+            Vector: instance of the same class, which is the result of the
+                operation
+        
+        Raises:
+            UT_TypeError: the second operand is not a real number
+        
+        Version 1.0.0.0
         """
-        pass
+        Result = None
+        if isinstance(Other, (int, float)):
+            Elements = [Item * Other for Item in self._Elements]
+            Result = self.__class__(*Elements)
+        else:
+            raise UT_TypeError(Other, (int, float), SkipFrames = 1)
+        return Result
     
     def __truediv__(self, Other: TReal) -> TVector:
         """
+        Magic method implementing division of a vector by a scalar
+        
+        Signature:
+            int OR float -> 'Vector
+        
+        Args:
+            Other: int OR float; the right (scalar) operand
+        
+        Returns:
+            'Vector: instance of the same class, which is the result of the
+                operation
+        
+        Raises:
+            UT_TypeError: the second operand is not a real number
+            UT_ValueError: the second operand is zero (division by zero)
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(Other, (int, float)):
+            raise UT_TypeError(Other, (int, float), SkipFrames = 1)
+        if not Other:
+            raise UT_ValueError(Other, '!= 0 - division by zero', SkipFrames= 1)
+        Elements = [Item / Other for Item in self._Elements]
+        Result = self.__class__(*Elements)
+        return Result
     
     def __matmul__(self, Other: TVector) -> TArray:
         """
+        Magic method implementing outer product of two generic vectors.
+        
+        Signature:
+            Vector -> Array2D
+        
+        Args:
+            Other: Vector; the right operand
+        
+        Returns:
+            Array2D: instance of the class, which is the basis for the actual
+                matrix classes
+        
+        Raises:
+            UT_TypeError: the second operand is not an instance of the same
+                class - sub-classes excluded
+        
+        Version 1.0.0.0
         """
-        pass
+        if ((not isinstance(Other, self.__class__))
+                        or (not (Other.__class__ is self.__class__))):
+            raise UT_TypeError(Other, self.__class__, SkipFrames = 1)
+        Elements = list()
+        for Item in self._Elements:
+            Elements.extend([Item * Element for Element in Other.Data])
+        Result = Array2D(Elements, Width = Other.Size, Height = self.Size)
+        return Result
     
     #public class methods
     
@@ -421,7 +502,6 @@ class Vector:
 class Column(Vector):
     """
     """
-    pass
 
     #special methods
     
@@ -436,32 +516,182 @@ class Column(Vector):
         """
         return '[{}]^T'.format(', '.join(map(str, self.Data)))
 
-    def __mul__(self, Other: TReal) -> TColumn:
+    def __mul__(self, Other: Union[TReal, TRow]) -> Union[TColumn, TMatrix]:
         """
+        Magic method implementing right multiplication of a column vector by a
+        scalar or row vector.
+        
+        Signature:
+            Row OR int OR float -> Column OR Matrix
+        
+        Args:
+            Other: Row OR int OR float; an instance of the row vector class
+                or a real number as the right operand
+        
+        Returns:
+            Column: instance of the same class, which is the result of the
+                operation with the real number right operand
+            Matrix: result of the column x row multiplication
+        
+        Raises:
+            UT_TypeError: the second operand is not an instance of the same
+                vector class nor a real number nor a Row vector
+        
+        Version 1.0.0.0
         """
+        #will be patch after definition of the Matrix and Row classes
         return NotImplemented
     
     def __rmul__(self, Other: TReal) -> TColumn:
         """
+        Magic method implementing left multiplication of a column vector by a
+        scalar.
+        
+        Signature:
+            int OR float -> Column
+        
+        Args:
+            Other: int OR float; the left (scalar) operand
+        
+        Returns:
+            Column: instance of the same class, which is the result of the
+                operation
+        
+        Raises:
+            UT_TypeError: the second operand is not a real number nor a Matrix
+                instance
+        
+        Version 1.0.0.0
+        """
+        Result = None
+        if isinstance(Other, (int, float)):
+            Elements = [Item * Other for Item in self._Elements]
+            Result = self.__class__(*Elements)
+        elif isinstance(Other, Array2D):
+            Result = NotImplemented #responsibility of the Matrix class
+        else:
+            raise UT_TypeError(Other, (int, float), SkipFrames = 1)
+        return Result
+    
+    def __matmul__(self, Other: Any) -> NotImplemented:
+        """
+        Disables the inherited outer product magic method.
+        
+        Version 1.0.0.0
+        """
+        return NotImplemented
+    
+    #public methods
+    
+    def transpose(self) -> TRow:
+        """
+        Transposes the current column vector into a row vector preserving the
+        elements.
+        
+        Signature:
+            None -> Row
+        
+        Version 1.0.0.0
         """
         return NotImplemented
 
 class Row(Vector):
     """
     """
-    pass
 
     #special methods
 
-    def __mul__(self, Other: Union[TReal, TColumn]) -> Union[TRow, TReal]:
+    def __mul__(self, Other: Union[TReal, Column]) -> Union[TRow, TReal]:
         """
+        Magic method implementing right multiplication of a row vector by a
+        scalar or column vector.
+        
+        Signature:
+            Column OR int OR float -> Row OR int OR float
+        
+        Args:
+            Other: Column OR int OR float; an instance of the column vector
+                class or a real number as the right operand
+        
+        Returns:
+            Row: instance of the same class, which is the result of the
+                operation with the real number right operand
+            int OR float: result of the row x column multiplication
+        
+        Raises:
+            UT_TypeError: the second operand is not an instance of the column
+                vector class nor a real number, nor a Matrix instance
+            UT_ValueError: different sizes of the vectors in the case of the
+                row x column product
+        
+        Version 1.0.0.0
         """
-        return NotImplemented
+        Result = None
+        if isinstance(Other, (int, float)):
+            Elements = [Item * Other for Item in self._Elements]
+            Result = self.__class__(*Elements)
+        elif isinstance(Other, Column):
+            if Other.Size != self.Size:
+                raise UT_ValueError(Other.Size,
+                    '{} - vectors dimensions'.format(self.Size), SkipFrames = 1)
+            Result = sum(Item * Other[Index]
+                                for Index, Item in enumerate(self._Elements))
+        elif isinstance(Other, Array2D):
+            Result = NotImplemented #responsibility of the Matrix class
+        else:
+            raise UT_TypeError(Other, (int, float, self.__class__),
+                                                                SkipFrames = 1)
+        return Result
     
     def __rmul__(self, Other: TReal) -> TRow:
         """
+        Magic method implementing left multiplication of a row vector by a
+        scalar.
+        
+        Signature:
+            int OR float -> Row
+        
+        Args:
+            Other: int OR float; a real number as the left operand
+        
+        Returns:
+            Row: instance of the same class, which is the result of the
+                operation
+        
+        Raises:
+            UT_TypeError: the second operand is not a real number
+        
+        Version 1.0.0.0
+        """
+        Result = None
+        if isinstance(Other, (int, float)):
+            Elements = [Item * Other for Item in self._Elements]
+            Result = self.__class__(*Elements)
+        else:
+            raise UT_TypeError(Other, (int, float), SkipFrames = 1)
+        return Result
+    
+    def __matmul__(self, Other: Any) -> NotImplemented:
+        """
+        Disables the inherited outer product magic method.
+        
+        Version 1.0.0.0
         """
         return NotImplemented
+    
+    #public methods
+    
+    def transpose(self) -> Column:
+        """
+        Transposes the current row vector into a column vector preserving the
+        elements.
+        
+        Signature:
+            None -> Column
+        
+        Version 1.0.0.0
+        """
+        return Column(*(self._Elements))
 
 class Matrix(Array2D):
     """
@@ -599,4 +829,73 @@ class SquareMatrix(Matrix):
         """
         pass
 
-#Do dynamic binding to implement column x row -> matrix multiplication
+#Dynamic patching of the Column class, instance method __mul__()
+
+def _Column__mul__(self: Column,
+                            Other: Union[Row, TReal]) -> Union[Column, Matrix]:
+    """
+    Special helper function to patch the right multiplication of a Column vector
+    hook magical method.
+    
+    Signature:
+        Column, Row OR int OR float -> Column OR Matrix
+    
+    Args:
+        self: Column; instance of Column class as the left operand
+        Other: Row OR int OR float; an instance of the row vector class or a
+            real number as the right operand
+    
+    Returns:
+        Column: instance of the Column class, which is the result of the
+            operation with the real number right operand
+        Matrix: result of the column x row multiplication
+    
+    Raises:
+        UT_TypeError: the second operand is not an instance of the Row vector
+            vector class nor a real number
+        
+    Version 1.0.0.0
+    """
+    Result = None
+    if isinstance(Other, (int, float)):
+        Elements = [Item * Other for Item in self._Elements]
+        Result = self.__class__(*Elements)
+    elif isinstance(Other, Row):
+        Elements = list()
+        OtherData = Other.Data
+        for Item in self._Elements:
+            Elements.extend([Item * Element for Element in OtherData])
+        selfSize = self.Size
+        OtherSize = Other.Size
+        if selfSize != OtherSize:
+            Result = Matrix(Elements, Width = OtherSize, Height = selfSize)
+        else:
+            Result = SquareMatrix(Elements, Size = selfSize)
+    else:
+        raise UT_TypeError(Other, (int, float), SkipFrames = 1)
+    return Result
+
+#Dynamic patching of the Column class, instance method transpose()
+
+def _Column_transpose(self: Column) -> Row:
+    """
+    Special helper function to patch the transpose() method of the Column class.
+        
+    Signature:
+        Column -> Row
+    
+    Args:
+        self: Column; an instance of the class.
+    
+    Version 1.0.0.0
+    """
+    return Row(*(self._Elements))
+
+#tweaking and patching the classes
+
+TempDoc = Column.__mul__.__doc__
+setattr(Column, "__mul__", _Column__mul__)
+Column.__mul__.__doc__ = TempDoc
+TempDoc = Column.transpose.__doc__
+setattr(Column, "transpose", _Column_transpose)
+Column.transpose.__doc__ = TempDoc
