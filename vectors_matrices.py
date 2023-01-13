@@ -457,6 +457,38 @@ class Vector:
         Result = Array2D(Elements, Width = Other.Size, Height = self.Size)
         return Result
     
+    def __pos__(self) -> TVector:
+        """
+        Magic method implementing unitaty plus operation (identity function).
+
+        Signature:
+            None -> 'Vector
+        
+        Returns:
+            'Vector: instance of the same class, another object with the
+                identical elements
+        
+        Version 1.0.0.0
+        """
+        return self.__class__(*(self._Elements))
+    
+    def __neg__(self) -> TVector:
+        """
+        Magic method implementing unitaty minus operation (negation / additive
+        inverse function).
+
+        Signature:
+            None -> 'Vector
+        
+        Returns:
+            'Vector: instance of the same class, another object with the
+                identical elements
+        
+        Version 1.0.0.0
+        """
+        Elements = [-Item for Item in self._Elements]
+        return self.__class__(*(Elements))
+    
     #public class methods
     
     @classmethod

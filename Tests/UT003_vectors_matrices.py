@@ -235,6 +235,7 @@ class Test_Vector(unittest.TestCase):
         self.assertIsNot(New, self.TestObject)
         self.assertEqual(New.Size, self.TestObject.Size)
         self.assertListEqual(New.Data, self.TestObject.Data)
+        del New
     
     def test_add_TypeError(self):
         """
@@ -590,6 +591,37 @@ class Test_Vector(unittest.TestCase):
             del Test
             self.tearDown()
             self.setUp()
+    
+    def test_pos(self):
+        """
+        Checks the implementation of the unitary plus operation.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        New = +self.TestObject
+        self.assertIs(New.__class__, self.TestClass)
+        self.assertIsNot(New, self.TestObject)
+        self.assertEqual(New.Size, self.TestObject.Size)
+        self.assertListEqual(New.Data, self.TestObject.Data)
+        del New
+    
+    def test_neg(self):
+        """
+        Checks the implementation of the unitary plus operation.
+        
+        Test ID: TEST-T-305
+        
+        Covers requirements: REQ-FUN-310
+        """
+        Elements = [-Item for Item in self.TestObject.Data]
+        New = -self.TestObject
+        self.assertIs(New.__class__, self.TestClass)
+        self.assertIsNot(New, self.TestObject)
+        self.assertEqual(New.Size, self.TestObject.Size)
+        self.assertListEqual(New.Data, Elements)
+        del New
 
 class Test_Column(Test_Vector):
     """

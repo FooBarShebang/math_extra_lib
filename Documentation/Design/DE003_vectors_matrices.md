@@ -119,6 +119,8 @@ whereas neither of the column and row vector classes should support multiplicati
 
 ## Matrix
 
+### General matrices
+
 Conceptually, a matrix of the size N x K is a table consisting of N columns and K rows, which can also be represented as a column of K elements, each being row N-vector, or as a row of N elements, each being column K-vector.
 
 $$
@@ -223,3 +225,28 @@ Finally, multiplication of matrix **A** (size N x K) by a matrix **B** (size M x
 $$
 \mathbf{A}_{NK} * \mathbf{B}_{MN} = \mathbf{C}_{MK} \; : \; c_{i,j} = a_{1,j} * b_{i,1} + a_{2,j} * b_{i,2} + \dots + a_{N,j} * b_{i,N} \; \forall \; 1 \leq i \leq M, 1 \leq j \leq K
 $$
+
+Thus, like in the case of the vectors, matrices could be implemented as a hybrid class, incorporating partially functionality of a nested immutable sequence and numeric types, thus supporting the standard indexing and arithmetics notation as is summarized in the table below.
+
+| Operation          | Notation | 'Magic' method    | Result | Requirements             |
+| ------------------ | -------- | ----------------- | ------ | ------------------------ |
+| element access     | a[i,j]   | \_\_getitem\_\_() | scalar |                          |
+| matrix addition    | a + b    | \_\_add\_\_()     | matrix | equal widths and heights |
+| matrix subtraction | a - b    | \_\_sub\_\_()     | matrix | equal widths and heights |
+| scalar x matrix    | a * b    | \_\_rmul\_\_()    | matrix |                          |
+| row x matrix       | a * b    | \_\_rmul\_\_()    | row    | length equals height     |
+| matrix x scalar    | a * b    | \_\_mul\_\_()     | matrix |                          |
+| matrix x column    | a * b    | \_\_mul\_\_()     | column | width equals length      |
+| matrix x matrix    | a * b    | \_\_mul\_\_()     | matrix | l. width = r. height     |
+| matrix / scalar    | a / b    | \_\_truediv\_\_() | matrix | number is not zero       |
+
+### Square matrices
+
+A matrix is square if its width equals its height, i.e. the matrix size is N x N, in which case the size of the matrix can be characterized with a single number N. Specifically for the square matrices there are additional properties and functionality, thus it is convenient to implement the square matrices as a specific sub-class of a generic matrix class with the additional methods or *properties* (as in Python programming language sense).
+
+The additional properties of the square matrices are:
+
+* The *trace* of a square matrix is the sum of all its *main diagonal* elements $\mathtt{Tr}(\mathbf{A}) = \sum_{i}{a_{i,i}}$
+* The *determinant* of a square matrix $\mathtt{det}(\mathbf{A})$ is a sum of all possible products constructed from unique column index selection of elements from each row weighted by the factor +1 or -1, which is the sign of the {1, ..., N} permutation formed by the respective column indexes, see [this link](https://en.wikipedia.org/wiki/Determinant)
+* If the determinant of a square matrix is not zero, then this matrix is *invertible*, i.e. it has the *multiplicative inverse*: $\forall \; \mathbf{A} \; : \mathtt{det}(\mathbf{A}) \neq 0 \; \exists \; \mathbf{A}^{-1} \; : \; \mathbf{A}^{-1} * \mathbf{A} = \mathbf{A} * \mathbf{A}^{-1} = \mathbf{I}$, where $\mathbf{I}$ is *multiplicative identity*, i.e. $\mathbf{I} * \mathbf{A} = \mathbf{A} * \mathbf{I} = \mathbf{A} \; \forall \; \mathbf{A}$, which has 1s on the main diagonal and 0s for other elements, i.e. $i_{i,i} = 1$ and $i_{i,j \neq i} = 0$
+
