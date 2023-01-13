@@ -622,6 +622,43 @@ class Test_Vector(unittest.TestCase):
         self.assertEqual(New.Size, self.TestObject.Size)
         self.assertListEqual(New.Data, Elements)
         del New
+    
+    def test_augmentedAssignment(self):
+        """
+        Checks that the in-place modification via augmented assignment is not
+        supported. This is an additional test.
+        """
+        Data = list(self.TestObject.Data)
+        Elements = [random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Size)]
+        Other = self.TestClass(*Elements)
+        with self.assertRaises(TypeError):
+            self.TestObject += Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject -= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject *= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject @= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Other
+        Other = random.randint(1, 10)
+        with self.assertRaises(TypeError):
+            self.TestObject *= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject /= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        Other += random.random()
+        with self.assertRaises(TypeError):
+            self.TestObject *= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject /= Other
+        self.assertListEqual(self.TestObject.Data, Data)
 
 class Test_Column(Test_Vector):
     """

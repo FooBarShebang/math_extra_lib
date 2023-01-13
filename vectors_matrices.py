@@ -489,6 +489,81 @@ class Vector:
         Elements = [-Item for Item in self._Elements]
         return self.__class__(*(Elements))
     
+    def __iadd__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '+=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '+=' for the type {}".format(
+                                                    self.__class__.__name__))
+    
+    def __isub__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '-=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '+-=' for the type {}".format(
+                                                    self.__class__.__name__))
+    
+    def __imul__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '*=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '*=' for the type {}".format(
+                                                    self.__class__.__name__))
+
+    def __itruediv__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '/=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '/=' for the type {}".format(
+                                                    self.__class__.__name__))
+
+    def __imatmul__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '@=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '@=' for the type {}".format(
+                                                    self.__class__.__name__))
+
     #public class methods
     
     @classmethod
