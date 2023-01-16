@@ -12,7 +12,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '12-01-2023'
+__date__ = '16-01-2023'
 __status__ = 'Development'
 
 #imports
@@ -21,10 +21,9 @@ __status__ = 'Development'
 
 import sys
 import os
-#import math
-
 import collections.abc as c_abc
 
+from math import sqrt, floor
 from typing import Sequence, Union, Tuple, Any, List, Optional, Dict, NoReturn
 
 #+ custom modules
@@ -90,8 +89,35 @@ def _CheckIfRealSequence(Value: Any) -> None:
 
 def _CheckIfSequenceRealSequence(Value: Any) -> None:
     """
+    Helper function designed to be used inside initialization methods to check
+    if the passed argument is a nested sequence of sequences of integers or
+    floating point numbers.
+    
+    Signature:
+        type A -> None
+    
+    Raises:
+        UT_TypeError: the argument is not a sequence, OR any of its elements is
+            not a sequence, OR any of the elements of any sub-sequence is not an
+            integer or floating point number
+    
+    Version 1.0.0.0
     """
-    pass
+    if (not isinstance(Value, c_abc.Sequence)) or isinstance(Value, str):
+        raise UT_TypeError(Value, (list, tuple), SkipFrames = 2)
+    for Index, Item in enumerate(Value):
+        if (not isinstance(Item, c_abc.Sequence)) or isinstance(Item, str):
+            Error = UT_TypeError(Item, (list, tuple), SkipFrames = 2)
+            Message = '{} at index {} in {}'.format(Error.args[0], Index, Value)
+            Error.args = (Message, )
+            raise Error
+        for Inner, Element in enumerate(Item):
+            if not isinstance(Element, (int, float)):
+                Error = UT_TypeError(Element, (int, float), SkipFrames = 2)
+                Message = '{} at index [{}][{}] in {}'.format(Error.args[0],
+                                                            Index, Inner, Value)
+                Error.args = (Message, )
+                raise Error
 
 #classes
 
@@ -107,7 +133,104 @@ class Array2D:
                                         isColumnsFirst : bool = False) -> None:
         """
         """
-        pass
+        if not isinstance(isColumnsFirst, bool):
+            Error = UT_TypeError(isColumnsFirst, bool, SkipFrames = 1)
+            Message = '{} - isColumnsFirst argument'.format(Error.args[0])
+            Error.args = (Message, )
+            raise Error
+        try:
+            _CheckIfRealSequence(seqValues)
+            Length = len(seqValues)
+            if (Width is None) and (Height is None):
+                raise UT_ValueError((Width, Height),
+                        '!= (None, None) - Width and Height keyword arguments',
+                                                                SkipFrames = 1)
+            if Width is None:
+                if not isinstance(Height, int):
+                    Error = UT_TypeError(Height, int, SkipFrames = 1)
+                    Message = '{} - Height argument'.format(Error.args[0])
+                    Error.args = (Message, )
+                    raise Error
+                if Height < 2:
+                    raise UT_ValueError(Height, '>= 2 - Height argument',
+                                                                SkipFrames = 1)
+                _Height = Height
+                _Width = int(floor(Length / Height))
+                if _Width < 2:
+                    raise UT_ValueError(Length,
+                                '>= {} - sequence length'.format(2 * Height),
+                                                                SkipFrames = 1)
+            elif Height is None:
+                if not isinstance(Width, int):
+                    Error = UT_TypeError(Width, int, SkipFrames = 1)
+                    Message = '{} - Width argument'.format(Error.args[0])
+                    Error.args = (Message, )
+                    raise Error
+                if Width < 2:
+                    raise UT_ValueError(Width, '>= 2 - Width argument',
+                                                                SkipFrames = 1)
+                _Width = Width
+                _Height = int(floor(Length / Width))
+                if _Width < 2:
+                    raise UT_ValueError(Length,
+                                '>= {} - sequence length'.format(2 * Width),
+                                                                SkipFrames = 1)
+            else:
+                if not isinstance(Height, int):
+                    Error = UT_TypeError(Height, int, SkipFrames = 1)
+                    Message = '{} - Height argument'.format(Error.args[0])
+                    Error.args = (Message, )
+                    raise Error
+                if Height < 2:
+                    raise UT_ValueError(Height, '>= 2 - Height argument',
+                                                                SkipFrames = 1)
+                if not isinstance(Width, int):
+                    Error = UT_TypeError(Width, int, SkipFrames = 1)
+                    Message = '{} - Width argument'.format(Error.args[0])
+                    Error.args = (Message, )
+                    raise Error
+                if Width < 2:
+                    raise UT_ValueError(Width, '>= 2 - Width argument',
+                                                                SkipFrames = 1)
+                _Width = Width
+                _Height = Height
+            MinLength = _Width * _Height
+            if Length < MinLength:
+                raise UT_ValueError(Length,
+                                '>= {} - sequence length'.format(MinLength),
+                                                                SkipFrames = 1)
+            if not isColumnsFirst:
+                self._Elements = tuple(
+                            tuple(seqValues[Index*_Width : (Index+1)*_Width])
+                                                    for Index in range(_Height))
+            else:
+                self._Elements = tuple(tuple(seqValues[Outer + _Height * Inner]
+                                                    for Inner in range(_Width))
+                                                    for Outer in range(_Height))
+        except UT_TypeError as err:
+            _CheckIfSequenceRealSequence(seqValues)
+            NItems = len(seqValues)
+            if NItems < 2:
+                raise UT_ValueError(NItems, '>= 2 - sequence length',
+                                                                SkipFrames = 1)
+            FirstLength = len(seqValues[0])
+            if FirstLength < 2:
+                raise UT_ValueError(NItems,
+                                        '>= 2 - the first sub-sequence length',
+                                                                SkipFrames = 1)
+            for Index in range(1, NItems):
+                CurrentLength = len(seqValues[Index])
+                if CurrentLength != FirstLength:
+                    raise UT_ValueError(CurrentLength,
+                                '!= {} - sub-sequence index {} length'.format(
+                                            FirstLength, Index), SkipFrames = 1)
+            if not isColumnsFirst:
+                self._Elements = tuple(tuple(seqValues[Index])
+                                                    for Index in range(NItems))
+            else:
+                self._Elements = tuple(tuple(seqValues[HIndex][WIndex]
+                                        for HIndex in range(NItems))
+                                            for WIndex in range(FirstLength))
     
     def __str__(self) -> str:
         """
@@ -569,8 +692,45 @@ class Vector:
     @classmethod
     def generateOrtogonal(cls, Length: int, Index: int) -> TVector:
         """
+        Class method to generate a vector from the unity orthogonal set such,
+        that only a single element is 1, thereas all other elements are 0.
+        
+        Signature:
+            int >= 2, int >= 0 -> 'Vector
+        
+        Args:
+            Length: int >= 2; the request size / dimensions of the vector
+            Index: int >= 0; the index on the only non-zero element, must be
+                also less than Length
+        
+        Returns:
+            'Vector: an instance of the same class
+        
+        Raises:
+            UT_TypeError: either of the arguments in not an integer number
+            UT_ValueError: the first argument is less than 2, OR the second
+                argument is negative or equal to or greater than the first one
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(Length, int):
+            Error = UT_TypeError(Length, int, SkipFrames = 1)
+            Error.args = ('{} - the first argument'.format(Error.args[0]), )
+            raise Error
+        if not isinstance(Index, int):
+            Error = UT_TypeError(Index, int, SkipFrames = 1)
+            Error.args = ('{} - the second argument'.format(Error.args[0]), )
+            raise Error
+        if Length < 2:
+            raise UT_ValueError(Length, '>= 2 - requested size of the vector',
+                                                                SkipFrames = 1)
+        if Index < 0 or Index >= Length:
+            raise UT_ValueError(Index,
+                'in range [0, {}] - non-zero element index'.format(Length - 1),
+                                                                SkipFrames = 1)
+        Elements = [0 for _ in range(Length)]
+        Elements[Index] = 1
+        return cls(*Elements)
     
     #public properties
     
@@ -603,8 +763,27 @@ class Vector:
     
     def normalize(self) -> TVector:
         """
+        Generates a new instance of the same class of the same length, but with
+        all elements being scaled (divided by) a square root of the sum of all
+        elements of the original vector squared.
+        
+        Signature:
+            None -> 'Vector
+        
+        Returns:
+            'Vector: a new instance of the same class - the normalized vector
+        
+        Raises:
+            UT_ValueError: all elements of the original vector are zeroes
+        
+        Version 1.0.0.0
         """
-        pass
+        Length = sqrt(sum(Item*Item for Item in self._Elements))
+        if not Length:
+            raise UT_ValueError(Length, '> 0 - geometric length of the vector',
+                                                                SkipFrames = 1)
+        Elements = [Item / Length for Item in self._Elements]
+        return self.__class__(*Elements)
 
 class Column(Vector):
     """

@@ -103,7 +103,7 @@ The verification method for a requirement is given by a single letter according 
 * A (nested) sequence of the equal length sequences of real numbers; for the square matrices the number of the nested sequences must be equal to the length of each nested sequuence
 * A plain (flat) sequence of real numbers of the length not less than the width x height of the matrix elements; for a non-square matrix both the width and the height must be explicitely specified, for the square matrices - the both sizes are equal and must be specified explicitely using a single argument
 
-In the both cases (nested and flat sequences) the default interpretation of the data should be 'columns first'; the reverse 'rows first' order must be explicitely specified via an optional argument.
+In the both cases (nested and flat sequences) the default interpretation of the data should be 'rows first', i.e. each nested sub-sequence is a single row of a matrix; the reverse 'columns first' order must be explicitely specified via an optional argument.
 
 **Verification Method:** T
 

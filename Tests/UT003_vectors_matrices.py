@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.polynomial, see TE003.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "12-01-2023"
+__date__ = "16-01-2023"
 __status__ = "Testing"
 
 #imports
@@ -18,6 +18,7 @@ import os
 import unittest
 import copy
 import random
+from math import sqrt
 
 from collections.abc import Sequence
 
@@ -40,11 +41,11 @@ class Test_Vector(unittest.TestCase):
     Unit tests for the generic vector class.
     
     Test IDs: TEST-T-300, TEST-T-301, TEST-T-302, TEST-T-303, TEST-T-304,
-        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308
+        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308, TEST-T-309
     
-    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-310, REQ-AWM-300,
-        REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304, REQ-AWM-307,
-        REQ-AWM-308
+    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-303, REQ-FUN-310,
+        REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304,
+        REQ-AWM-305, REQ-AWM-306, REQ-AWM-307, REQ-AWM-308
 
     Version 1.0.0.0
     """
@@ -659,17 +660,109 @@ class Test_Vector(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.TestObject /= Other
         self.assertListEqual(self.TestObject.Data, Data)
+    
+    def test_normalize(self):
+        """
+        Checks generation of a normalized vector from an existing one.
+        
+        Test ID: TEST-T-309
+        
+        Covers requirements: REQ-FUN-303
+        """
+        Length = sqrt(sum(Item*Item for Item in self.TestObject.Data))
+        while not Length:
+            self.tearDown()
+            self.setUp()
+            Length = sqrt(sum(Item*Item for Item in self.TestObject.Data))
+        Data = list(self.TestObject.Data)
+        Test = self.TestObject.normalize()
+        self.assertListEqual(self.TestObject.Data, Data)
+        self.assertIsInstance(Test, self.TestClass)
+        self.assertIs(Test.__class__, self.TestClass)
+        self.assertEqual(Test.Size, self.TestObject.Size)
+        for Index, Element in enumerate(self.TestObject.Data):
+            self.assertAlmostEqual(Test[Index], Element / Length)
+        del Test
+        Size = random.randint(2, 10)
+        Elements = [0 for _ in range(Size)]
+        Test = self.TestClass(*Elements)
+        with self.assertRaises(ValueError):
+            Temp = Test.normalize()
+        del Test
+    
+    def test_generateOrtogonal(self):
+        """
+        Checks generation of a unity orthogonal vectors set.
+        
+        Test ID: TEST-T-309
+        
+        Covers requirements: REQ-FUN-303
+        """
+        Size = random.randint(2, 10)
+        for Index in range(Size):
+            Test = self.TestClass.generateOrtogonal(Size, Index)
+            self.assertIsInstance(Test, self.TestClass)
+            self.assertIs(Test.__class__, self.TestClass)
+            self.assertEqual(Test.Size, Size)
+            for Second in range(Size):
+                if Second == Index:
+                    self.assertEqual(Test[Second], 1)
+                else:
+                    self.assertEqual(Test[Second], 0)
+            del Test
+    
+    def test_generateOrtogonal_TypeError(self):
+        """
+        Checks generation of a unity orthogonal vectors set - input data types.
+        
+        Test ID: TEST-T-309
+        
+        Covers requirements: REQ-FUN-303
+        """
+        Size = random.randint(2, 10)
+        Index = random.randint(0, Size - 1)
+        for Item in self.NotScalar:
+            with self.assertRaises(TypeError):
+                self.TestClass.generateOrtogonal(Item, Index)
+            with self.assertRaises(TypeError):
+                self.TestClass.generateOrtogonal(Size, Item)
+        with self.assertRaises(TypeError):
+            self.TestClass.generateOrtogonal(3.0, Index)
+        with self.assertRaises(TypeError):
+            self.TestClass.generateOrtogonal(Size, 1.0)
+    
+    def test_generateOrtogonal_ValueError(self):
+        """
+        Checks generation of a unity orthogonal vectors set - input data values.
+        
+        Test ID: TEST-T-309
+        
+        Covers requirements: REQ-FUN-303
+        """
+        with self.assertRaises(ValueError):
+            self.TestClass.generateOrtogonal(0, 1)
+        with self.assertRaises(ValueError):
+            self.TestClass.generateOrtogonal(1, 1)
+        with self.assertRaises(ValueError):
+            self.TestClass.generateOrtogonal(random.randint(-10, -1), 1)
+        Size = random.randint(2, 10)
+        with self.assertRaises(ValueError):
+            self.TestClass.generateOrtogonal(Size, random.randint(-10, -1))
+        with self.assertRaises(ValueError):
+            self.TestClass.generateOrtogonal(Size, Size)
+        with self.assertRaises(ValueError):
+            self.TestClass.generateOrtogonal(Size, Size + random.randint(1, 10))
 
 class Test_Column(Test_Vector):
     """
     Unit tests for the column vector class.
     
     Test IDs: TEST-T-300, TEST-T-301, TEST-T-302, TEST-T-303, TEST-T-304,
-        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308
+        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308, TEST-T-309
     
-    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-320, REQ-AWM-300,
-        REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304, REQ-AWM-307,
-        REQ-AWM-308
+    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-303, REQ-FUN-320,
+        REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304,
+        REQ-AWM-305, REQ-AWM-306, REQ-AWM-307, REQ-AWM-308
 
     Version 1.0.0.0
     """
@@ -774,17 +867,33 @@ class Test_Column(Test_Vector):
         with self.assertRaises(TypeError):
             Test = Other @ self.TestObject
         del Other
+    
+    def test_transpose(self):
+        """
+        Checks the transposition method.
+        
+        Test ID: TEST-T-309
+        
+        Covers requirements: REQ-FUN-303
+        """
+        Data = list(self.TestObject.Data)
+        Test = self.TestObject.transpose()
+        self.assertIsInstance(Test, testmodule.Row)
+        self.assertIs(Test.__class__, testmodule.Row)
+        self.assertListEqual(Test.Data, Data)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Test
 
 class Test_Row(Test_Vector):
     """
     Unit tests for the row vector class.
     
     Test IDs: TEST-T-300, TEST-T-301, TEST-T-302, TEST-T-303, TEST-T-304,
-        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308
+        TEST-T-305, TEST-T-306, TEST-T-307, TEST-T-308, TEST-T-309
     
-    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-320, REQ-FUN-330,
+    Covers requirements: REQ-FUN-301, REQ-FUN-302, REQ-FUN-303, REQ-FUN-330,
         REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303, REQ-AWM-304,
-        REQ-AWM-307, REQ-AWM-308
+        REQ-AWM-305, REQ-AWM-306, REQ-AWM-307, REQ-AWM-308
 
     Version 1.0.0.0
     """
@@ -906,6 +1015,22 @@ class Test_Row(Test_Vector):
         with self.assertRaises(TypeError):
             Test = Other @ self.TestObject
         del Other
+        
+    def test_transpose(self):
+        """
+        Checks the transposition method.
+        
+        Test ID: TEST-T-309
+        
+        Covers requirements: REQ-FUN-303
+        """
+        Data = list(self.TestObject.Data)
+        Test = self.TestObject.transpose()
+        self.assertIsInstance(Test, testmodule.Column)
+        self.assertIs(Test.__class__, testmodule.Column)
+        self.assertListEqual(Test.Data, Data)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Test
 
 #+ test suites
 

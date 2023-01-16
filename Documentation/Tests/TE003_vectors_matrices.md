@@ -228,7 +228,7 @@ The elements of the involved vector operands are not changed in the process.
 
 **Test steps:** Generate a random instance of the class being tested. Try all defined arithmetical operations with various improper data types of the second operand. Check that a sub-class of TypeError exception is raised each time.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -253,7 +253,7 @@ The elements of the involved vector operands are not changed in the process.
 * For row vector class - generate a random column vector of a different size. Try row x column multiplication - check the ValueError sub-class exception is raised
 * For generic vector - generate a second random vector of the same class. Try to multiply them - check that the ValueError sub-class exception is raised. Repeat with the reverese order of operands - check that ValueError sub-class exception is raised.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -270,6 +270,113 @@ The elements of the involved vector operands are not changed in the process.
 **Test steps:** Generate a random vector of the class being tested. Try to divide it by 0 and by 0.0 - check that a sub-class of ValueError exception is raised in the both cases. This test should be applied to each of the vector classes.
 
 **Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-309
+
+**Requirement ID(s)**: REQ-FUN-303, REQ-AWM-305, REQ-AWM-306
+
+**Verification method:** T
+
+**Test goal:** Proper implementation of the additional functionality of the vector classes.
+
+**Expected result:** Row and column vector classes implement transposition method, which returns an instance of column (from row) and row (from column) class respectively, with the same elements as the initial instance, which is not modified. All three classes provide a method, which returns a new instance of the same class with the elements being scaled by the geometric length of the initial vector, i.e. the square root of the sum of squares of the elements, whereas the initial instance is not modified. If all elements are zero - the same method should raise ValueError compatible exception. Finally, all three classes provide a class method (no instantiation is required), which generates an instance of the same class, which has only one element set to 1, and all other elements set to 0. For this method both the required size of the vector and the index of the non-zero element must be specified via arguments of the method call. Respectively, exceptions must be raised: TypeError sub-class if either of the arguments is not an integer number; ValueError if the requested size is less than 2, or if the index is negative or equal to or greater then the requested size of the vector.
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Generate a random row vector, call its method *transpose*(); check that it returns an instance of column vector class with the same elements as the original row vector, also check that the original row vector is not modified
+* Generate a random column vector, call its method *transpose*(); check that it returns an instance of row vector class with the same elements as the original column vector, also check that the original column vector is not modified
+* Generate a random generic vector, calculate its geometric length, then call its method *normalize*(); check that it returns an instance of the same class, of the same size, and with each element being equal to the respective element of the original vector divided by the calculated geometric length. Perform the same test with column and row vector classes.
+* For all three vectror classes - generate an instance of a random size with all zero elements. Try to call its method *normalize*() and check that a sub-class of ValueError exception is raised.
+* For all three vector classes:
+  * Generate a random integer >= 2 as the required size of a vector and a random integer in the inclusive range from 0 to size - 1. Call the method *generateOrtogonal*() on the class itself without instantiation with the generated numbers as its arguments. Check that it returns an instance of the same class of the requested size, and that all elements except for the requested index one are zeros, whereas the requested index element is 1.
+  * Try to call this method with different data types except for an integer number as the first argument - check that sub-class of TypeError exception is raised each time
+  * Try to call this method with different data types except for an integer number as the second argument - check that sub-class of TypeError exception is raised each time
+  * Try to call this method with values 0, 1 and a random negative integer as the first argument - check that sub-class of ValueError exception is raised each time
+  * Try to call this method with the second argument being a random negative integer, an integer being equal to the first argument, and a random integer greater than the first argument - check that sub-class of ValueError exception is raised each time
+
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-30A
+
+**Requirement ID(s)**: REQ-FUN-304, REQ-FUN-305
+
+**Verification method:** T
+
+**Test goal:** Instantiation and index access of matices, individual columns and rows access
+
+**Expected result:** The following modes of instantiation are supported:
+
+* A (nested) sequence of equal length sub-sequences of real numbersm in which case the values of the optional keyword arguments for width and height (or size for the square matrices) are ignored. Each nested sub-sequence represents a single row / column (depending on the value of the optional keyword argument defining the treatment of the row / column first order), whereas the number of those nested sub-sequences defines the value of the second dimension
+  * For the square matrices the number of the nested sub-sequences must be equal to the length of any of these sub-sequences
+* A flat sequence of real numbers
+  * For generic matrices the following combination of the optional keyword arguments is supported:
+    * Both the width and the height are supplied as integer values >= 2, in which case the length of the sequence must be equal to or greater than width * height
+    * The width is specified as an integer >= 2, the height is not specified or None - the length of the sequence must be, at least, 2 x width; the height is defined automaticaly as the integer floor of division of the length by the width
+    * The height is specified as an integer >= 2, the width is not specified or None - the length of the sequence must be, at least, 2 x height; the width is defined automaticaly as the integer floor of division of the length by the height
+  * For square matrices:
+    * Size argument is provided as an integer >= 2 - the length of the sequence must be, at least, size * size
+    * Size argument is not passed or None - the size is defined automatically as integer floor of the square root of the length of the sequence
+* For the both flat and nested sequences the optional keyword argument defines the order of the data filling of NxM matrix as:
+  * Rows first means that the matrix' elements are assigned as: 0-th row 0-th column, 0-th row 1-st column, ..., 0-th row N-th (last) column, than 1-st row, than 2-nd row, etc.
+  * Columns first means that the matrix' elements are assigned as: 0-th row 0-th column, 1-st row 0-th column, ..., M-th (last) row 0-th column, than 1-st column, than 2-nd column, etc.
+
+Any matrix (generic or square) is not a sub-class of generic sequence ('IS A' check against *collections.abc.Sequence*). It does not support iteration ('for x in object') nor 'contains' check ('if x in object').
+
+Any matrix (generic or square) supports read-only double index access to the individual elements as 'obj[i,j]' with the inner index refering to a column, and the outer (second, right) - to a row. A whole column or row of a matrix can be read-out as an instance of the column or row vector class respectively.
+
+Any matrix (generic or square) has a method or read-only property to read-out all elements at once as a nested list of lists of real numbers in the rows first order.
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Generate a random integer >= 2 as width (N) and a random integer >= 2 as height (M); for the square matrices use only the first number as the size (M=N)
+* Generate a random list of a mixture of random integers and random floating point numbers of the length width \* height + 1 (size \* size + 1)
+* Create two nested test lists:
+  * Length M, each element is a list of length N, constructed as
+    * 0, 1, ... N-1 index elements of the generated sequence
+    * N, N+1, ..., 2*N-1 index elements of the generated sequence
+    * etc.
+  * Length N, each element is a list of length M, constructed as
+    * 0, N, ..., N * (M-1) index elements of the generated sequence
+    * 1, N+1, ..., N * (M-1)+1 index elements of the generated sequence
+    * etc.
+* For the both classes - instantiate the class with the **first** nested test list using the following options for the keyword arguments:
+  * no keyword arguments
+  * isColumnsFirst = False
+  * isColumnsFirst = False, Width and Height / Size are random integers > max(N, M)
+  * Width and Height / Size are random integers > max(N, M)
+* For the both classes - instantiate the class with the **second** nested test list using the following options for the keyword arguments:
+  * isColumnsFirst = True
+  * isColumnsFirst = True, Width and Height / Size are random integers > max(N, M)
+* For the both classes - instantiate the class with the generated **flat** list using the following options for the keyword arguments
+  * For the generic matrix:
+    * Width = N
+    * Height = M
+    * Width = N, Height = M
+  * For the square matrix Size = N
+* Check, that in all cases (three previous points):
+  * The *Width* and *Height* / *Size* properties return the expected generated N and M values (respectively)
+  * The property *Data* returns a list equal to the first nested test list
+  * Assignment to these properties is not allowed (AttributeError is raised)
+  * The method *getRow*(0 <= j < M) returns an instance of Row class, with the elements being equal to the j-th element of the first nested test list
+  * The method *getColumn*(0 <= i < N) returns an instance of Column class, with the elements being equal to the i-th element of the second nested test list
+  * The index access object[i, j] returns a real number value equal to the i-th element of the j-th element of the first nested test list
+  * Assignment to an element as object[i, j] = something results in the AttributeError exception
+* For the generic matrix - instantiate the class with the generated **flat** list, and the keyword arguments Width = M, Height = N, isColumnsFirst = True. Check that:
+  * The *Width* and *Height* properties return the expected generated M and N values respectively
+  * The property *Data* returns a list equal to the second nested test list
+* For the square matrix - instantiate the class with the generated **flat** list, and the keyword arguments Size = N, isColumnsFirst = True. Check that:
+  * The *Size* property returns N
+  * The property *Data* returns a list equal to the second nested test list
+* For the both classes:
+  * Generate a random instance using any of the allowed instantiation signature
+  * Check that being used in the construction 'for x in y' (iteration) the instance throws TypeError sub-class exception
+  * Check that being used in the construction 'if x in y' (contains check) the instance throws TypeError sub-class exception
+
+**Test result:** PASS/FAIL
 
 ---
 
@@ -298,7 +405,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-300        | TEST-A-300                                                   | NO                       |
 | REQ-FUN-301        | TEST-T-300                                                   | YES                      |
 | REQ-FUN-302        | TEST-T-300                                                   | YES                      |
-| REQ-FUN-303        |                                                              | NO                       |
+| REQ-FUN-303        | TEST-T-309                                                   | YES                      |
 | REQ-FUN-304        |                                                              | NO                       |
 | REQ-FUN-305        |                                                              | NO                       |
 | REQ-FUN-306        |                                                              | NO                       |
@@ -312,8 +419,8 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-302        | TEST-T-306                                                   | NO                       |
 | REQ-AWM-303        | TEST-T-307                                                   | NO                       |
 | REQ-AWM-304        | TEST-T-308                                                   | NO                       |
-| REQ-AWM-305        |                                                              | NO                       |
-| REQ-AWM-306        |                                                              | NO                       |
+| REQ-AWM-305        | TEST-T-309                                                   | NO                       |
+| REQ-AWM-306        | TEST-T-309                                                   | NO                       |
 | REQ-AWM-307        | TEST-T-301                                                   | NO                       |
 | REQ-AWM-308        | TEST-T-302                                                   | NO                       |
 | REQ-AWM-340        |                                                              | NO                       |
