@@ -365,7 +365,11 @@ Any matrix (generic or square) has a method or read-only property to read-out al
   * The method *getColumn*(0 <= i < N) returns an instance of Column class, with the elements being equal to the i-th element of the second nested test list
   * The index access object[i, j] returns a real number value equal to the i-th element of the j-th element of the first nested test list
   * Assignment to an element as object[i, j] = something results in the AttributeError exception
-* For the generic matrix - instantiate the class with the generated **flat** list, and the keyword arguments Width = M, Height = N, isColumnsFirst = True. Check that:
+* For the generic matrix - instantiate the class with the generated **flat** list, and the keyword arguments:
+  * Width = M, isColumnsFirst = True
+  * Height = N, isColumnsFirst = True
+  * Width = M, Height = N, isColumnsFirst = True
+* Check that:
   * The *Width* and *Height* properties return the expected generated M and N values respectively
   * The property *Data* returns a list equal to the second nested test list
 * For the square matrix - instantiate the class with the generated **flat** list, and the keyword arguments Size = N, isColumnsFirst = True. Check that:
@@ -376,7 +380,78 @@ Any matrix (generic or square) has a method or read-only property to read-out al
   * Check that being used in the construction 'for x in y' (iteration) the instance throws TypeError sub-class exception
   * Check that being used in the construction 'if x in y' (contains check) the instance throws TypeError sub-class exception
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-30D
+
+**Requirement ID(s)**: REQ-AWM-300, REQ-AWM-301
+
+**Verification method:** T
+
+**Test goal:** Treatment of improper arguments of initialization method of matrix classes
+
+**Expected result:** The matrix classes raise a sub-class of TypeError when
+
+* Both classes: isColumnsFirst optional keyword argument is not a boolean type value
+* Both classes: the mandatory first argument - the elements data - is neither a flat sequence of real numbers nor a nested sequence of sequences of real numbers
+* Generic matrix class: the data argument is flat sequence, whereas either Width or Height optional keyword argument is neither None nor an integer number
+
+The matrix classes raise a sub-class of ValueError when
+
+* Both classes
+  * The data argument is a nested sequence of less than 2 elements at the top level
+  * The data argument is a nested sequence with a length of, at least, one sub-sequence element being less than 2
+  * The data argument is a nested sequence with the different lengths of its sub-sequence elements
+* Generic matrix
+  * The data argument is a flat sequence and neither width nor height is specified
+  * The data argument is a flat sequence with only width optional argument specified (not height), but the width value is less than 2
+  * The data argument is a flat sequence with only width optional argument specified (not height), but the length of the data sequence is less than 2 * width
+  * The data argument is a flat sequence with only height optional argument specified (not width), but the height value is less than 2
+  * The data argument is a flat sequence with only height optional argument specified (not width), but the length of the data sequence is less than 2 * height
+  * The data argument is a flat sequence with the both width and height arguments specified, but either of these optional arguments is less the 2
+  * The data argument is a flat sequence with the both width and height arguments specified, but the length of the data sequenc is less than width * height
+* Square matrix:
+  * The data argument is a flat sequence and the size optional argument is not provided, and the length of the data sequence is less than 4
+  * The data argument is a flat sequence and the size optional argument is provided, but the specified size is less than 2
+  * The data argument is a flat sequence and the size optional argument is provided, but the length of the data sequence is less than size * size
+  * The data argument is a nested sequence with a length of a sub-sequence element being unequal to the number of the sub-sequence elements
+
+**Test steps:** Try to instantiate the class being tested with one or several arguments of the different improper data types, whereas the other arguments being of the proper data type, or not provided (for the optional ones). Check that a sub-class of TypeError exception is raised in each case. Make sure that all described violation cases are covered.
+
+Try to instantiate the class being tested with the one or more arguments being of the proper type but of a value expected to result in ValueError sub-class exception (see above). Make sure that all described violation cases are covered, and the expected exception is raised in the each case.
+
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-30F
+
+**Requirement ID(s)**: REQ-AWM-307, REQ-AWM-308
+
+**Verification method:** T
+
+**Test goal:** Treatment of improper element, row or column access index of matrix classes
+
+**Expected result:** The both matrix classes raise a sub-class of TypeError when
+
+* Element index access is done in the form obj[index], not in the form obj[col_index, row_index], i.e. with only single index of any data type, including slice
+* Element is accessed in the form obj[col_index, row_index], but either column or row index is of any data type except for an integer number, including slice
+* Column (method getColum(index)) or row (method getRow(index)) is accessed using any data type argument except for an integer number, including slice
+
+The both matrix classes raise a sub-class of ValueError when
+
+* The column (first) index in the element access obj[col_index, row_index] is an integer but either less than - Width or greater than Width - 1, where Width is the matrix width
+* The row (second) index in the element access obj[col_index, row_index] is an integer but either less than - Height or greater than Height - 1, where Height is the matrix height
+* The argument of the method getColumn() method is an integer but either less than - Width or greater than Width - 1, where Width is the matrix width
+* The argument of the method getRow() is an integer but either less than - Height or greater than Height - 1, where Height is the matrix height
+
+**Test steps:** Instantiate a random matrix of the class being tested. Try to access an element using only index of an integer and slice data types; check that a sub-class of TypeError exception is raised in the both cases. Try to access an element using different improper (not integer) data types as the first, the second and both indexes, check that a sub-class of TypeError exception is raised in all cases. Try to call the methods getColumn() and getRow() with different improper (not integer) data types as the argument, check that a sub-class of TypeError exception is raised in all cases.
+
+Try to access an element using two integer index values, with one or both being outside the allowed ranges [-Width, Width -1] and [-Height, Height - 1] respectively; check that a sub-class ValueError exception is raised in each case with the different improper values. Try to call method getColumn() with an integer argument with the value outside the allowed range [-Width, Width -1]; check that a sub-class ValueError exception is raised in each case with the different improper values. Try to call method getRow() with an integer argument with the value outside the allowed range [-Height, Height -1]; check that a sub-class ValueError exception is raised in each case with the different improper values.
+
+**Test result:** PASS
 
 ---
 
@@ -406,23 +481,23 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-301        | TEST-T-300                                                   | YES                      |
 | REQ-FUN-302        | TEST-T-300                                                   | YES                      |
 | REQ-FUN-303        | TEST-T-309                                                   | YES                      |
-| REQ-FUN-304        |                                                              | NO                       |
-| REQ-FUN-305        |                                                              | NO                       |
-| REQ-FUN-306        |                                                              | NO                       |
-| REQ-FUN-307        |                                                              | NO                       |
+| REQ-FUN-304        | TEST-T-30A                                                   | YES                      |
+| REQ-FUN-305        | TEST-T-30A                                                   | YES                      |
+| REQ-FUN-306        | TEST-T-30B                                                   | NO                       |
+| REQ-FUN-307        | TEST-T-30C                                                   | NO                       |
 | REQ-FUN-310        | TEST-T-305                                                   | NO                       |
 | REQ-FUN-320        | TEST-T-305                                                   | NO                       |
 | REQ-FUN-330        | TEST-T-305                                                   | NO                       |
 | REQ-FUN-340        |                                                              | NO                       |
-| REQ-AWM-300        | TEST-T-303                                                   | NO                       |
-| REQ-AWM-301        | TEST-T-304                                                   | NO                       |
-| REQ-AWM-302        | TEST-T-306                                                   | NO                       |
-| REQ-AWM-303        | TEST-T-307                                                   | NO                       |
-| REQ-AWM-304        | TEST-T-308                                                   | NO                       |
-| REQ-AWM-305        | TEST-T-309                                                   | NO                       |
-| REQ-AWM-306        | TEST-T-309                                                   | NO                       |
-| REQ-AWM-307        | TEST-T-301                                                   | NO                       |
-| REQ-AWM-308        | TEST-T-302                                                   | NO                       |
+| REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                      |
+| REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                      |
+| REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | NO                       |
+| REQ-AWM-303        | TEST-T-307, TEST-T-30E                                       | NO                       |
+| REQ-AWM-304        | TEST-T-308, TEST-T-30E                                       | NO                       |
+| REQ-AWM-305        | TEST-T-309                                                   | YES                      |
+| REQ-AWM-306        | TEST-T-309                                                   | YES                      |
+| REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                      |
+| REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                      |
 | REQ-AWM-340        |                                                              | NO                       |
 | REQ-AWM-341        |                                                              | NO                       |
 | REQ-AWM-342        |                                                              | NO                       |

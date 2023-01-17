@@ -132,6 +132,55 @@ class Array2D:
                                     Height : Optional[int] = None,
                                         isColumnsFirst : bool = False) -> None:
         """
+        Instantiation method. Parses the passed data sequence and packs it into
+        the internally stored nested tuple structure representing a 2D array or
+        a matrix, with each tuple element representing a single row of that
+        array or matrix.
+        
+        Signature:
+            seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None,
+                int >= 2 OR None, bool/ -> None
+        
+        Args:
+            seqValues: seq(int OR float) OR seq(seq(int OR float)); elements
+                of the array / matrix, in the flat form the total number of
+                elements must be equal to or greater than 2 * Width if only
+                width is specified, or 2 * Height if only height is specified,
+                or Width * Height if both are specified
+            Width: (keyword) int >= 2 OR None; required width of the array or
+                matrix, defaults to None meaning automatic definition based on
+                the number of elements and the specified required height, at
+                least one of the dimensions (width and / or height) must be
+                specified if the data is passed as a flat sequence, this
+                argument is ignored if the data is passed as a nested sequence
+            Height: (keyword) int >= 2 OR None; required height of the array or
+                matrix, defaults to None meaning automatic definition based on
+                the number of elements and the specified required width, at
+                least one of the dimensions (width and / or height) must be
+                specified if the data is passed as a flat sequence, this
+                argument is ignored if the data is passed as a nested sequence
+            isColumnsFirst: (keyword) bool; flag if the passed data to parsed
+                in the columns-first order, defaults to False, i.e. rows-first
+                order when each consequitive slice of a flat sequence or
+                sub-sequence element of a nested sequence is treated as the
+                representation of a single row of the array or matrix
+        
+        Raises:
+            UT_TypeError: mandatory argument is neither a flat sequence of real
+                numbers nor a nested sequence of sequences of real numbers, OR
+                optional keyword argument isColumnsFirst is not boolean, OR
+                optional keyword arguments Width or Height are neither None nor
+                integer numbers
+            UT_ValueError: either Width or Height argument is an integer < 2, OR
+                the both arguments are None when the mandatory argument is a
+                flat sequence of real numbers, OR the length of a flat sequence
+                as the mandatory argument is too short for the given values of
+                Width and / or Height, OR a nested sequence as the mandatory
+                argument has less than 2 elements, OR the length of an
+                sub-sequence element is less than 2, OR the sub-sequence
+                elements differ in length.
+        
+        Version 1.0.0.0
         """
         if not isinstance(isColumnsFirst, bool):
             Error = UT_TypeError(isColumnsFirst, bool, SkipFrames = 1)
@@ -171,7 +220,7 @@ class Array2D:
                                                                 SkipFrames = 1)
                 _Width = Width
                 _Height = int(floor(Length / Width))
-                if _Width < 2:
+                if _Height < 2:
                     raise UT_ValueError(Length,
                                 '>= {} - sequence length'.format(2 * Width),
                                                                 SkipFrames = 1)
@@ -258,28 +307,88 @@ class Array2D:
     
     def __getitem__(self, Indexes: Tuple[int, int]) -> TReal:
         """
+        Magic method to hook index access to a single element of an array or
+        matrix in the form obj[i,j], where i is the column index, and j is the
+        row index.
+        
+        Signature:
+            tuple(int, int) -> int OR float
+        
+        Raises:
+            UT_TypeError: either of the indexes is not an integer number, OR
+                less or more than 2 indexes are provided
+            UT_ValueError: the column index value is not in the inclusive range
+                [-Width, Width - 1], OR the row index values is not in the
+                inclusive range [-Height, Height - 1]
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(Indexes, tuple):
+            raise UT_TypeError(Indexes, tuple, SkipFrames = 1)
+        if len(Indexes) != 2:
+            raise UT_ValueError(len(Indexes), '== 2 - number of indexes',
+                                                                SkipFrames = 1)
+        Column, Row = Indexes
+        Height = len(self._Elements)
+        Width = len(self._Elements[0])
+        if not isinstance(Column, int):
+            Error = UT_TypeError(Column, int, SkipFrames = 1)
+            Message = '{} - column index'.format(Error.args[0])
+            Error.args = (Message, )
+            raise Error
+        if (Column < -Width) or (Column >= Width):
+            raise UT_ValueError(Column,
+                'in range [{}, {}]'.format(-Width, Width -1), SkipFrames = 1)
+        if not isinstance(Row, int):
+            Error = UT_TypeError(Row, int, SkipFrames = 1)
+            Message = '{} - row index'.format(Error.args[0])
+            Error.args = (Message, )
+            raise Error
+        if (Row < -Height) or (Row >= Height):
+            raise UT_ValueError(Column,
+                'in range [{}, {}]'.format(-Height, Height -1), SkipFrames = 1)
+        return self._Elements[Row][Column]
     
     #public properties
     
     @property
     def Width(self) -> int:
         """
+        Read-only property to access the width, i.e. number of columns of the
+        array or matrix.
+        
+        Signature:
+            None -> int >= 2
+        
+        Version 1.0.0.0
         """
-        pass
+        return len(self._Elements[0])
     
     @property
     def Height(self) -> int:
         """
+        Read-only property to access the height, i.e. number of rows of the
+        array or matrix.
+        
+        Signature:
+            None -> int >= 2
+        
+        Version 1.0.0.0
         """
-        pass
+        return len(self._Elements)
 
     @property
     def Data(self) -> List[List[TReal]]:
         """
+        Read-only property to access all elements of the array or matrix as a
+        nested list of lists of real numbers.
+        
+        Signature:
+            None -> list(list(int OR float))
+        
+        Version 1.0.0.0
         """
-        pass
+        return [list(Item) for Item in self._Elements]
 
 class Vector:
     """
@@ -1011,19 +1120,65 @@ class Matrix(Array2D):
         """
         return NotImplemented
     
-    #public properties
+    def __iadd__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '+=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '+=' for the type {}".format(
+                                                    self.__class__.__name__))
     
-    @property
-    def Width(self) -> int:
+    def __isub__(self, Other: Any) -> NoReturn:
         """
+        Magic method to prohibit the '-=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
         """
-        pass
+        raise TypeError("unsupported operation '+-=' for the type {}".format(
+                                                    self.__class__.__name__))
     
-    @property
-    def Height(self) -> int:
+    def __imul__(self, Other: Any) -> NoReturn:
         """
+        Magic method to prohibit the '*=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
         """
-        pass
+        raise TypeError("unsupported operation '*=' for the type {}".format(
+                                                    self.__class__.__name__))
+
+    def __itruediv__(self, Other: Any) -> NoReturn:
+        """
+        Magic method to prohibit the '/=' operation.
+
+        Signature:
+            type A -> None
+        
+        Raises:
+            TypeError: unconditionally.
+        
+        Version 1.0.0.0
+        """
+        raise TypeError("unsupported operation '/=' for the type {}".format(
+                                                    self.__class__.__name__))
     
     #public methods
     
@@ -1034,13 +1189,55 @@ class Matrix(Array2D):
     
     def getColumn(self, Index: int) -> Column:
         """
+        Method to access a specific column of a matrix in the form of a column
+        vector.
+        
+        Signature:
+            int -> Column
+        
+        Args:
+            Index: int; the required column index
+        
+        Raises:
+            UT_TypeError: argument is not an integer number
+            UT_ValueError: argument value is not in the inclusive range
+                [-Width, Width - 1]
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(Index, int):
+            raise UT_TypeError(Index, int, SkipFrames = 1)
+        Width = len(self._Elements[0])
+        if (Index < - Width) or (Index >= Width):
+            raise UT_ValueError(Index,
+                'in range[{}, {}]'.format(-Width, Width - 1), SkipFrames = 1)
+        Elements = [RowItem[Index] for RowItem in self._Elements]
+        return Column(*Elements)
     
     def getRow(self, Index: int) -> Row:
         """
+        Method to access a specific row of a matrix in the form of a row vector.
+        
+        Signature:
+            int -> Row
+        
+        Args:
+            Index: int; the required row index
+        
+        Raises:
+            UT_TypeError: argument is not an integer number
+            UT_ValueError: argument value is not in the inclusive range
+                [-Height, Height - 1]
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(Index, int):
+            raise UT_TypeError(Index, int, SkipFrames = 1)
+        Height = len(self._Elements)
+        if (Index < - Height) or (Index >= Height):
+            raise UT_ValueError(Index,
+                'in range[{}, {}]'.format(-Height, Height - 1), SkipFrames = 1)
+        return Row(*(self._Elements[Index]))
 
 class SquareMatrix(Matrix):
     """
@@ -1063,18 +1260,128 @@ class SquareMatrix(Matrix):
     #special methods
     
     def __init__(self, seqValues: Union[TRealSequence, TSequenceRealSequence],
-                    *, Size : int = None, isColumnsFirst : bool = True) -> None:
+                                *, Size : Optional[int] = None,
+                                        isColumnsFirst : bool = False) -> None:
         """
+        Instantiation method. Parses the passed data sequence and packs it into
+        the internally stored nested tuple structure representing a matrix, with
+        each tuple element representing a single row of that matrix.
+        
+        Signature:
+            seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None,
+                bool/ -> None
+        
+        Args:
+            seqValues: seq(int OR float) OR seq(seq(int OR float)); elements
+                of the array / matrix, in the flat form the total number of
+                elements must be equal to or greater than Size*Size if it is
+                specified, or > 4 if Size is not specified or None, in the
+                nested form the length of each element must be equal to their
+                count
+            Size: (keyword) int >= 2 OR None; required size = width = height of
+                the matrix, defaults to None meaning automatic definition based
+                on the length of the flat sequence argument
+            isColumnsFirst: (keyword) bool; flag if the passed data to parsed
+                in the columns-first order, defaults to False, i.e. rows-first
+                order when each consequitive slice of a flat sequence or
+                sub-sequence element of a nested sequence is treated as the
+                representation of a single row of the array or matrix
+        
+        Raises:
+            UT_TypeError: mandatory argument is neither a flat sequence of real
+                numbers nor a nested sequence of sequences of real numbers, OR
+                optional keyword argument isColumnsFirst is not boolean, OR
+                optional keyword arguments Size is neither None nor an integer
+                number
+            UT_ValueError: Size argument is an integer < 2, OR the length of a
+                flat sequence as the mandatory argument is too short for the
+                given values of Size, OR a nested sequence as the mandatory
+                argument has less than 2 elements, OR the length of an
+                sub-sequence element is less than 2, OR the sub-sequence
+                elements differ in length, OR length of the sub-sequence element
+                is not equal to their number
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(isColumnsFirst, bool):
+            Error = UT_TypeError(isColumnsFirst, bool, SkipFrames = 1)
+            Message = '{} - isColumnsFirst argument'.format(Error.args[0])
+            Error.args = (Message, )
+            raise Error
+        try:
+            _CheckIfRealSequence(seqValues)
+            Length = len(seqValues)
+            if (not isinstance(Size, int)) and (not (Size is None)):
+                Error = UT_TypeError(Size, int, SkipFrames = 1)
+                Message = '{} - Size argument'.format(Error.args[0])
+                Error.args = (Message, )
+                raise Error
+            if Size is None:
+                if Length < 4:
+                    raise UT_ValueError(Length, '>= 4 - sequence length',
+                                                                SkipFrames = 1)
+                _Size = int(floor(sqrt(Length)))
+            else:
+                if Size < 2:
+                    raise UT_ValueError(Size, '>= 2 - requested matrix size',
+                                                                SkipFrames = 1)
+                MinLength = Size * Size
+                if Length < MinLength:
+                    raise UT_ValueError(Length,
+                                    '>= {} - sequence length'.format(MinLength),
+                                                                SkipFrames = 1)
+                _Size = Size
+            if not isColumnsFirst:
+                self._Elements = tuple(
+                            tuple(seqValues[Index*_Size : (Index+1)*_Size])
+                                                    for Index in range(_Size))
+            else:
+                self._Elements = tuple(tuple(seqValues[Outer + _Size * Inner]
+                                                    for Inner in range(_Size))
+                                                    for Outer in range(_Size))
+        except UT_TypeError as err:
+            _CheckIfSequenceRealSequence(seqValues)
+            NItems = len(seqValues)
+            if NItems < 2:
+                raise UT_ValueError(NItems, '>= 2 - sequence length',
+                                                                SkipFrames = 1)
+            FirstLength = len(seqValues[0])
+            if FirstLength < 2:
+                raise UT_ValueError(NItems,
+                                        '>= 2 - the first sub-sequence length',
+                                                                SkipFrames = 1)
+            for Index in range(1, NItems):
+                CurrentLength = len(seqValues[Index])
+                if CurrentLength != FirstLength:
+                    raise UT_ValueError(CurrentLength,
+                                '!= {} - sub-sequence index {} length'.format(
+                                            FirstLength, Index), SkipFrames = 1)
+            if FirstLength != NItems:
+                raise UT_ValueError(FirstLength,
+                    '= {} - mismatching width and height of the matrix'.format(
+                                                        NItems), SkipFrames = 1)
+            if not isColumnsFirst:
+                self._Elements = tuple(tuple(seqValues[Index])
+                                                    for Index in range(NItems))
+            else:
+                self._Elements = tuple(tuple(seqValues[HIndex][WIndex]
+                                        for HIndex in range(NItems))
+                                            for WIndex in range(FirstLength))
     
     #public properties
     
     @property
     def Size(self) -> int:
         """
+        Read-only property to access the size of a square matrix, which is
+        equal to its width and its height.
+        
+        Signature:
+            None -> int >= 2
+        
+        Version 1.0.0.0
         """
-        pass
+        return len(self._Elements)
     
     #public instance methods
     
@@ -1100,7 +1407,7 @@ class SquareMatrix(Matrix):
         """
         pass
     
-    def getInverse(self) -> TSquareMatrix:
+    def getInverse(self) -> Union[TSquareMatrix, None]:
         """
         """
         pass

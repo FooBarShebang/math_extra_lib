@@ -1032,14 +1032,1072 @@ class Test_Row(Test_Vector):
         self.assertListEqual(self.TestObject.Data, Data)
         del Test
 
+class Test_Array2D(unittest.TestCase):
+    """
+    """
+    
+    @classmethod
+    def setUpClass(cls) -> None:
+        """
+        Preparation for the test cases, done only once.
+        """
+        cls.TestClass = testmodule.Array2D
+        cls.NotBool = [1, 1.0, [1, 1], (1, 1), {1, 1}, "1", {1 : 1}, int,
+                        float, bool, testmodule.Vector(1, 1),
+                        testmodule.Column(1, 1), testmodule.Row(1, 1),
+                        testmodule.Array2D([[1, 1], [1, 1]])]
+        cls.NotInt = [1.0, [1, 1], (1, 1), {1, 1}, "1", {1 : 1}, int, float,
+                        bool, testmodule.Vector(1, 1), testmodule.Column(1, 1),
+                        testmodule.Row(1, 1),
+                        testmodule.Array2D([[1, 1], [1, 1]])]
+        cls.NotScalar = [[1, 1], (1, 1), {1, 1}, "1", {1 : 1}, int, float,
+                        bool, testmodule.Vector(1, 1), testmodule.Column(1, 1),
+                        testmodule.Row(1, 1),
+                        testmodule.Array2D([[1, 1], [1, 1]])]
+        cls.NotSequence = [1, 1.0, "1", {1 : 1}, int, float, bool,
+                            testmodule.Vector(1, 1), testmodule.Column(1, 1),
+                            testmodule.Row(1, 1),
+                            testmodule.Array2D([[1, 1], [1, 1]])]
+    
+    def setUp(self) -> None:
+        """
+        Preparation for each individual unit test.
+        """
+        Width = random.randint(2, 5)
+        Height = random.randint(2, 5)
+        Elements = list()
+        for _ in range(Height):
+            Row = list()
+            for _ in range(Width):
+                Value = random.randint(-5, 5)
+                if random.random() > 0.5:
+                    Value += random.random()
+                Row.append(Value)
+            Elements.append(Row)
+        self.TestObject = self.TestClass(Elements)
+    
+    def tearDown(self) -> None:
+        """
+        Cleaning up after each individual unit test
+        """
+        del self.TestObject
+        self.TestObject = None
+    
+    def test_init(self):
+        """
+        Checks the different instantiation options and per element access.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304, REQ-FUN-305
+        """
+        Width = random.randint(2, 5)
+        Height = random.randint(2, 5)
+        Elements = list()
+        for _ in range(Width*Height + 1):
+            Value = random.randint(-5, 5)
+            if random.random() > 0.5:
+                Value += random.random()
+            Elements.append(Value)
+        ElementsRows = [[Elements[Width*Row + Column]
+                        for Column in range(Width)] for Row in range(Height)]
+        ElementsCols = [[Elements[Width*Row + Column]
+                        for Row in range(Height)] for Column in range(Width)]
+        Test = self.TestClass(Elements, Width = Width)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Width = Width, isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Width = Height, isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Height)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Width)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsCols)
+        for Row in range(Width):
+            for Col in range(Height):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsCols[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Height = Height)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Height = Height, isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Height = Width, isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Height)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Width)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsCols)
+        for Row in range(Width):
+            for Col in range(Height):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsCols[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Width = Width, Height = Height)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Width = Width, Height = Height,
+                                                        isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Width = Height, Height = Width,
+                                                        isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Height)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Width)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsCols)
+        for Row in range(Width):
+            for Col in range(Height):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsCols[Row][Col])
+        del Test
+        MaxSize = max(Width, Height)
+        NewSize = random.randint(MaxSize + 1, 2 * MaxSize)
+        Test = self.TestClass(ElementsRows)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsCols, isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, Width = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, isColumnsFirst = False,
+                                                                Width = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsCols, isColumnsFirst = True,
+                                                                Width = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, Height = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, isColumnsFirst = False,
+                                                            Height = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsCols, isColumnsFirst = True,
+                                                            Height = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, Height = NewSize, Width = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, isColumnsFirst = False,
+                                            Width = NewSize, Height = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsCols, isColumnsFirst = True,
+                                            Width = NewSize, Height = NewSize)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Width)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Height)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Height):
+            for Col in range(Width):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+    
+    def test_init_TypeError(self):
+        """
+        Checks the treatment of the improper data types of the arguments of the
+        initialization method.
+        
+        Test ID: TEST-T-30D
+        
+        Covers requirements: REQ-AWM-300
+        """
+        Width = self.TestObject.Width
+        Height = self.TestObject.Height
+        Data = list(self.TestObject.Data)
+        DataFlat = list()
+        for Item in Data:
+            DataFlat.extend(Item)
+        # column / row order argument
+        for Item in self.NotBool:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Width = Width,
+                                                        isColumnsFirst = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Width = Width, Height = Height,
+                                                        isColumnsFirst = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Height = Height,
+                                                        isColumnsFirst = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Data, isColumnsFirst = Item)
+        # width argument
+        for Item in self.NotInt:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Width = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Width = Item, Height = Height)
+            #that should be ignored as the argument
+            Temp = self.TestClass(Data, Width = Item)
+            del Temp
+        # height argument
+        for Item in self.NotInt:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Height = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Height = Item, Width = Width)
+            #that should be ignored as the argument
+            Temp = self.TestClass(Data, Height = Item)
+            del Temp
+        # mandatory data argument
+        for Item in self.NotSequence:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Item, Width = Width, Height = Height)
+        for Item in self.NotScalar:
+            Elements = [1 for _ in range(random.randint(4, 10))]
+            Index = random.randint(0, len(Elements) - 1)
+            Elements[Index] = Item
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Elements, Width = 2, Height = 2)
+            Elements = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+            IndexX = random.randint(0, 2)
+            IndexY = random.randint(0, 2)
+            Elements[IndexX][IndexY] = Item
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Elements)
+    
+    def test_init_ValueError(self):
+        """
+        Checks the treatment of the improper data types of the arguments of the
+        initialization method.
+        
+        Test ID: TEST-T-30D
+        
+        Covers requirements: REQ-AWM-300
+        """
+        Width = self.TestObject.Width
+        Height = self.TestObject.Height
+        Data = list()
+        for Item in self.TestObject.Data:
+            Data.extend(Item)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass(Data) #no width and height!
+        for Value in [0, 1, Width + 1, random.randint(-10, -1)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass(Data, Width = Value, Height = Height)
+        for Value in [0, 1, Height + 1, random.randint(-10, -1)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass(Data, Width = Width, Height = Value)
+        for Value in [0, 1, max(Width, Height) + 1, random.randint(-10, -1)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass(Data, Width = Value, Height = Value)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass(Data, Width = Width + 1, Height = Height + 1)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1], Width = 2)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1, 1, 1], Width = 3)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1], Height = 2)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1, 1, 1], Height = 3)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1], [1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1], [1, 1 ,1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1, 1], [1, 1 ,1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1], [1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1], [1, 1, 1, 1]])
+    
+    def test_index_TypeError(self):
+        """
+        Checks treatment of the improper data type of the index access.
+        
+        Test ID: TEST-T-30F
+        
+        Covers requirements: REQ-AWM-307
+        """
+        for Item in self.NotInt:
+            with self.assertRaises(TypeError):
+                Temp = self.TestObject[1, Item]
+            with self.assertRaises(TypeError):
+                Temp = self.TestObject[Item, 1]
+            with self.assertRaises(TypeError):
+                Temp = self.TestObject[Item, Item]
+        with self.assertRaises(TypeError):
+            Temp = self.TestObject[0, 0 : 1]
+        with self.assertRaises(TypeError):
+            Temp = self.TestObject[0 : 1, 0]
+        with self.assertRaises(TypeError):
+            Temp = self.TestObject[0 : 1, 0 : 1]
+        with self.assertRaises(TypeError):
+            Temp = self.TestObject[1]
+        with self.assertRaises(TypeError):
+            Temp = self.TestObject[0:1]
+    
+    def test_index_ValueError(self):
+        """
+        Checks treatment of the improper values of the index access.
+        
+        Test ID: TEST-T-30F
+        
+        Covers requirements: REQ-AWM-308
+        """
+        Width = self.TestObject.Width
+        Height = self.TestObject.Height
+        with self.assertRaises(ValueError):
+            Temp = self.TestObject[1, 1, 1]
+        for Col in [-Width - random.randint(2, 10), -Width -1, Width,
+                                                Width + random.randint(1, 10)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject[Col, 0]
+        for Row in [-Height - random.randint(2, 10), -Height -1, Height,
+                                                Height + random.randint(1, 10)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject[0, Row]
+        #those should be ok - no exceptions
+        for Col in range(-Width, Width):
+            for Row in range(-Height, Height):
+                Temp = self.TestObject[Col, Row]
+    
+    def test_NotSequence(self):
+        """
+        Checks that 'IS A' check against sequence type returns False.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        self.assertNotIsInstance(self.TestObject, Sequence)
+    
+    def test_NotIterator(self):
+        """
+        Checks that 'for x in y' construct cannot be used with arrays and
+        matrices, i.e. they are not iterable.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        with self.assertRaises(TypeError):
+            for Item in self.TestObject:
+                pass
+    
+    def test_NotContains(self):
+        """
+        Checks that 'if x in y' construct cannot be used with arrays and
+        matrices, i.e. the 'contains' check is not supported.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        with self.assertRaises(TypeError):
+            if 1 in self.TestObject:
+                pass
+    
+    def test_Immutable(self):
+        """
+        Checks that arrays and matrices are not mutable, and their property
+        attributes are read-only. Also, index access is read-only.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        with self.assertRaises(AttributeError):
+            self.TestObject.Width = 5
+        with self.assertRaises(AttributeError):
+            self.TestObject.Height = 5
+        with self.assertRaises(AttributeError):
+            self.TestObject.Data = [[1, 1], [1, 1]]
+        Width = self.TestObject.Width
+        Height = self.TestObject.Height
+        for Col in range(Width):
+            for Row in range(Height):
+                with self.assertRaises(TypeError):
+                    self.TestObject[Col, Row] = 5
+    
+class Test_Matrix(Test_Array2D):
+    """
+    """
+    
+    @classmethod
+    def setUpClass(cls) -> None:
+        """
+        Preparation for the test cases, done only once.
+        """
+        super().setUpClass()
+        cls.TestClass = testmodule.Matrix
+    
+    def test_getRow(self):
+        """
+        Checks the access to a single row
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        Height = self.TestObject.Height
+        Data = list(self.TestObject.Data)
+        for Index in range(-Height, Height):
+            Test = self.TestObject.getRow(Index)
+            self.assertIsInstance(Test, testmodule.Row)
+            self.assertListEqual(Test.Data, Data[Index])
+            del Test
+    
+    def test_getColumn(self):
+        """
+        Checks the access to a single column
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        Width = self.TestObject.Width
+        Data = list(self.TestObject.Data)
+        for Index in range(-Width, Width):
+            TestCheck = [Row[Index] for Row in Data]
+            Test = self.TestObject.getColumn(Index)
+            self.assertIsInstance(Test, testmodule.Column)
+            self.assertListEqual(Test.Data, TestCheck)
+            del Test
+    
+    def test_getRow_TypeError(self):
+        """
+        Checks treatment of the improper indexing (per row) access data types.
+        
+        Test ID: TEST-T-30F
+        
+        Covers requirements: REQ-AWM-307
+        """
+        for Item in self.NotInt:
+            with self.assertRaises(TypeError):
+                Row = self.TestObject.getRow(Item)
+        with self.assertRaises(TypeError):
+            Row = self.TestObject.getRow(slice(0,1))
+    
+    def test_getColumn_TypeError(self):
+        """
+        Checks treatment of the improper indexing (per column) access data types
+        
+        Test ID: TEST-T-30F
+        
+        Covers requirements: REQ-AWM-307
+        """
+        for Item in self.NotInt:
+            with self.assertRaises(TypeError):
+                Col = self.TestObject.getColumn(Item)
+        with self.assertRaises(TypeError):
+            Col = self.TestObject.getColumn(slice(0,1))
+    
+    def test_getRow_ValueError(self):
+        """
+        Checks treatment of the improper indexing (per row) access data types.
+        
+        Test ID: TEST-T-30F
+        
+        Covers requirements: REQ-AWM-308
+        """
+        Height = self.TestObject.Height
+        for Row in [-Height - random.randint(2, 10), -Height -1, Height,
+                                                Height + random.randint(1, 10)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject.getRow(Row)
+    
+    def test_getColumn_ValueError(self):
+        """
+        Checks treatment of the improper indexing (per column) access data types
+        
+        Test ID: TEST-T-30F
+        
+        Covers requirements: REQ-AWM-308
+        """
+        Width = self.TestObject.Width
+        for Col in [-Width - random.randint(2, 10), -Width -1, Width,
+                                                Width + random.randint(1, 10)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject.getColumn(Col)
+    
+    def test_augmentedAssignment(self):
+        """
+        Checks that the in-place modification via augmented assignment is not
+        supported. This is an additional test.
+        """
+        Data = list(self.TestObject.Data)
+        Elements = [[random.random() + random.randint(-10, 10)
+                                        for _ in range(self.TestObject.Width)]
+                                        for _ in range(self.TestObject.Height)]
+        Other = self.TestClass(Elements)
+        with self.assertRaises(TypeError):
+            self.TestObject += Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject -= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject *= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject @= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        del Other
+        Other = random.randint(1, 10)
+        with self.assertRaises(TypeError):
+            self.TestObject *= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject /= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        Other += random.random()
+        with self.assertRaises(TypeError):
+            self.TestObject *= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+        with self.assertRaises(TypeError):
+            self.TestObject /= Other
+        self.assertListEqual(self.TestObject.Data, Data)
+
+class Test_SquareMatrix(Test_Matrix):
+    """
+    """
+    
+    @classmethod
+    def setUpClass(cls) -> None:
+        """
+        Preparation for the test cases, done only once.
+        """
+        super().setUpClass()
+        cls.TestClass = testmodule.SquareMatrix
+    
+    def setUp(self) -> None:
+        """
+        Preparation for each individual unit test.
+        """
+        Size = random.randint(2, 5)
+        Elements = list()
+        for _ in range(Size):
+            Row = list()
+            for _ in range(Size):
+                Value = random.randint(-5, 5)
+                if random.random() > 0.5:
+                    Value += random.random()
+                Row.append(Value)
+            Elements.append(Row)
+        self.TestObject = self.TestClass(Elements)
+    
+    def tearDown(self) -> None:
+        """
+        Cleaning up after each individual unit test
+        """
+        del self.TestObject
+        self.TestObject = None
+    
+    def test_init(self):
+        """
+        Checks the different instantiation options and per element access.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304, REQ-FUN-305
+        """
+        Size = random.randint(2, 5)
+        Elements = list()
+        for _ in range(Size*Size + 1):
+            Value = random.randint(-5, 5)
+            if random.random() > 0.5:
+                Value += random.random()
+            Elements.append(Value)
+        ElementsRows = [[Elements[Size*Row + Column]
+                        for Column in range(Size)] for Row in range(Size)]
+        ElementsCols = [[Elements[Size*Row + Column]
+                        for Row in range(Size)] for Column in range(Size)]
+        Test = self.TestClass(Elements, Size = Size)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Size = Size, isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, Size = Size, isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsCols)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsCols[Row][Col])
+        del Test
+        Test = self.TestClass(Elements, isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsCols)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsCols[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, isColumnsFirst = False)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsCols, isColumnsFirst = True)
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, isColumnsFirst = False,
+                                            Size = Size + random.randint(1, 5))
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsRows, Size = Size + random.randint(1, 5))
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+        Test = self.TestClass(ElementsCols, isColumnsFirst = True,
+                                            Size = Size + random.randint(1, 5))
+        self.assertIsInstance(Test.Width, int)
+        self.assertEqual(Test.Width, Size)
+        self.assertIsInstance(Test.Height, int)
+        self.assertEqual(Test.Height, Size)
+        self.assertIsInstance(Test.Size, int)
+        self.assertEqual(Test.Size, Size)
+        self.assertIsInstance(Test.Data, list)
+        self.assertListEqual(Test.Data, ElementsRows)
+        for Row in range(Size):
+            for Col in range(Size):
+                Temp = Test[Col, Row]
+                self.assertIsInstance(Temp, (int, float))
+                self.assertEqual(Temp, ElementsRows[Row][Col])
+        del Test
+    
+    def test_init_TypeError(self):
+        """
+        Checks the treatment of the improper data types of the arguments of the
+        initialization method.
+        
+        Test ID: TEST-T-30D
+        
+        Covers requirements: REQ-AWM-300
+        """
+        Size = self.TestObject.Size
+        Data = list(self.TestObject.Data)
+        DataFlat = list()
+        for Item in Data:
+            DataFlat.extend(Item)
+        # column / row order argument
+        for Item in self.NotBool:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Size = Size,
+                                                        isColumnsFirst = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, isColumnsFirst = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Data, isColumnsFirst = Item)
+        # Size argument
+        for Item in self.NotInt:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Size = Item)
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(DataFlat, Size = Item,
+                                                        isColumnsFirst = True)
+            #that should be ignored as the argument
+            Temp = self.TestClass(Data, Size = Item)
+            del Temp
+        # mandatory data argument
+        for Item in self.NotSequence:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Item, Size = Size)
+        for Item in self.NotScalar:
+            Elements = [1 for _ in range(random.randint(4, 10))]
+            Index = random.randint(0, len(Elements) - 1)
+            Elements[Index] = Item
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Elements)
+            Elements = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+            IndexX = random.randint(0, 2)
+            IndexY = random.randint(0, 2)
+            Elements[IndexX][IndexY] = Item
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass(Elements)
+    
+    def test_init_ValueError(self):
+        """
+        Checks the treatment of the improper data types of the arguments of the
+        initialization method.
+        
+        Test ID: TEST-T-30D
+        
+        Covers requirements: REQ-AWM-300
+        """
+        Size = self.TestObject.Size
+        Data = list()
+        for Item in self.TestObject.Data:
+            Data.extend(Item)
+        for Value in [0, 1, Size + 1, random.randint(-10, -1)]:
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass(Data, Size = Value)
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass(Data, Size = Value, isColumnsFirst = True)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1], Size = 2)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([1, 1, 1, 1, 1], Size = 3)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1], [1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1], [1, 1 ,1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1, 1], [1, 1 ,1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1], [1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1], [1, 1, 1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1, 1], [1, 1, 1]])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass([[1, 1], [1, 1], [1, 1]])
+    
+    def test_SizeImmutable(self):
+        """
+        Checks that arrays and matrices are not mutable, and their property
+        attributes are read-only. Also, index access is read-only.
+        
+        Test ID: TEST-T-30A
+        
+        Covers requirements: REQ-FUN-304
+        """
+        with self.assertRaises(AttributeError):
+            self.TestObject.Size = 5
+
 #+ test suites
 
 TestSuite1 = unittest.TestLoader().loadTestsFromTestCase(Test_Vector)
 TestSuite2 = unittest.TestLoader().loadTestsFromTestCase(Test_Column)
 TestSuite3 = unittest.TestLoader().loadTestsFromTestCase(Test_Row)
+TestSuite4 = unittest.TestLoader().loadTestsFromTestCase(Test_Array2D)
+TestSuite5 = unittest.TestLoader().loadTestsFromTestCase(Test_Matrix)
+TestSuite6 = unittest.TestLoader().loadTestsFromTestCase(Test_SquareMatrix)
 
 TestSuite = unittest.TestSuite()
-TestSuite.addTests([TestSuite1, TestSuite2, TestSuite3])
+TestSuite.addTests([TestSuite1, TestSuite2, TestSuite3, TestSuite4, TestSuite5,
+                    TestSuite6])
 
 if __name__ == "__main__":
     sys.stdout.write(

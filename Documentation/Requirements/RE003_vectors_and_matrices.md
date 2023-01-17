@@ -330,7 +330,7 @@ In the both cases (nested and flat sequences) the default interpretation of the 
 
 **Description:** An exception compatible with TypeError should be raised if:
 
-* Any other data type except the integer is used in the index access to a vector's element, as in *obj[i]*
+* Any other data type except the integer is used in the index access to a vector's element, as in *obj[i]*; as well as to entire column or row of a matrix access
 * Any other data type except of two integers (unpacked tuple of integers with 2 elements) is used in the index access to an element of a matrix, as in *obj[i,j]*
 
 **Verification Method:** T
@@ -343,7 +343,7 @@ In the both cases (nested and flat sequences) the default interpretation of the 
 
 **Description:** An exception compatible with IndexError should be raised:
 
-* The integer index in accessing an element of a vector of length N is not in the (inclusive) range [-N, N-1]
+* The integer index in accessing an element of a vector of length N is not in the (inclusive) range [-N, N-1]; as well as to entire column or row of a matrix access
 * In the index access to an element of a matrix of N x M dimentions
   * The first (inner) integer index - for column - is not in the (inclusive) range [-N, N-1]
   * The second (outer) integer index - for row - is not in the (inclusive) range [-M, M-1]
