@@ -227,6 +227,9 @@ class Array2D:
             Message = '{} - isColumnsFirst argument'.format(Error.args[0])
             Error.args = (Message, )
             raise Error
+        if ((not isinstance(seqValues, c_abc.Sequence))
+                                                or isinstance(seqValues, str)):
+            raise UT_TypeError(seqValues, (list, tuple), SkipFrames = 1)
         try:
             _CheckIfRealSequence(seqValues)
             Length = len(seqValues)
@@ -323,13 +326,29 @@ class Array2D:
     
     def __str__(self) -> str:
         """
+        Magic method to support str() function with the array as its argument.
+        
+        Signature:
+            None -> str
+        
+        Version 1.0.0.0
         """
-        pass
+        return '\n{}\n'.format('\n'.join(['|{}|'.format(
+                                        ', '.join([str(Item) for Item in Row]))
+                                                    for Row in self._Elements]))
     
     def __repr__(self) -> str:
         """
+        Magic method to support str() function with the array or matrix as its
+        argument.
+        
+        Signature:
+            None -> str
+        
+        Version 1.0.0.0
         """
-        pass
+        return "'{}(Width={}, Height={})'".format(self.__class__.__name__,
+                                    len(self._Elements[0]), len(self._Elements))
     
     def __iter__(self) -> NoReturn:
         """
@@ -519,7 +538,7 @@ class Vector:
         
         Version 1.0.0.0
         """
-        return '[{}]'.format(', '.join(map(str, self._Elements)))
+        return '|{}|'.format(', '.join(map(str, self._Elements)))
     
     def __repr__(self) -> str:
         """
@@ -530,8 +549,8 @@ class Vector:
         
         Version 1.0.0.0
         """
-        return "'{}({})'".format(self.__class__.__name__,
-                                            ', '.join(map(str, self._Elements)))
+        return "'{}(Size={})'".format(self.__class__.__name__,
+                                                            len(self._Elements))
     
     def __getitem__(self, Index: int) -> TReal:
         """
@@ -1024,7 +1043,7 @@ class Column(Vector):
         
         Version 1.0.0.0
         """
-        return '[{}]^T'.format(', '.join(map(str, self._Elements)))
+        return '|{}|^T'.format(', '.join(map(str, self._Elements)))
 
     def __mul__(self, Other: Union[TReal, TRow]) -> Union[TColumn, TMatrix]:
         """
@@ -1297,6 +1316,19 @@ class Matrix(Array2D):
     """
     
     #special methods
+
+    def __str__(self) -> str:
+        """
+        Magic method to support str() function with the matrix as its argument.
+        
+        Signature:
+            None -> str
+        
+        Version 1.0.0.0
+        """
+        return '\n{}\n'.format('\n'.join(['||{}||'.format(
+                                        ', '.join([str(Item) for Item in Row]))
+                                                    for Row in self._Elements]))
     
     def __add__(self, Other: TMatrix) -> TMatrix:
         """
@@ -1586,6 +1618,9 @@ class SquareMatrix(Matrix):
             Message = '{} - isColumnsFirst argument'.format(Error.args[0])
             Error.args = (Message, )
             raise Error
+        if ((not isinstance(seqValues, c_abc.Sequence))
+                                                or isinstance(seqValues, str)):
+            raise UT_TypeError(seqValues, (list, tuple), SkipFrames = 1)
         try:
             _CheckIfRealSequence(seqValues)
             Length = len(seqValues)
@@ -1646,6 +1681,18 @@ class SquareMatrix(Matrix):
                                         for HIndex in range(NItems))
                                             for WIndex in range(FirstLength))
     
+    def __repr__(self) -> str:
+        """
+        Magic method to support repr() function with the matrix as its argument.
+        
+        Signature:
+            None -> str
+        
+        Version 1.0.0.0
+        """
+        return "'{}(Size={})'".format(self.__class__.__name__,
+                                                            len(self._Elements))
+
     #public properties
     
     @property
