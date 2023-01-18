@@ -39,7 +39,7 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '08-12-2022'
+__date__ = '18-01-2023'
 __status__ = 'Production'
 
 #imports
@@ -441,6 +441,36 @@ def _checkSanity4(z: TReal, x: TReal, y: TReal) -> None:
         raise UT_TypeError(y, (int, float), SkipFrames = 2)
     if z < 0 or z > 1:
         raise UT_ValueError(z, 'in range [0, 1], z argument', SkipFrames = 2)
+    if x <= 0:
+        raise UT_ValueError(x, '> 0, x argument', SkipFrames = 2)
+    if y <= 0:
+        raise UT_ValueError(y, '> 0, y argument', SkipFrames = 2)
+
+def _checkSanity5(z: TReal, x: TReal, y: TReal) -> None:
+    """
+    Performs the input data sanity check - the first argument must be a real
+    number in the semi-closed range (0, 1], the other two arguments must be
+    positive real numbers.
+    
+    Signature:
+        0 < int <= 1 OR 0 < float < 1, int > 0 OR float > 0,
+            int > 0 OR float > 0 -> None
+    
+    Raises:
+        UT_TypeError: either of the arguments is neither integer nor float
+        UT_ValueError: the first argument is not in the range (0, 1], OR either
+            of the other arguments is zero or negative
+    
+    Version 1.0.0.0
+    """
+    if not isinstance(z, (int, float)):
+        raise UT_TypeError(z, (int, float), SkipFrames = 2)
+    if not isinstance(x, (int, float)):
+        raise UT_TypeError(x, (int, float), SkipFrames = 2)
+    if not isinstance(y, (int, float)):
+        raise UT_TypeError(y, (int, float), SkipFrames = 2)
+    if z <= 0 or z > 1:
+        raise UT_ValueError(z, 'in range (0, 1], z argument', SkipFrames = 2)
     if x <= 0:
         raise UT_ValueError(x, '> 0, x argument', SkipFrames = 2)
     if y <= 0:
@@ -895,10 +925,8 @@ def log_beta_incomplete(z: TReal, x: TReal, y : TReal) -> float:
     
     Version 1.0.0.0
     """
-    _checkSanity4(z, x, y)
-    if z <= 0:
-        raise UT_ValueError(z, '> 0, z argument', SkipFrames = 1)
-    elif (1 - z) < FPMIN:
+    _checkSanity5(z, x, y)
+    if (1 - z) < FPMIN:
         Result = log_beta(x, y)
     else:
         Temp = beta_incomplete(z, x, y)

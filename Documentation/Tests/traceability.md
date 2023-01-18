@@ -3,7 +3,7 @@
 ## Relation between modules, classes and the requirements and tests indexing
 
 * global requirements - 00x
-* module **polynomial** - 1xx
+* module **polynomial** - 1xy
   * 10x - class **Polynomial**
   * 11x - class **RationalFunction**
 * module **special_functions** - 2xy
@@ -12,6 +12,8 @@
   * 32x - class **Column**
   * 33x - class **Row**
   * 34x - class **SquareMatrix**
+* module **lin_solver** - 4xy
+* module **poly_solver** - 5xy
 
 ## Requirements vs Tests Traceability
 
