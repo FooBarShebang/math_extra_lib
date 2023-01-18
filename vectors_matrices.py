@@ -1,6 +1,9 @@
 #usr/bin/python3
 """
-Module math_extra_lib.vectors_matrices
+Module math_extra_lib.vectors_matrices.
+
+Imlements matrices, generic vectors, column and row vectors as well as
+arithmetics involving instances of these classes and real number as operands.
 
 Classes:
     Array2D
@@ -12,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '16-01-2023'
+__date__ = '18-01-2023'
 __status__ = 'Development'
 
 #imports
@@ -123,6 +126,43 @@ def _CheckIfSequenceRealSequence(Value: Any) -> None:
 
 class Array2D:
     """
+    A prototype class for the generic and square matrices, implementing the
+    data storage and read-access in the form of a 2-D array.
+    
+    The data is stored and returned (property Data) as a sequence of the nested
+    equal length sub-sequences of real numbers, each sub-sequence representing a
+    single row of the array, i.e. in the rows-first order.
+    
+    The instances of this class are immutable objects, and are not considered
+    to be sequences, thus not supporting iteration and 'contains' check. But
+    the entire stored data can be copied into a mutable Python sequence (list)
+    using the property Data. Individual element can be read-only accessed using
+    double indexing as obj[col_index, row_index]. Slice notation is not
+    supported.
+    
+    Can be instantiated either from a flat sequence of real number, when either
+    width or height or both must be specified; or from a nested sequence, in
+    which case the width and height arguments are ignored even if provided. The
+    default parsing order is rows-first, which can be switched to columns-first
+    using a boolean keyword argument isColumnsFirst, which defaults to False.
+    
+    Thus, the supported instantiation call signatures are:
+        * Array2D(list(int OR float), Width = int >= 2)
+        * Array2D(list(int OR float), Height = int >= 2)
+        * Array2D(list(int OR float), Width = int >= 2, Height = int >= 2)
+        * Array2D(list(int OR float), Width = int >= 2)
+        * Array2D(list(int OR float), Height = int >= 2)
+        * Array2D(list(int OR float), Width = int >= 2, Height = int >= 2,
+            isColumnsFirst = True)
+        * Array2D(list(list(int OR float)))
+        * Array2D(list(list(int OR float)), isColumnsFirst = True)
+    
+    Properties:
+        Width: (read-only) int >= 2
+        Height: (read-only) int >= 2
+        Data: (read-only) list(list(int OR float))
+    
+    Version 1.0.0.0
     """
     
     #special methods
@@ -392,6 +432,40 @@ class Array2D:
 
 class Vector:
     """
+    Implementation of a generic, abstract vector. Must be instantiated with 2 or
+    more real number typed arguments, with the number of the arguments defining
+    the size / dimensions of the vector. Individual elements can be read-only
+    accessed using integer indexing as obj[index], slicing is not supported.
+    
+    The instances of this class are immutable objects, and are not considered
+    to be sequences, thus not supporting iteration and 'contains' check. But
+    the entire stored data can be copied into a mutable Python sequence (list)
+    using the property Data.
+    
+    Supports the following artihmetics:
+        * Addition and subtraction of two generic vectors of equal length
+        * Left and right mutliplication by a real number
+        * Division by non-zero real number
+        * Inner (dot) product of two equal length generic vectors -> real number
+        * Outer product of two generic vectors -> Array2D
+    
+    Additionally, supports generation of orthogonal unity vectors of the
+    specified dimensions and a normalized (unity geometric length) vector
+    parallel to the one represented by the current instance.
+    
+    Properties:
+        Size: (read-only) int >= 2
+        Data: (read-only) list(int OR float)
+        
+    Class methods:
+        generateOrtogonal(Length, Index):
+            int >= 2, int >= 0 -> Vector
+    
+    Methods:
+        normalize():
+            None -> Vector
+    
+    Version 1.0.0.0
     """
     
     #special methods
@@ -529,7 +603,7 @@ class Vector:
             raise UT_ValueError(Other.Size, '{} - vectors dimensions'.format(
                                                     self.Size), SkipFrames = 1)
         Elements = [self._Elements[Index] + Item
-                                    for Index, Item in enumerate(Other.Data)]
+                                for Index, Item in enumerate(Other._Elements)]
         return self.__class__(*Elements)
 
     def __sub__(self, Other: TVector) -> TVector:
@@ -561,7 +635,7 @@ class Vector:
             raise UT_ValueError(Other.Size, '{} - vectors dimensions'.format(
                                                     self.Size), SkipFrames = 1)
         Elements = [self._Elements[Index] - Item
-                                    for Index, Item in enumerate(Other.Data)]
+                                for Index, Item in enumerate(Other._Elements)]
         return self.__class__(*Elements)
 
     def __mul__(self, Other: Union[TReal, TVector]) -> Union[TReal, TVector]:
@@ -683,10 +757,9 @@ class Vector:
         if ((not isinstance(Other, self.__class__))
                         or (not (Other.__class__ is self.__class__))):
             raise UT_TypeError(Other, self.__class__, SkipFrames = 1)
-        Elements = list()
-        for Item in self._Elements:
-            Elements.extend([Item * Element for Element in Other.Data])
-        Result = Array2D(Elements, Width = Other.Size, Height = self.Size)
+        Elements = [[Item * Element for Element in Other._Elements]
+                                                    for Item in self._Elements]
+        Result = Array2D(Elements)
         return Result
     
     def __pos__(self) -> TVector:
@@ -896,6 +969,48 @@ class Vector:
 
 class Column(Vector):
     """
+    Implementation of a column vector. Must be instantiated with 2 or more real
+    number typed arguments, with the number of the arguments defining the size /
+    dimensions of the vector. Individual elements can be read-only accessed
+    using integer indexing as obj[index], slicing is not supported.
+    
+    The instances of this class are immutable objects, and are not considered
+    to be sequences, thus not supporting iteration and 'contains' check. But
+    the entire stored data can be copied into a mutable Python sequence (list)
+    using the property Data.
+    
+    Supports the following artihmetics:
+        * Addition and subtraction of two column vectors of equal length
+        * Left and right mutliplication by a real number
+        * Division by non-zero real number
+        * Right multiplication by a row vector -> Matrix
+        * Left multiplication by a row vector of the same size -> real number
+    
+    Outer product is not supported. Multiplication with a matrix is delegated
+    to the Matrix class.
+    
+    Additionally, supports generation of orthogonal unity vectors of the
+    specified dimensions and a normalized (unity geometric length) vector
+    parallel to the one represented by the current instance. Also implements
+    transposition Column -> Row.
+    
+    Sub-classes Vector.
+    
+    Properties:
+        Size: (read-only) int >= 2
+        Data: (read-only) list(int OR float)
+        
+    Class methods:
+        generateOrtogonal(Length, Index):
+            int >= 2, int >= 0 -> Column
+    
+    Methods:
+        normalize():
+            None -> Column
+        transpose():
+            None -> Row
+    
+    Version 1.0.0.0
     """
 
     #special methods
@@ -909,7 +1024,7 @@ class Column(Vector):
         
         Version 1.0.0.0
         """
-        return '[{}]^T'.format(', '.join(map(str, self.Data)))
+        return '[{}]^T'.format(', '.join(map(str, self._Elements)))
 
     def __mul__(self, Other: Union[TReal, TRow]) -> Union[TColumn, TMatrix]:
         """
@@ -992,6 +1107,48 @@ class Column(Vector):
 
 class Row(Vector):
     """
+    Implementation of a row vector. Must be instantiated with 2 or more real
+    number typed arguments, with the number of the arguments defining the size /
+    dimensions of the vector. Individual elements can be read-only accessed
+    using integer indexing as obj[index], slicing is not supported.
+    
+    The instances of this class are immutable objects, and are not considered
+    to be sequences, thus not supporting iteration and 'contains' check. But
+    the entire stored data can be copied into a mutable Python sequence (list)
+    using the property Data.
+    
+    Supports the following artihmetics:
+        * Addition and subtraction of two row vectors of equal length
+        * Left and right mutliplication by a real number
+        * Division by non-zero real number
+        * Left multiplication by a column vector -> Matrix
+        * Right multiplication by a same size column vector -> real number
+    
+    Outer product is not supported. Multiplication with a matrix is delegated
+    to the Matrix class.
+    
+    Additionally, supports generation of orthogonal unity vectors of the
+    specified dimensions and a normalized (unity geometric length) vector
+    parallel to the one represented by the current instance. Also implements
+    transposition Row -> Column.
+    
+    Sub-classes Vector.
+    
+    Properties:
+        Size: (read-only) int >= 2
+        Data: (read-only) list(int OR float)
+        
+    Class methods:
+        generateOrtogonal(Length, Index):
+            int >= 2, int >= 0 -> Row
+    
+    Methods:
+        normalize():
+            None -> Row
+        transpose():
+            None -> Column
+    
+    Version 1.0.0.0
     """
 
     #special methods
@@ -1090,6 +1247,53 @@ class Row(Vector):
 
 class Matrix(Array2D):
     """
+    Implementation of a generic matrix.
+    
+    The data is stored and returned (property Data) as a sequence of the nested
+    equal length sub-sequences of real numbers, each sub-sequence representing a
+    single row of the matrix, i.e. in the rows-first order.
+    
+    The instances of this class are immutable objects, and are not considered
+    to be sequences, thus not supporting iteration and 'contains' check. But
+    the entire stored data can be copied into a mutable Python sequence (list)
+    using the property Data. Individual element can be read-only accessed using
+    double indexing as obj[col_index, row_index].
+    
+    Can be instantiated either from a flat sequence of real number, when either
+    width or height or both must be specified; or from a nested sequence, in
+    which case the width and height arguments are ignored even if provided. The
+    default parsing order is rows-first, which can be switched to columns-first
+    using a boolean keyword argument isColumnsFirst, which defaults to False.
+    
+    Thus, the supported instantiation call signatures are:
+        * Matrix(list(int OR float), Width = int >= 2)
+        * Matrix(list(int OR float), Height = int >= 2)
+        * Matrix(list(int OR float), Width = int >= 2, Height = int >= 2)
+        * Matrix(list(int OR float), Width = int >= 2)
+        * Matrix(list(int OR float), Height = int >= 2)
+        * Matrix(list(int OR float), Width = int >= 2, Height = int >= 2,
+            isColumnsFirst = True)
+        * Matrix(list(list(int OR float)))
+        * Matrix(list(list(int OR float)), isColumnsFirst = True)
+    
+    Sub-classes Array2D and adds support for arithmetics between a matrices,
+    column and row vectors, and scalars. Also adds transposition, columns and
+    rows access methods.
+    
+    Properties:
+        Width: (read-only) int >= 2
+        Height: (read-only) int >= 2
+        Data: (read-only) list(list(int OR float))
+    
+    Methods:
+        transpose():
+            None -> Matrix
+        getColumn(Index):
+            int -> Column
+        getRow(Index):
+            int -> Row
+    
+    Version 1.0.0.0
     """
     
     #special methods
@@ -1241,6 +1445,80 @@ class Matrix(Array2D):
 
 class SquareMatrix(Matrix):
     """
+    Implementation of a square matrix, for which width equals height, and is
+    referred to as simply size.
+    
+    The data is stored and returned (property Data) as a sequence of the nested
+    equal length sub-sequences of real numbers, each sub-sequence representing a
+    single row of the matrix, i.e. in the rows-first order.
+    
+    The instances of this class are immutable objects, and are not considered
+    to be sequences, thus not supporting iteration and 'contains' check. But
+    the entire stored data can be copied into a mutable Python sequence (list)
+    using the property Data. Individual element can be read-only accessed using
+    double indexing as obj[col_index, row_index].
+    
+    Can be instantiated either from a flat sequence of real number, when the
+    required size may be specified via a keyword argument, or it may
+    auto-deducted; or from a nested sequence, in which case the size arguments
+    is ignored even if provided. The default parsing order is rows-first, which
+    can be switched to columns-first using a boolean keyword argument
+    isColumnsFirst, which defaults to False.
+    
+    Thus, the supported instantiation call signatures are:
+        * SquareMatrix(list(int OR float))
+        * SquareMatrix(list(int OR float), isColumnsFirst = True)
+        * SquareMatrix(list(int OR float), Size = int >= 2)
+        * SquareMatrix(list(int OR float), Size = int >= 2,
+            isColumnsFirst = True)
+        * SquareMatrix(list(list(int OR float)))
+        * SquareMatrix(list(list(int OR float)), isColumnsFirst = True)
+    
+    Sub-classes Matrix and supports for arithmetics between a matrices,
+    column and row vectors, and scalars as well as transposition, columns and
+    rows access methods. Also adds adds a number of class and instance methods
+    specific for the square matrices:
+        * calculation of the trace and determinant
+        * LUP and LUDP (full) decomposition
+        * Generation of the multuplicative inverse matrix
+        * Calculation of eigenvalues and eigenvectors
+    
+    Properties:
+        Width: (read-only) int >= 2
+        Height: (read-only) int >= 2
+        Size: (read-only) int >= 2
+        Data: (read-only) list(list(int OR float))
+    
+    Class methods:
+        generateIdentity(Size):
+            int >= 2 -> SquareMatrix
+        generatePermutation(Permutation):
+            seq(int >= 0) -> SquareMatrix
+    
+    Methods:
+        transpose():
+            None -> SquareMatrix
+        getColumn(Index):
+            int -> Column
+        getRow(Index):
+            int -> Row
+        getTrace():
+            None -> int OR float
+        getLUPdecomposition():
+            None -> SquareMatrix, SquareMatrix, tuple(int OR float), int
+        getFullDecomposition():
+            None -> SquareMatrix, SquareMatrix, SquareMatrix,
+                tuple(int OR float), int
+        getDeterminant():
+            None -> int OR float
+        getInverse():
+            None -> SquareMatrix OR None
+        getEigenValues():
+            None -> tuple(int OR float) OR None
+        getEigenVectors():
+            None -> dict(int OR float -> tuple(Column)) OR None
+    
+    Version 1.0.0.0
     """
     
     #public class methods
@@ -1387,38 +1665,53 @@ class SquareMatrix(Matrix):
     
     def getTrace(self) -> TReal:
         """
+        Signature:
+            None -> int OR float
         """
         pass
     
     def getLUPdecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
                                                             TRealTuple, int]:
         """
+        Signature:
+            None -> SquareMatrix, SquareMatrix, tuple(int OR float), int
         """
         pass
     
     def getFullDecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
                                                 TSquareMatrix, TRealTuple, int]:
         """
+        Signature:
+            None -> SquareMatrix, SquareMatrix, SquareMatrix,
+                tuple(int OR float), int
         """
         pass
     
     def getDeterminant(self) -> TReal:
         """
+        Signature:
+            None -> int OR float
         """
         pass
     
     def getInverse(self) -> Union[TSquareMatrix, None]:
         """
+        Signature:
+            None -> SquareMatrix OR None
         """
         pass
     
     def getEigenValues(self) -> Union[TRealTuple, None]:
         """
+        Signature:
+            None -> tuple(int OR float) OR None
         """
         pass
     
     def getEigenVectors(self) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
         """
+        Signature:
+            None -> dict(int OR float -> tuple(Column)) OR None
         """
         pass
 
@@ -1454,16 +1747,9 @@ def _Column__mul__(self: Column,
         Elements = [Item * Other for Item in self._Elements]
         Result = self.__class__(*Elements)
     elif isinstance(Other, Row):
-        Elements = list()
-        OtherData = Other.Data
-        for Item in self._Elements:
-            Elements.extend([Item * Element for Element in OtherData])
-        selfSize = self.Size
-        OtherSize = Other.Size
-        if selfSize != OtherSize:
-            Result = Matrix(Elements, Width = OtherSize, Height = selfSize)
-        else:
-            Result = SquareMatrix(Elements, Size = selfSize)
+        Elements = [[Item * Element for Element in Other._Elements]
+                                                    for Item in self._Elements]
+        Result = Matrix(Elements)
     else:
         raise UT_TypeError(Other, (int, float), SkipFrames = 1)
     return Result

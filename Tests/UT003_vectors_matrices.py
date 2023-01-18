@@ -2,11 +2,11 @@
 """
 Module math_extra_lib.Tests.UT003_vectors_matrices
 
-Implements unit testing of the module math_extra_lib.polynomial, see TE003.
+Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "16-01-2023"
+__date__ = "18-01-2023"
 __status__ = "Testing"
 
 #imports
@@ -106,6 +106,7 @@ class Test_Vector(unittest.TestCase):
             self.assertEqual(Size, Length)
             with self.assertRaises(AttributeError):
                 objTest.Size = 10 #read-only property
+            self.assertEqual(objTest.Size, Size)
             for Index in range(-Length, Length): #index read access
                 Item = objTest[Index]
                 self.assertIsInstance(Item, (int, float))
@@ -118,10 +119,11 @@ class Test_Vector(unittest.TestCase):
             for Index in range(Length): #immurability check
                 AsList[Index] = random.random()
             for Index in range(Length):
-                Item = objTest[Index]
-                self.assertEqual(Item, Elements[Index])
+                self.assertEqual(objTest[Index], Elements[Index])
+            self.assertListEqual(objTest.Data, Elements)
             with self.assertRaises(AttributeError):
                 objTest.Data = (10, 10, 10) #read-only property
+            self.assertListEqual(objTest.Data, Elements)
             del objTest
     
     def test_Iteration(self):
@@ -246,26 +248,35 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             if isinstance(Item, self.TestClass):
                 if not (Item.__class__ is self.TestClass):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject + Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                     with self.assertRaises(TypeError):
                         Temp = Item + self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
             else:
                 with self.assertRaises(TypeError):
                     Temp = self.TestObject + Item
+                self.assertListEqual(self.TestObject.Data, Data)
                 with self.assertRaises(TypeError):
                     Temp = Item + self.TestObject
+                self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = self.TestObject + random.random()
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = self.TestObject + random.randint()
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = random.random() + self.TestObject
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = random.randint() + self.TestObject
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_sub_TypeError(self):
         """
@@ -275,26 +286,35 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             if isinstance(Item, self.TestClass):
                 if not (Item.__class__ is self.TestClass):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject - Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                     with self.assertRaises(TypeError):
                         Temp = Item - self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
             else:
                 with self.assertRaises(TypeError):
                     Temp = self.TestObject - Item
+                self.assertListEqual(self.TestObject.Data, Data)
                 with self.assertRaises(TypeError):
                     Temp = Item - self.TestObject
+                self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = self.TestObject - random.random()
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = self.TestObject - random.randint()
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = random.random() - self.TestObject
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = random.randint() - self.TestObject
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_add_ValueError(self):
         """
@@ -304,14 +324,20 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-303
         """
-        Elements = [random.random()
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random()
                 for _ in range(self.TestObject.Size + random.randint(1, 10))]
-        Other = self.TestClass(*Elements)
-        with self.assertRaises(ValueError):
-            Temp = self.TestObject + Other
-        with self.assertRaises(ValueError):
-            Temp = Other + self.TestObject
-        del Other
+            Other = self.TestClass(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject + Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(ValueError):
+                Temp = Other + self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_sub_ValueError(self):
         """
@@ -321,14 +347,20 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-303
         """
-        Elements = [random.random()
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random()
                 for _ in range(self.TestObject.Size + random.randint(1, 10))]
-        Other = self.TestClass(*Elements)
-        with self.assertRaises(ValueError):
-            Temp = self.TestObject - Other
-        with self.assertRaises(ValueError):
-            Temp = Other - self.TestObject
-        del Other
+            Other = self.TestClass(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject - Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(ValueError):
+                Temp = Other - self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_add(self):
         """
@@ -338,26 +370,29 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-310, REQ-FUN-320, REQ-FUN-330
         """
-        Elements = [random.random() for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        TestCheck = [self.TestObject[Index] + Item
+        for _ in range(10):
+            Elements = [random.random() for _ in range(self.TestObject.Size)]
+            Other = self.TestClass(*Elements)
+            TestCheck = [self.TestObject[Index] + Item
                                         for Index, Item in enumerate(Elements)]
-        Data = list(self.TestObject.Data)
-        Temp = self.TestObject + Other
-        self.assertIsInstance(Temp, self.TestClass)
-        self.assertIs(Temp.__class__, self.TestClass)
-        self.assertListEqual(Temp.Data, TestCheck)
-        self.assertListEqual(self.TestObject.Data, Data)
-        self.assertListEqual(Other.Data, Elements)
-        del Temp
-        Temp = Other + self.TestObject
-        self.assertIsInstance(Temp, self.TestClass)
-        self.assertIs(Temp.__class__, self.TestClass)
-        self.assertListEqual(Temp.Data, TestCheck)
-        self.assertListEqual(self.TestObject.Data, Data)
-        self.assertListEqual(Other.Data, Elements)
-        del Temp
-        del Other
+            Data = list(self.TestObject.Data)
+            Temp = self.TestObject + Other
+            self.assertIsInstance(Temp, self.TestClass)
+            self.assertIs(Temp.__class__, self.TestClass)
+            self.assertListEqual(Temp.Data, TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.assertListEqual(Other.Data, Elements)
+            del Temp
+            Temp = Other + self.TestObject
+            self.assertIsInstance(Temp, self.TestClass)
+            self.assertIs(Temp.__class__, self.TestClass)
+            self.assertListEqual(Temp.Data, TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.assertListEqual(Other.Data, Elements)
+            del Temp
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_sub(self):
         """
@@ -367,27 +402,30 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-310, REQ-FUN-320, REQ-FUN-330
         """
-        Elements = [random.random() for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        TestCheck = [self.TestObject[Index] - Item
+        for _ in range(10):
+            Elements = [random.random() for _ in range(self.TestObject.Size)]
+            Other = self.TestClass(*Elements)
+            TestCheck = [self.TestObject[Index] - Item
                                         for Index, Item in enumerate(Elements)]
-        TestCheck2 = [-Item for Item in TestCheck]
-        Data = list(self.TestObject.Data)
-        Temp = self.TestObject - Other
-        self.assertIsInstance(Temp, self.TestClass)
-        self.assertIs(Temp.__class__, self.TestClass)
-        self.assertListEqual(Temp.Data, TestCheck)
-        self.assertListEqual(self.TestObject.Data, Data)
-        self.assertListEqual(Other.Data, Elements)
-        del Temp
-        Temp = Other - self.TestObject
-        self.assertIsInstance(Temp, self.TestClass)
-        self.assertIs(Temp.__class__, self.TestClass)
-        self.assertListEqual(Temp.Data, TestCheck2)
-        self.assertListEqual(self.TestObject.Data, Data)
-        self.assertListEqual(Other.Data, Elements)
-        del Temp
-        del Other
+            TestCheck2 = [-Item for Item in TestCheck]
+            Data = list(self.TestObject.Data)
+            Temp = self.TestObject - Other
+            self.assertIsInstance(Temp, self.TestClass)
+            self.assertIs(Temp.__class__, self.TestClass)
+            self.assertListEqual(Temp.Data, TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.assertListEqual(Other.Data, Elements)
+            del Temp
+            Temp = Other - self.TestObject
+            self.assertIsInstance(Temp, self.TestClass)
+            self.assertIs(Temp.__class__, self.TestClass)
+            self.assertListEqual(Temp.Data, TestCheck2)
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.assertListEqual(Other.Data, Elements)
+            del Temp
+            del Other
+            self.tearDown()
+            self.setUp()
         
     def test_mul_TypeError(self):
         """
@@ -397,18 +435,23 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             if isinstance(Item, self.TestClass):
                 if not (Item.__class__ is self.TestClass):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject * Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                     with self.assertRaises(TypeError):
                         Temp = Item * self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
             else:
                 with self.assertRaises(TypeError):
                     Temp = self.TestObject * Item
+                self.assertListEqual(self.TestObject.Data, Data)
                 with self.assertRaises(TypeError):
                     Temp = Item * self.TestObject
+                self.assertListEqual(self.TestObject.Data, Data)
     
     def test_mul_ValueError(self):
         """
@@ -418,14 +461,20 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-303
         """
-        Elements = [random.random()
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random()
                 for _ in range(self.TestObject.Size + random.randint(1, 10))]
-        Other = self.TestClass(*Elements)
-        with self.assertRaises(ValueError):
-            Temp = self.TestObject * Other
-        with self.assertRaises(ValueError):
-            Temp = Other * self.TestObject
-        del Other
+            Other = self.TestClass(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject * Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(ValueError):
+                Temp = Other * self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_mul(self):
         """
@@ -436,49 +485,52 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-310
         """
-        Data = list(self.TestObject.Data)
-        Other = random.random()
-        Elements = [Item * Other for Item in self.TestObject.Data]
-        TestCheck = self.TestObject * Other
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        TestCheck = Other * self.TestObject
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        Other = random.randint(-10, 10)
-        Elements = [Item * Other for Item in self.TestObject.Data]
-        TestCheck = self.TestObject * Other
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        TestCheck = Other * self.TestObject
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        Elements = [random.random() + random.randint(-10, 10)
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Other = random.random()
+            Elements = [Item * Other for Item in self.TestObject.Data]
+            TestCheck = self.TestObject * Other
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            TestCheck = Other * self.TestObject
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            Other = random.randint(-10, 10)
+            Elements = [Item * Other for Item in self.TestObject.Data]
+            TestCheck = self.TestObject * Other
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            TestCheck = Other * self.TestObject
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            Elements = [random.random() + random.randint(-10, 10)
                                         for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        TestCheck = sum(Item * self.TestObject[Index]
+            Other = self.TestClass(*Elements)
+            TestCheck = sum(Item * self.TestObject[Index]
                                         for Index, Item in enumerate(Elements))
-        Test = self.TestObject * Other
-        self.assertIsInstance(Test, (int, float))
-        self.assertAlmostEqual(Test, TestCheck)
-        self.assertListEqual(self.TestObject.Data, Data)
-        Test = Other * self.TestObject
-        self.assertIsInstance(Test, (int, float))
-        self.assertAlmostEqual(Test, TestCheck)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Other
+            Test = self.TestObject * Other
+            self.assertIsInstance(Test, (int, float))
+            self.assertAlmostEqual(Test, TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            Test = Other * self.TestObject
+            self.assertIsInstance(Test, (int, float))
+            self.assertAlmostEqual(Test, TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_matmul_TypeError(self):
         """
@@ -488,23 +540,30 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             if isinstance(Item, self.TestClass):
                 if not (Item.__class__ is self.TestClass):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject @ Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                     with self.assertRaises(TypeError):
                         Temp = Item @ self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
             else:
                 with self.assertRaises(TypeError):
                     Temp = self.TestObject @ Item
+                self.assertListEqual(self.TestObject.Data, Data)
                 with self.assertRaises(TypeError):
                     Temp = Item @ self.TestObject
+                self.assertListEqual(self.TestObject.Data, Data)
         for Item in [1, 1.0]:
             with self.assertRaises(TypeError):
                 Temp = self.TestObject @ Item
+            self.assertListEqual(self.TestObject.Data, Data)
             with self.assertRaises(TypeError):
                 Temp = Item @ self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
     
     def test_matmul(self):
         """
@@ -514,22 +573,36 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-310
         """
-        Data = list(self.TestObject.Data)
-        Elements = [random.random() + random.randint(-10, 10)
-                                        for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        Test = self.TestObject @ Other
-        self.assertIsInstance(Test, testmodule.Array2D)
-        #TODO - check Matrix size and content!
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Test
-        Test = Other @ self.TestObject
-        self.assertIsInstance(Test, testmodule.Array2D)
-        #TODO - check Matrix size and content!
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Test
-        del Other
-        #TODO - also check for the unequal sizes!
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random() + random.randint(-10, 10)
+                    for _ in range(self.TestObject.Size + random.randint(0, 3))]
+            Other = self.TestClass(*Elements)
+            SizeSelf = len(Data)
+            SizeOther = len(Elements)
+            Test = self.TestObject @ Other
+            self.assertIsInstance(Test, testmodule.Array2D)
+            self.assertEqual(Test.Width, SizeOther)
+            self.assertEqual(Test.Height, SizeSelf)
+            for Row in range(SizeSelf):
+                for Col in range(SizeOther):
+                    self.assertAlmostEqual(Test[Col, Row],
+                                                    Elements[Col] * Data[Row])
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Test
+            Test = Other @ self.TestObject
+            self.assertIsInstance(Test, testmodule.Array2D)
+            self.assertEqual(Test.Width, SizeSelf)
+            self.assertEqual(Test.Height, SizeOther)
+            for Row in range(SizeOther):
+                for Col in range(SizeSelf):
+                    self.assertAlmostEqual(Test[Col, Row],
+                                                    Elements[Row] * Data[Col])
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Test
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_div_TypeError(self):
         """
@@ -539,15 +612,20 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             with self.assertRaises(TypeError):
                 Temp = self.TestObject / Item
+            self.assertListEqual(self.TestObject.Data, Data)
             with self.assertRaises(TypeError):
                 Temp = Item / self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = 1 / self.TestObject
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Temp = 1.0 / self.TestObject
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_div_ValueError(self):
         """
@@ -557,10 +635,16 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-AWM-304
         """
-        with self.assertRaises(ValueError):
-            Temp = self.TestObject / 0
-        with self.assertRaises(ValueError):
-            Temp = self.TestObject / 0.0
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject / 0
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject / 0.0
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
     
     def test_div(self):
         """
@@ -601,12 +685,17 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-310
         """
-        New = +self.TestObject
-        self.assertIs(New.__class__, self.TestClass)
-        self.assertIsNot(New, self.TestObject)
-        self.assertEqual(New.Size, self.TestObject.Size)
-        self.assertListEqual(New.Data, self.TestObject.Data)
-        del New
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            New = +self.TestObject
+            self.assertIs(New.__class__, self.TestClass)
+            self.assertIsNot(New, self.TestObject)
+            self.assertEqual(New.Size, self.TestObject.Size)
+            self.assertListEqual(New.Data, self.TestObject.Data)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del New
+            self.tearDown()
+            self.setUp()
     
     def test_neg(self):
         """
@@ -616,50 +705,58 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-310
         """
-        Elements = [-Item for Item in self.TestObject.Data]
-        New = -self.TestObject
-        self.assertIs(New.__class__, self.TestClass)
-        self.assertIsNot(New, self.TestObject)
-        self.assertEqual(New.Size, self.TestObject.Size)
-        self.assertListEqual(New.Data, Elements)
-        del New
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [-Item for Item in self.TestObject.Data]
+            New = -self.TestObject
+            self.assertIs(New.__class__, self.TestClass)
+            self.assertIsNot(New, self.TestObject)
+            self.assertEqual(New.Size, self.TestObject.Size)
+            self.assertListEqual(New.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del New
+            self.tearDown()
+            self.setUp()
     
     def test_augmentedAssignment(self):
         """
         Checks that the in-place modification via augmented assignment is not
         supported. This is an additional test.
         """
-        Data = list(self.TestObject.Data)
-        Elements = [random.random() + random.randint(-10, 10)
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random() + random.randint(-10, 10)
                                         for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        with self.assertRaises(TypeError):
-            self.TestObject += Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject -= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject *= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject @= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Other
-        Other = random.randint(1, 10)
-        with self.assertRaises(TypeError):
-            self.TestObject *= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject /= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        Other += random.random()
-        with self.assertRaises(TypeError):
-            self.TestObject *= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject /= Other
-        self.assertListEqual(self.TestObject.Data, Data)
+            Other = self.TestClass(*Elements)
+            with self.assertRaises(TypeError):
+                self.TestObject += Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject -= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject *= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject @= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            Other = random.randint(1, 10)
+            with self.assertRaises(TypeError):
+                self.TestObject *= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject /= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            Other += random.random()
+            with self.assertRaises(TypeError):
+                self.TestObject *= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject /= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
     
     def test_normalize(self):
         """
@@ -669,26 +766,29 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-303
         """
-        Length = sqrt(sum(Item*Item for Item in self.TestObject.Data))
-        while not Length:
+        for _ in range(10):
+            Length = sqrt(sum(Item*Item for Item in self.TestObject.Data))
+            while not Length:
+                self.tearDown()
+                self.setUp()
+                Length = sqrt(sum(Item*Item for Item in self.TestObject.Data))
+            Data = list(self.TestObject.Data)
+            Test = self.TestObject.normalize()
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.assertIsInstance(Test, self.TestClass)
+            self.assertIs(Test.__class__, self.TestClass)
+            self.assertEqual(Test.Size, self.TestObject.Size)
+            for Index, Element in enumerate(self.TestObject.Data):
+                self.assertAlmostEqual(Test[Index], Element / Length)
+            del Test
+            Size = random.randint(2, 10)
+            Elements = [0 for _ in range(Size)]
+            Test = self.TestClass(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = Test.normalize()
+            del Test
             self.tearDown()
             self.setUp()
-            Length = sqrt(sum(Item*Item for Item in self.TestObject.Data))
-        Data = list(self.TestObject.Data)
-        Test = self.TestObject.normalize()
-        self.assertListEqual(self.TestObject.Data, Data)
-        self.assertIsInstance(Test, self.TestClass)
-        self.assertIs(Test.__class__, self.TestClass)
-        self.assertEqual(Test.Size, self.TestObject.Size)
-        for Index, Element in enumerate(self.TestObject.Data):
-            self.assertAlmostEqual(Test[Index], Element / Length)
-        del Test
-        Size = random.randint(2, 10)
-        Elements = [0 for _ in range(Size)]
-        Test = self.TestClass(*Elements)
-        with self.assertRaises(ValueError):
-            Temp = Test.normalize()
-        del Test
     
     def test_generateOrtogonal(self):
         """
@@ -698,18 +798,21 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-303
         """
-        Size = random.randint(2, 10)
-        for Index in range(Size):
-            Test = self.TestClass.generateOrtogonal(Size, Index)
-            self.assertIsInstance(Test, self.TestClass)
-            self.assertIs(Test.__class__, self.TestClass)
-            self.assertEqual(Test.Size, Size)
-            for Second in range(Size):
-                if Second == Index:
-                    self.assertEqual(Test[Second], 1)
-                else:
-                    self.assertEqual(Test[Second], 0)
-            del Test
+        for _ in range(10):
+            Size = random.randint(2, 10)
+            for Index in range(Size):
+                Test = self.TestClass.generateOrtogonal(Size, Index)
+                self.assertIsInstance(Test, self.TestClass)
+                self.assertIs(Test.__class__, self.TestClass)
+                self.assertEqual(Test.Size, Size)
+                for Second in range(Size):
+                    if Second == Index:
+                        self.assertEqual(Test[Second], 1)
+                    else:
+                        self.assertEqual(Test[Second], 0)
+                del Test
+            self.tearDown()
+            self.setUp()
     
     def test_generateOrtogonal_TypeError(self):
         """
@@ -719,17 +822,22 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-303
         """
+        Data = list(self.TestObject.Data)
         Size = random.randint(2, 10)
         Index = random.randint(0, Size - 1)
         for Item in self.NotScalar:
             with self.assertRaises(TypeError):
                 self.TestClass.generateOrtogonal(Item, Index)
+            self.assertListEqual(self.TestObject.Data, Data)
             with self.assertRaises(TypeError):
                 self.TestClass.generateOrtogonal(Size, Item)
+            self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             self.TestClass.generateOrtogonal(3.0, Index)
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             self.TestClass.generateOrtogonal(Size, 1.0)
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_generateOrtogonal_ValueError(self):
         """
@@ -739,19 +847,26 @@ class Test_Vector(unittest.TestCase):
         
         Covers requirements: REQ-FUN-303
         """
+        Data = list(self.TestObject.Data)
         with self.assertRaises(ValueError):
             self.TestClass.generateOrtogonal(0, 1)
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
             self.TestClass.generateOrtogonal(1, 1)
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
             self.TestClass.generateOrtogonal(random.randint(-10, -1), 1)
+        self.assertListEqual(self.TestObject.Data, Data)
         Size = random.randint(2, 10)
         with self.assertRaises(ValueError):
             self.TestClass.generateOrtogonal(Size, random.randint(-10, -1))
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
             self.TestClass.generateOrtogonal(Size, Size)
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
             self.TestClass.generateOrtogonal(Size, Size + random.randint(1, 10))
+        self.assertListEqual(self.TestObject.Data, Data)
 
 class Test_Column(Test_Vector):
     """
@@ -783,19 +898,24 @@ class Test_Column(Test_Vector):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             if isinstance(Item, testmodule.Vector):
                 if not (Item.__class__ is testmodule.Row):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject * Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                     with self.assertRaises(TypeError):
                         Temp = Item * self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
             else:
                 with self.assertRaises(TypeError):
                     Temp = self.TestObject * Item
+                self.assertListEqual(self.TestObject.Data, Data)
                 if not isinstance(Item, testmodule.Matrix):
                     with self.assertRaises(TypeError):
                         Temp = Item * self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
     
     def test_mul_ValueError(self):
         """
@@ -805,12 +925,17 @@ class Test_Column(Test_Vector):
         
         Covers requirements: REQ-AWM-303
         """
-        Elements = [random.random()
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random()
                 for _ in range(self.TestObject.Size + random.randint(1, 10))]
-        Other = testmodule.Row(*Elements)
-        with self.assertRaises(ValueError):
-            Temp = Other * self.TestObject
-        del Other
+            Other = testmodule.Row(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = Other * self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_mul(self):
         """
@@ -820,35 +945,38 @@ class Test_Column(Test_Vector):
         
         Covers requirements: REQ-FUN-320
         """
-        Data = list(self.TestObject.Data)
-        Other = random.random()
-        Elements = [Item * Other for Item in self.TestObject.Data]
-        TestCheck = self.TestObject * Other
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        TestCheck = Other * self.TestObject
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        Other = random.randint(-10, 10)
-        Elements = [Item * Other for Item in self.TestObject.Data]
-        TestCheck = self.TestObject * Other
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        TestCheck = Other * self.TestObject
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Other = random.random()
+            Elements = [Item * Other for Item in self.TestObject.Data]
+            TestCheck = self.TestObject * Other
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            TestCheck = Other * self.TestObject
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            Other = random.randint(-10, 10)
+            Elements = [Item * Other for Item in self.TestObject.Data]
+            TestCheck = self.TestObject * Other
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            TestCheck = Other * self.TestObject
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            self.tearDown()
+            self.setUp()
     
     def test_matmul(self):
         """
@@ -858,15 +986,20 @@ class Test_Column(Test_Vector):
         
         Covers requirements: REQ-FUN-310
         """
-        Data = list(self.TestObject.Data)
-        Elements = [random.random() + random.randint(-10, 10)
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random() + random.randint(-10, 10)
                                         for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        with self.assertRaises(TypeError):
-            Test = self.TestObject @ Other
-        with self.assertRaises(TypeError):
-            Test = Other @ self.TestObject
-        del Other
+            Other = self.TestClass(*Elements)
+            with self.assertRaises(TypeError):
+                Test = self.TestObject @ Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                Test = Other @ self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_transpose(self):
         """
@@ -876,13 +1009,16 @@ class Test_Column(Test_Vector):
         
         Covers requirements: REQ-FUN-303
         """
-        Data = list(self.TestObject.Data)
-        Test = self.TestObject.transpose()
-        self.assertIsInstance(Test, testmodule.Row)
-        self.assertIs(Test.__class__, testmodule.Row)
-        self.assertListEqual(Test.Data, Data)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Test
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Test = self.TestObject.transpose()
+            self.assertIsInstance(Test, testmodule.Row)
+            self.assertIs(Test.__class__, testmodule.Row)
+            self.assertListEqual(Test.Data, Data)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Test
+            self.tearDown()
+            self.setUp()
 
 class Test_Row(Test_Vector):
     """
@@ -914,19 +1050,24 @@ class Test_Row(Test_Vector):
         
         Covers requirements: REQ-AWM-302
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotScalar:
             if isinstance(Item, testmodule.Vector):
                 if not (Item.__class__ is testmodule.Column):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject * Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                     with self.assertRaises(TypeError):
                         Temp = Item * self.TestObject
+                    self.assertListEqual(self.TestObject.Data, Data)
             else:
                 if not isinstance(Item, testmodule.Matrix):
                     with self.assertRaises(TypeError):
                         Temp = self.TestObject * Item
+                    self.assertListEqual(self.TestObject.Data, Data)
                 with self.assertRaises(TypeError):
                     Temp = Item * self.TestObject
+                self.assertListEqual(self.TestObject.Data, Data)
     
     def test_mul_ValueError(self):
         """
@@ -936,12 +1077,17 @@ class Test_Row(Test_Vector):
         
         Covers requirements: REQ-AWM-303
         """
-        Elements = [random.random()
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random()
                 for _ in range(self.TestObject.Size + random.randint(1, 10))]
-        Other = testmodule.Column(*Elements)
-        with self.assertRaises(ValueError):
-            Temp = self.TestObject * Other
-        del Other
+            Other = testmodule.Column(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject * Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_mul(self):
         """
@@ -952,51 +1098,79 @@ class Test_Row(Test_Vector):
         
         Covers requirements: REQ-FUN-320, REQ-FUN-330
         """
-        Data = list(self.TestObject.Data)
-        Other = random.random()
-        Elements = [Item * Other for Item in self.TestObject.Data]
-        TestCheck = self.TestObject * Other
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        TestCheck = Other * self.TestObject
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        Other = random.randint(-10, 10)
-        Elements = [Item * Other for Item in self.TestObject.Data]
-        TestCheck = self.TestObject * Other
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        TestCheck = Other * self.TestObject
-        self.assertIsInstance(TestCheck, self.TestClass)
-        self.assertIs(TestCheck.__class__, self.TestClass)
-        self.assertListEqual(TestCheck.Data, Elements)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del TestCheck
-        Elements = [random.random() + random.randint(-10, 10)
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Other = random.random()
+            Elements = [Item * Other for Item in self.TestObject.Data]
+            TestCheck = self.TestObject * Other
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            TestCheck = Other * self.TestObject
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            Other = random.randint(-10, 10)
+            Elements = [Item * Other for Item in self.TestObject.Data]
+            TestCheck = self.TestObject * Other
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            TestCheck = Other * self.TestObject
+            self.assertIsInstance(TestCheck, self.TestClass)
+            self.assertIs(TestCheck.__class__, self.TestClass)
+            self.assertListEqual(TestCheck.Data, Elements)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del TestCheck
+            Elements = [random.random() + random.randint(-10, 10)
                                         for _ in range(self.TestObject.Size)]
-        Other = testmodule.Column(*Elements)
-        TestCheck = sum(Item * self.TestObject[Index]
+            Other = testmodule.Column(*Elements)
+            TestCheck = sum(Item * self.TestObject[Index]
                                         for Index, Item in enumerate(Elements))
-        Test = self.TestObject * Other
-        self.assertIsInstance(Test, (int, float))
-        self.assertAlmostEqual(Test, TestCheck)
-        self.assertListEqual(self.TestObject.Data, Data)
-        Test = Other * self.TestObject
-        self.assertIsInstance(Test, testmodule.SquareMatrix)
-        #TODO - check Matrix size and content!
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Test
-        del Other
-        #TODO - also check for the unequal sizes!
+            Test = self.TestObject * Other
+            self.assertIsInstance(Test, (int, float))
+            self.assertAlmostEqual(Test, TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            NewSize = self.TestObject.Size + random.randint(0, 3)
+            Elements = [random.random() + random.randint(-10, 10)
+                                                    for _ in range(NewSize)]
+            Other = testmodule.Column(*Elements)
+            Test = Other * self.TestObject
+            self.assertIsInstance(Test, testmodule.Matrix)
+            self.assertEqual(Test.Width, self.TestObject.Size)
+            self.assertEqual(Test.Height, Other.Size)
+            for Row in range(Other.Size):
+                for Col in range(self.TestObject.Size):
+                    TestCheck = Other[Row] * self.TestObject[Col]
+                    self.assertAlmostEqual(Test[Col, Row], TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Test
+            del Other
+            NewSize = self.TestObject.Size - random.randint(0, 3)
+            NewSize = max(2, NewSize)
+            Elements = [random.random() + random.randint(-10, 10)
+                                                    for _ in range(NewSize)]
+            Other = testmodule.Column(*Elements)
+            Test = Other * self.TestObject
+            self.assertIsInstance(Test, testmodule.Matrix)
+            self.assertEqual(Test.Width, self.TestObject.Size)
+            self.assertEqual(Test.Height, Other.Size)
+            for Row in range(Other.Size):
+                for Col in range(self.TestObject.Size):
+                    TestCheck = Other[Row] * self.TestObject[Col]
+                    self.assertAlmostEqual(Test[Col, Row], TestCheck)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Test
+            del Other
+            self.tearDown()
+            self.setUp()
     
     def test_matmul(self):
         """
@@ -1006,15 +1180,21 @@ class Test_Row(Test_Vector):
         
         Covers requirements: REQ-FUN-310
         """
-        Data = list(self.TestObject.Data)
-        Elements = [random.random() + random.randint(-10, 10)
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [random.random() + random.randint(-10, 10)
                                         for _ in range(self.TestObject.Size)]
-        Other = self.TestClass(*Elements)
-        with self.assertRaises(TypeError):
-            Test = self.TestObject @ Other
-        with self.assertRaises(TypeError):
-            Test = Other @ self.TestObject
-        del Other
+            Other = self.TestClass(*Elements)
+            with self.assertRaises(TypeError):
+                Test = self.TestObject @ Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                Test = Other @ self.TestObject
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
         
     def test_transpose(self):
         """
@@ -1024,16 +1204,27 @@ class Test_Row(Test_Vector):
         
         Covers requirements: REQ-FUN-303
         """
-        Data = list(self.TestObject.Data)
-        Test = self.TestObject.transpose()
-        self.assertIsInstance(Test, testmodule.Column)
-        self.assertIs(Test.__class__, testmodule.Column)
-        self.assertListEqual(Test.Data, Data)
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Test
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Test = self.TestObject.transpose()
+            self.assertIsInstance(Test, testmodule.Column)
+            self.assertIs(Test.__class__, testmodule.Column)
+            self.assertListEqual(Test.Data, Data)
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Test
+            self.tearDown()
+            self.setUp()
 
 class Test_Array2D(unittest.TestCase):
     """
+    Set of unit tests for the class Array2D. These tests are not part of the
+    test plan, however, this class is the prototype for the both generic and
+    square matrices, which already implements part of their functionality.
+    
+    Implements tests: TEST-T-30A, TEST-T-30D and TEST-T-30F
+    
+    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-AWM-300, REQ-AWM-301,
+    REQ-AWM-307 and REQ-AWM-308
     """
     
     @classmethod
@@ -1457,7 +1648,7 @@ class Test_Array2D(unittest.TestCase):
         
         Test ID: TEST-T-30D
         
-        Covers requirements: REQ-AWM-300
+        Covers requirements: REQ-AWM-301
         """
         Width = self.TestObject.Width
         Height = self.TestObject.Height
@@ -1506,6 +1697,7 @@ class Test_Array2D(unittest.TestCase):
         
         Covers requirements: REQ-AWM-307
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotInt:
             with self.assertRaises(TypeError):
                 Temp = self.TestObject[1, Item]
@@ -1523,6 +1715,7 @@ class Test_Array2D(unittest.TestCase):
             Temp = self.TestObject[1]
         with self.assertRaises(TypeError):
             Temp = self.TestObject[0:1]
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_index_ValueError(self):
         """
@@ -1534,6 +1727,7 @@ class Test_Array2D(unittest.TestCase):
         """
         Width = self.TestObject.Width
         Height = self.TestObject.Height
+        Data = list(self.TestObject.Data)
         with self.assertRaises(ValueError):
             Temp = self.TestObject[1, 1, 1]
         for Col in [-Width - random.randint(2, 10), -Width -1, Width,
@@ -1548,6 +1742,7 @@ class Test_Array2D(unittest.TestCase):
         for Col in range(-Width, Width):
             for Row in range(-Height, Height):
                 Temp = self.TestObject[Col, Row]
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_NotSequence(self):
         """
@@ -1594,21 +1789,32 @@ class Test_Array2D(unittest.TestCase):
         
         Covers requirements: REQ-FUN-304
         """
+        Data = list(self.TestObject.Data)
         with self.assertRaises(AttributeError):
             self.TestObject.Width = 5
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(AttributeError):
             self.TestObject.Height = 5
+        self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(AttributeError):
             self.TestObject.Data = [[1, 1], [1, 1]]
+        self.assertListEqual(self.TestObject.Data, Data)
         Width = self.TestObject.Width
         Height = self.TestObject.Height
         for Col in range(Width):
             for Row in range(Height):
                 with self.assertRaises(TypeError):
                     self.TestObject[Col, Row] = 5
+                self.assertListEqual(self.TestObject.Data, Data)
     
 class Test_Matrix(Test_Array2D):
     """
+    Set of unit tests for the class Matrix.
+    
+    Implements tests: TEST-T-30A, TEST-T-30D and TEST-T-30F
+    
+    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-AWM-300, REQ-AWM-301,
+    REQ-AWM-307 and REQ-AWM-308
     """
     
     @classmethod
@@ -1627,13 +1833,17 @@ class Test_Matrix(Test_Array2D):
         
         Covers requirements: REQ-FUN-304
         """
-        Height = self.TestObject.Height
-        Data = list(self.TestObject.Data)
-        for Index in range(-Height, Height):
-            Test = self.TestObject.getRow(Index)
-            self.assertIsInstance(Test, testmodule.Row)
-            self.assertListEqual(Test.Data, Data[Index])
-            del Test
+        for _ in range(10):
+            Height = self.TestObject.Height
+            Data = list(self.TestObject.Data)
+            for Index in range(-Height, Height):
+                Test = self.TestObject.getRow(Index)
+                self.assertIsInstance(Test, testmodule.Row)
+                self.assertListEqual(Test.Data, Data[Index])
+                del Test
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
     
     def test_getColumn(self):
         """
@@ -1643,14 +1853,18 @@ class Test_Matrix(Test_Array2D):
         
         Covers requirements: REQ-FUN-304
         """
-        Width = self.TestObject.Width
-        Data = list(self.TestObject.Data)
-        for Index in range(-Width, Width):
-            TestCheck = [Row[Index] for Row in Data]
-            Test = self.TestObject.getColumn(Index)
-            self.assertIsInstance(Test, testmodule.Column)
-            self.assertListEqual(Test.Data, TestCheck)
-            del Test
+        for _ in range(10):
+            Width = self.TestObject.Width
+            Data = list(self.TestObject.Data)
+            for Index in range(-Width, Width):
+                TestCheck = [Row[Index] for Row in Data]
+                Test = self.TestObject.getColumn(Index)
+                self.assertIsInstance(Test, testmodule.Column)
+                self.assertListEqual(Test.Data, TestCheck)
+                del Test
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
     
     def test_getRow_TypeError(self):
         """
@@ -1660,11 +1874,14 @@ class Test_Matrix(Test_Array2D):
         
         Covers requirements: REQ-AWM-307
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotInt:
             with self.assertRaises(TypeError):
                 Row = self.TestObject.getRow(Item)
+            self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Row = self.TestObject.getRow(slice(0,1))
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_getColumn_TypeError(self):
         """
@@ -1674,11 +1891,14 @@ class Test_Matrix(Test_Array2D):
         
         Covers requirements: REQ-AWM-307
         """
+        Data = list(self.TestObject.Data)
         for Item in self.NotInt:
             with self.assertRaises(TypeError):
                 Col = self.TestObject.getColumn(Item)
+            self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
             Col = self.TestObject.getColumn(slice(0,1))
+        self.assertListEqual(self.TestObject.Data, Data)
     
     def test_getRow_ValueError(self):
         """
@@ -1688,11 +1908,16 @@ class Test_Matrix(Test_Array2D):
         
         Covers requirements: REQ-AWM-308
         """
-        Height = self.TestObject.Height
-        for Row in [-Height - random.randint(2, 10), -Height -1, Height,
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Height = self.TestObject.Height
+            for Row in [-Height - random.randint(2, 10), -Height -1, Height,
                                                 Height + random.randint(1, 10)]:
-            with self.assertRaises(ValueError):
-                Temp = self.TestObject.getRow(Row)
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject.getRow(Row)
+                self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
     
     def test_getColumn_ValueError(self):
         """
@@ -1702,52 +1927,66 @@ class Test_Matrix(Test_Array2D):
         
         Covers requirements: REQ-AWM-308
         """
-        Width = self.TestObject.Width
-        for Col in [-Width - random.randint(2, 10), -Width -1, Width,
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Width = self.TestObject.Width
+            for Col in [-Width - random.randint(2, 10), -Width -1, Width,
                                                 Width + random.randint(1, 10)]:
-            with self.assertRaises(ValueError):
-                Temp = self.TestObject.getColumn(Col)
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject.getColumn(Col)
+                self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
     
     def test_augmentedAssignment(self):
         """
         Checks that the in-place modification via augmented assignment is not
         supported. This is an additional test.
         """
-        Data = list(self.TestObject.Data)
-        Elements = [[random.random() + random.randint(-10, 10)
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            Elements = [[random.random() + random.randint(-10, 10)
                                         for _ in range(self.TestObject.Width)]
                                         for _ in range(self.TestObject.Height)]
-        Other = self.TestClass(Elements)
-        with self.assertRaises(TypeError):
-            self.TestObject += Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject -= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject *= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject @= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        del Other
-        Other = random.randint(1, 10)
-        with self.assertRaises(TypeError):
-            self.TestObject *= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject /= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        Other += random.random()
-        with self.assertRaises(TypeError):
-            self.TestObject *= Other
-        self.assertListEqual(self.TestObject.Data, Data)
-        with self.assertRaises(TypeError):
-            self.TestObject /= Other
-        self.assertListEqual(self.TestObject.Data, Data)
+            Other = self.TestClass(Elements)
+            with self.assertRaises(TypeError):
+                self.TestObject += Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject -= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject *= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject @= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            del Other
+            Other = random.randint(1, 10)
+            with self.assertRaises(TypeError):
+                self.TestObject *= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject /= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            Other += random.random()
+            with self.assertRaises(TypeError):
+                self.TestObject *= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            with self.assertRaises(TypeError):
+                self.TestObject /= Other
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
 
 class Test_SquareMatrix(Test_Matrix):
     """
+    Set of unit tests for the class SquareMatrix.
+    
+    Implements tests: TEST-T-30A, TEST-T-30D and TEST-T-30F
+    
+    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-AWM-300, REQ-AWM-301,
+    REQ-AWM-307 and REQ-AWM-308
     """
     
     @classmethod
@@ -2040,7 +2279,7 @@ class Test_SquareMatrix(Test_Matrix):
         
         Test ID: TEST-T-30D
         
-        Covers requirements: REQ-AWM-300
+        Covers requirements: REQ-AWM-301
         """
         Size = self.TestObject.Size
         Data = list()
@@ -2083,8 +2322,13 @@ class Test_SquareMatrix(Test_Matrix):
         
         Covers requirements: REQ-FUN-304
         """
-        with self.assertRaises(AttributeError):
-            self.TestObject.Size = 5
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            with self.assertRaises(AttributeError):
+                self.TestObject.Size = 2 + random.randint(0, 5)
+            self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
 
 #+ test suites
 

@@ -64,9 +64,9 @@
 | REQ-FUN-305        | TEST-T-30A                                                   | YES                      |
 | REQ-FUN-306        | TEST-T-30B                                                   | NO                       |
 | REQ-FUN-307        | TEST-T-30C                                                   | NO                       |
-| REQ-FUN-310        | TEST-T-305                                                   | NO                       |
-| REQ-FUN-320        | TEST-T-305                                                   | NO                       |
-| REQ-FUN-330        | TEST-T-305                                                   | NO                       |
+| REQ-FUN-310        | TEST-T-305                                                   | YES                      |
+| REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | NO                       |
+| REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | NO                       |
 | REQ-FUN-340        |                                                              | NO                       |
 | REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                      |
 | REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                      |
