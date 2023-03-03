@@ -1823,6 +1823,12 @@ class Test_Matrix(Test_Array2D):
         Preparation for the test cases, done only once.
         """
         super().setUpClass()
+        cls.NotMatrix = [1, 2.0, True, int, float, bool, [1], (1.0, 1), {1:1},
+                            {1, 2}, list, tuple, dict, set, testmodule.Matrix,
+                            testmodule.SquareMatrix, testmodule.Vector,
+                            testmodule.Column, testmodule.Row,
+                            testmodule.Vector(1, 2, 3), testmodule.Row(1, 2, 3),
+                            testmodule.Column(1, 2, 3)]
         cls.TestClass = testmodule.Matrix
     
     def test_getRow(self):
@@ -1976,6 +1982,270 @@ class Test_Matrix(Test_Array2D):
             with self.assertRaises(TypeError):
                 self.TestObject /= Other
             self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
+    
+    def test_add(self):
+        """
+        Checks the implementation of the matrix summation.
+
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        for _ in range (10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            Data = list(self.TestObject.Data)
+            Elements = list()
+            for _ in range(Height):
+                Row = list()
+                for _ in range(Width):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = self.TestClass(Elements)
+            objTest = self.TestObject + Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] +
+                                                                Other[Col, Row])
+            del objTest
+            objTest = Other + self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] +
+                                                                Other[Col, Row])
+            del objTest
+            del Other
+            self.tearDown()
+            self.setUp()
+    
+    def test_sub(self):
+        """
+        Checks the implementation of the matrix subtraction.
+
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        for _ in range (10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            Data = list(self.TestObject.Data)
+            Elements = list()
+            for _ in range(Height):
+                Row = list()
+                for _ in range(Width):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = self.TestClass(Elements)
+            objTest = self.TestObject - Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] -
+                                                                Other[Col, Row])
+            del objTest
+            objTest = Other - self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, - self.TestObject[Col, Row] +
+                                                                Other[Col, Row])
+            del objTest
+            del Other
+            self.tearDown()
+            self.setUp()
+    
+    def test_add_ValueError(self):
+        """
+        Checks the implementation of the matrix summation - unequal sizes.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-FUN-303
+        """
+        for _ in range(10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            NewWidth = Width + random.randint(1, 5)
+            NewHeight = Height + random.randint(1, 5)
+            Elements = list()
+            for _ in range(Height):
+                Row = list()
+                for _ in range(NewWidth):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject + Other
+            with self.assertRaises(ValueError):
+                Temp = Other + self.TestObject
+            del Other
+            Elements = list()
+            for _ in range(NewHeight):
+                Row = list()
+                for _ in range(Width):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject + Other
+            with self.assertRaises(ValueError):
+                Temp = Other + self.TestObject
+            del Other
+            Size = max(Width, Height) + random.randint(1, 5)
+            Elements = list()
+            for _ in range(Size):
+                Row = list()
+                for _ in range(Size):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.SquareMatrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject + Other
+            with self.assertRaises(ValueError):
+                Temp = Other + self.TestObject
+            del Other
+            self.tearDown()
+            self.setUp()
+    
+    def test_sub_ValueError(self):
+        """
+        Checks the implementation of the matrix subtraction - unequal sizes.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-FUN-303
+        """
+        for _ in range(10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            NewWidth = Width + random.randint(1, 5)
+            NewHeight = Height + random.randint(1, 5)
+            Elements = list()
+            for _ in range(Height):
+                Row = list()
+                for _ in range(NewWidth):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            self.assertNotEqual(Other.Width, self.TestObject.Width)
+            self.assertEqual(Other.Height, self.TestObject.Height)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject - Other
+            with self.assertRaises(ValueError):
+                Temp = Other - self.TestObject
+            del Other
+            Elements = list()
+            for _ in range(NewHeight):
+                Row = list()
+                for _ in range(Width):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject - Other
+            with self.assertRaises(ValueError):
+                Temp = Other - self.TestObject
+            del Other
+            Size = max(Width, Height) + random.randint(1, 5)
+            Elements = list()
+            for _ in range(Size):
+                Row = list()
+                for _ in range(Size):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.SquareMatrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject - Other
+            with self.assertRaises(ValueError):
+                Temp = Other - self.TestObject
+            del Other
+            self.tearDown()
+            self.setUp()
+    
+    def test_add_TypeError(self):
+        """
+        Checks the implementation of the matrix summation - improper types.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-FUN-303
+        """
+        for _ in range(10):
+            for Item in self.NotMatrix:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject + Item
+                with self.assertRaises(TypeError):
+                    Temp = Item + self.TestObject
+            self.tearDown()
+            self.setUp()
+    
+    def test_sub_TypeError(self):
+        """
+        Checks the implementation of the matrix subtraction - improper types.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-FUN-303
+        """
+        for _ in range(10):
+            for Item in self.NotMatrix:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject + Item
+                with self.assertRaises(TypeError):
+                    Temp = Item + self.TestObject
             self.tearDown()
             self.setUp()
 
@@ -2327,6 +2597,106 @@ class Test_SquareMatrix(Test_Matrix):
             with self.assertRaises(AttributeError):
                 self.TestObject.Size = 2 + random.randint(0, 5)
             self.assertListEqual(self.TestObject.Data, Data)
+            self.tearDown()
+            self.setUp()
+    
+    def test_add(self):
+        """
+        Checks the implementation of the matrix summation.
+
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        super().test_add()
+        for _ in range (10):
+            Size = self.TestObject.Size
+            Data = list(self.TestObject.Data)
+            Elements = list()
+            for _ in range(Size):
+                Row = list()
+                for _ in range(Size):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            objTest = self.TestObject + Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Size, Size)
+            for Row in range(Size):
+                for Col in range(Size):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] +
+                                                                Other[Col, Row])
+            del objTest
+            objTest = Other + self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Size, Size)
+            for Row in range(Size):
+                for Col in range(Size):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] +
+                                                                Other[Col, Row])
+            del objTest
+            del Other
+            self.tearDown()
+            self.setUp()
+    
+    def test_sub(self):
+        """
+        Checks the implementation of the matrix subtraction.
+
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        super().test_sub()
+        for _ in range (10):
+            Size = self.TestObject.Size
+            Data = list(self.TestObject.Data)
+            Elements = list()
+            for _ in range(Size):
+                Row = list()
+                for _ in range(Size):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            objTest = self.TestObject - Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Size, Size)
+            for Row in range(Size):
+                for Col in range(Size):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] -
+                                                                Other[Col, Row])
+            del objTest
+            objTest = Other - self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Size, Size)
+            for Row in range(Size):
+                for Col in range(Size):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, - self.TestObject[Col, Row] +
+                                                                Other[Col, Row])
+            del objTest
+            del Other
             self.tearDown()
             self.setUp()
 

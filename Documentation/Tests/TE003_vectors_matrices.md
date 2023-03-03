@@ -386,6 +386,35 @@ Any matrix (generic or square) has a method or read-only property to read-out al
 
 ---
 
+**Test Identifier:** TEST-T-30B
+
+**Requirement ID(s)**: REQ-FUN-306, REQ-FUN-320, REQ-FUN-330
+
+**Verification method:** T
+
+**Test goal:** Arithmetic operations with matrices
+
+**Expected result:** Both the general and square matrix classes support the basic arithmetics:
+
+* Two matrices can be added or one matrix can be subtracted from enother if both the widths and heights of the left and the right operands are equal. If one of the operands is a generic matrix but with equal width and height and the second operand is a square matrix the result is a square matrix.
+
+These arithmetical operations do not change the content of the operands.
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Generate a generic matrix of random width and height with the random values of elements. Generate the second matrix of the same sizes and with also random values of the the elements. Perform the following operations:
+  * first + second
+  * second + first
+  * first - second
+  * second - first
+* Check that in all cases the result is a matrix of the same class (type) and the dimentions; check that the content of the operands is not changed; check that the values of the elements of the resulting matrix are the sum / difference of the corresponding column / row intersection elements of the operands
+* Repeat the previous tests with two square matrices (width = height = size)
+* Also try a generic matrix as one of the operands (with width equal to the height) and a square matrix of the same size as the second operand - check that the result is an instance of the square matrix class of the same size and the elements are calculated properly
+
+**Test result:** PASS/FAIL
+
+---
+
 **Test Identifier:** TEST-T-30D
 
 **Requirement ID(s)**: REQ-AWM-300, REQ-AWM-301
@@ -425,6 +454,35 @@ The matrix classes raise a sub-class of ValueError when
 Try to instantiate the class being tested with the one or more arguments being of the proper type but of a value expected to result in ValueError sub-class exception (see above). Make sure that all described violation cases are covered, and the expected exception is raised in the each case.
 
 **Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-30E
+
+**Requirement ID(s)**: REQ-AWM-302, REQ-AWM-303, REQ-AWM-304
+
+**Verification method:** T
+
+**Test goal:** Exceptions are raised with improper types, sizes or values of the matrix arithmetics operands
+
+**Expected result:** The exception compatible with / sub-class of TypeError is raised if:
+
+* Any other data type except for a matrix instance is used as the second operand in matrix addition or subtraction
+
+The exception compatible with / sub-class of ValueError is raised if:
+
+* Either of the two sizes of the matrix operands of the summation or subtraction are not equal
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Generate a generic matrix of random width and height with the random values of elements.
+* Generate a random generic matrix with the width differing by a random non-zero integer number.
+* Try to subtract one matrix from another and add them - check that a sub-class of ValueError exception is raised in the both cases.
+* Repeat with mis-matching heights.
+* Repeat the tests with the square matrices.
+* Check that that a sub-class of ValueError exception is raised when two unequal sized square matrices are added or subtracted.
+
+**Test result:** PASS/FAIL
 
 ---
 

@@ -41,6 +41,7 @@ if not (ROOT_FOLDER in sys.path):
 #++ actual import
 
 from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
+from introspection_lib.base_exceptions import GetObjectClass
 
 #types
 
@@ -1332,13 +1333,107 @@ class Matrix(Array2D):
     
     def __add__(self, Other: TMatrix) -> TMatrix:
         """
+        Magic method implementing addition of two matrices of the same sizes.
+
+        Signature:
+            'Matrix -> 'Matrix
+        
+        Args:
+            Other: 'Matrix; another instance of the generic or square matrix
+                same size
+        
+        Returns:
+            'MAtrix: instance of the generic or square matrix class, which is
+                the result of the operation; square matrix is returned only if
+                one of the arguments is an instance of square matrix class
+        
+        Raises:
+            UT_TypeError: the second operand is not an instance of the same
+                vector class
+            UT_ValueError: different sizes of the vectors
+        
+        Version 1.0.0.0
         """
-        return NotImplemented
+        if (not isinstance(Other, self.__class__)) and (
+                                        not isinstance(self, Other.__class__)):
+            objError = UT_TypeError(Other, self.__class__, SkipFrames = 1)
+            strMessage = 'incompatible types {} and {} for addition'.format(
+                                        self.__class__, GetObjectClass(Other))
+            objError.args = (strMessage, )
+            raise objError
+        elif isinstance(Other, self.__class__) and (
+                                        not isinstance(self, Other.__class__)):
+            clsResult = Other.__class__
+        else:
+            clsResult = self.__class__
+        selfWidth = len(self._Elements)
+        selfHeight = len(self._Elements[0])
+        otherWidth = len(Other._Elements)
+        otherHeight = len(Other._Elements[0])
+        if selfWidth != otherWidth:
+            raise UT_ValueError(otherWidth,
+                    '={} - matrices widths'.format(otherWidth), SkipFrames = 1)
+        elif selfHeight != otherHeight:
+            raise UT_ValueError(otherHeight,
+                '={} - matrices heights'.format(otherHeight), SkipFrames = 1)
+        Elements = list()
+        for Row in range(self.Height):
+            RowItems = list([Item + Other._Elements[Row][Index]
+                             for Index, Item in enumerate(self._Elements[Row])])
+            Elements.append(RowItems)
+        return clsResult(Elements)
     
     def __sub__(self, Other: TMatrix) -> TMatrix:
         """
+        Magic method implementing subtraction of two matrices of the same sizes.
+
+        Signature:
+            'Matrix -> 'Matrix
+        
+        Args:
+            Other: 'Matrix; another instance of the generic or square matrix
+                same size
+        
+        Returns:
+            'MAtrix: instance of the generic or square matrix class, which is
+                the result of the operation; square matrix is returned only if
+                one of the arguments is an instance of square matrix class
+        
+        Raises:
+            UT_TypeError: the second operand is not an instance of the same
+                vector class
+            UT_ValueError: different sizes of the vectors
+        
+        Version 1.0.0.0
         """
-        return NotImplemented
+        if (not isinstance(Other, self.__class__)) and (
+                                        not isinstance(self, Other.__class__)):
+            objError = UT_TypeError(Other, self.__class__, SkipFrames = 1)
+            strMessage = 'incompatible types {} and {} for addition'.format(
+                                        self.__class__, GetObjectClass(Other))
+            objError.args = (strMessage, )
+            raise objError
+        elif isinstance(Other, self.__class__) and (
+                                        not isinstance(self, Other.__class__)):
+            clsResult = Other.__class__
+        else:
+            clsResult = self.__class__
+        selfWidth = len(self._Elements)
+        selfHeight = len(self._Elements[0])
+        otherWidth = len(Other._Elements)
+        otherHeight = len(Other._Elements[0])
+        if selfWidth != otherWidth:
+            raise UT_ValueError(otherWidth,
+                    '={} - matrices widths'.format(otherWidth), SkipFrames = 1)
+        elif selfHeight != otherHeight:
+            raise UT_ValueError(otherHeight,
+                '={} - matrices heights'.format(otherHeight), SkipFrames = 1)
+        Elements = list()
+        for Row in range(self.Height):
+            RowItems = list([Item - Other._Elements[Row][Index]
+                             for Index, Item in enumerate(self._Elements[Row])])
+            Elements.append(RowItems)
+        return clsResult(Elements)
     
     def __mul__(self, Other: Union[TReal, Column, TMatrix]
                                                 ) -> Union[Column, TMatrix]:
