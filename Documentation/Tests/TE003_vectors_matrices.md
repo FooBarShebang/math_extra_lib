@@ -43,7 +43,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Expected result:** The required special functions are present and perform as expected, i.e. all TEST-T-3xy tests defined in this document are passed.
 
-**Test steps:** Analyze the source code of the module [vectors\_matrices](../../vectors_matrices.py) as well as of the unit-test module [/Tests/UT003\_vectors\_matrices](../../Tests/UT003_vectors_matrices.py). Execute the mentioned unit-test module.
+**Test steps:** Analyze the source code of the module [vectors\_matrices](../../vectors_matrices.py) as well as of the unit-test module [/Tests/UT003\_vectors\_matrices](../../Tests/UT003_vectors_matrices.py). Execute the mentioned unit-test module. Also execute the demonstration test [/Tests/DE003\_vectors\_matrices](../../Tests/DT003_vectors_matrices.py).
 
 **Test result:** PASS / FAIL
 
