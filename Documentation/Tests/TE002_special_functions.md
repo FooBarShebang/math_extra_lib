@@ -193,17 +193,17 @@ The functions *upper_gamma*(x, y), *upper_gamma_reg*(x, y) and *log_upper_gamma*
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
-| :----------------- | :--------------------- | :----------------------- |
-| REQ-FUN-200        | TEST-A-200             | YES                      |
-| REQ-FUN-210        | TEST-T-210             | YES                      |
-| REQ-FUN-220        | TEST-T-220             | YES                      |
-| REQ-FUN-230        | TEST-T-230             | YES                      |
-| REQ-FUN-240        | TEST-T-240             | YES                      |
-| REQ-FUN-250        | TEST-T-250             | YES                      |
-| REQ-FUN-260        | TEST-T-260             | YES                      |
-| REQ-AWM-200        | TEST-T-200             | YES                      |
-| REQ-AWM-201        | TEST-T-201             | YES                      |
+| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]** |
+| :----------------- | :--------------------- | :---------------------- |
+| REQ-FUN-200        | TEST-A-200             | YES                     |
+| REQ-FUN-210        | TEST-T-210             | YES                     |
+| REQ-FUN-220        | TEST-T-220             | YES                     |
+| REQ-FUN-230        | TEST-T-230             | YES                     |
+| REQ-FUN-240        | TEST-T-240             | YES                     |
+| REQ-FUN-250        | TEST-T-250             | YES                     |
+| REQ-FUN-260        | TEST-T-260             | YES                     |
+| REQ-AWM-200        | TEST-T-200             | YES                     |
+| REQ-AWM-201        | TEST-T-201             | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |

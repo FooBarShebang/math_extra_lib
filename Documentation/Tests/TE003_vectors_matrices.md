@@ -535,32 +535,32 @@ Try to access an element using two integer index values, with one or both being 
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]**) |
-| :----------------- | :----------------------------------------------------------- | :----------------------- |
-| REQ-FUN-300        | TEST-A-300                                                   | NO                       |
-| REQ-FUN-301        | TEST-T-300                                                   | YES                      |
-| REQ-FUN-302        | TEST-T-300                                                   | YES                      |
-| REQ-FUN-303        | TEST-T-309                                                   | YES                      |
-| REQ-FUN-304        | TEST-T-30A                                                   | YES                      |
-| REQ-FUN-305        | TEST-T-30A                                                   | YES                      |
-| REQ-FUN-306        | TEST-T-30B                                                   | NO                       |
-| REQ-FUN-307        | TEST-T-30C                                                   | NO                       |
-| REQ-FUN-310        | TEST-T-305                                                   | YES                      |
-| REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | NO                       |
-| REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | NO                       |
-| REQ-FUN-340        |                                                              | NO                       |
-| REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                      |
-| REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                      |
-| REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | NO                       |
-| REQ-AWM-303        | TEST-T-307, TEST-T-30E                                       | NO                       |
-| REQ-AWM-304        | TEST-T-308, TEST-T-30E                                       | NO                       |
-| REQ-AWM-305        | TEST-T-309                                                   | YES                      |
-| REQ-AWM-306        | TEST-T-309                                                   | YES                      |
-| REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                      |
-| REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                      |
-| REQ-AWM-340        |                                                              | NO                       |
-| REQ-AWM-341        |                                                              | NO                       |
-| REQ-AWM-342        |                                                              | NO                       |
+| **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
+| :----------------- | :----------------------------------------------------------- | :---------------------- |
+| REQ-FUN-300        | TEST-A-300                                                   | NO                      |
+| REQ-FUN-301        | TEST-T-300                                                   | YES                     |
+| REQ-FUN-302        | TEST-T-300                                                   | YES                     |
+| REQ-FUN-303        | TEST-T-309                                                   | YES                     |
+| REQ-FUN-304        | TEST-T-30A                                                   | YES                     |
+| REQ-FUN-305        | TEST-T-30A                                                   | YES                     |
+| REQ-FUN-306        | TEST-T-30B                                                   | NO                      |
+| REQ-FUN-307        | TEST-T-30C                                                   | NO                      |
+| REQ-FUN-310        | TEST-T-305                                                   | YES                     |
+| REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | NO                      |
+| REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | NO                      |
+| REQ-FUN-340        |                                                              | NO                      |
+| REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                     |
+| REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                     |
+| REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | NO                      |
+| REQ-AWM-303        | TEST-T-307, TEST-T-30E                                       | NO                      |
+| REQ-AWM-304        | TEST-T-308, TEST-T-30E                                       | NO                      |
+| REQ-AWM-305        | TEST-T-309                                                   | YES                     |
+| REQ-AWM-306        | TEST-T-309                                                   | YES                     |
+| REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                     |
+| REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                     |
+| REQ-AWM-340        |                                                              | NO                      |
+| REQ-AWM-341        |                                                              | NO                      |
+| REQ-AWM-342        |                                                              | NO                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
