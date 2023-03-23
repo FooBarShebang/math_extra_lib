@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "18-01-2023"
+__date__ = "23-03-2023"
 __status__ = "Testing"
 
 #imports
@@ -1811,10 +1811,12 @@ class Test_Matrix(Test_Array2D):
     """
     Set of unit tests for the class Matrix.
     
-    Implements tests: TEST-T-30A, TEST-T-30D and TEST-T-30F
+    Implements tests: TEST-T-30A, TEST-T-30B, TEST-T-30D, TEST-T-30E
+    and TEST-T-30F
     
-    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-AWM-300, REQ-AWM-301,
-    REQ-AWM-307 and REQ-AWM-308
+    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-FUN-306, REQ-FUN-320,
+    REQ-FUN-330, REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303,
+    REQ-AWM-304, REQ-AWM-307 and REQ-AWM-308
     """
     
     @classmethod
@@ -1829,6 +1831,26 @@ class Test_Matrix(Test_Array2D):
                             testmodule.Column, testmodule.Row,
                             testmodule.Vector(1, 2, 3), testmodule.Row(1, 2, 3),
                             testmodule.Column(1, 2, 3)]
+        cls.BadTypeRight = [int, float, bool, [1], (1.0, 1), {1:1},
+                            {1, 2}, list, tuple, dict, set, testmodule.Matrix,
+                            testmodule.SquareMatrix, testmodule.Vector,
+                            testmodule.Column, testmodule.Row,
+                            testmodule.Vector(1, 2, 3), testmodule.Row(1, 2, 3),
+                            ]
+        cls.BadTypeLeft = [int, float, bool, [1], (1.0, 1), {1:1},
+                            {1, 2}, list, tuple, dict, set, testmodule.Matrix,
+                            testmodule.SquareMatrix, testmodule.Vector,
+                            testmodule.Column, testmodule.Row,
+                            testmodule.Vector(1, 2, 3),
+                            testmodule.Column(1, 2, 3)]
+        cls.NotScalar = [int, float, bool, [1], (1.0, 1), {1:1},
+                            {1, 2}, list, tuple, dict, set, testmodule.Matrix,
+                            testmodule.SquareMatrix, testmodule.Vector,
+                            testmodule.Column, testmodule.Row,
+                            testmodule.Vector(1, 2, 3), testmodule.Row(1, 2, 3),
+                            testmodule.Column(1, 2, 3),
+                            testmodule.Matrix(((1, 1), (2, 3))),
+                            testmodule.SquareMatrix(((1, 1), (2, 3)))]
         cls.TestClass = testmodule.Matrix
     
     def test_getRow(self):
@@ -2095,7 +2117,7 @@ class Test_Matrix(Test_Array2D):
 
         Test ID: TEST-T-30E
 
-        Covers requirements: REQ-FUN-303
+        Covers requirements: REQ-AWM-303
         """
         for _ in range(10):
             Width = self.TestObject.Width
@@ -2157,7 +2179,7 @@ class Test_Matrix(Test_Array2D):
 
         Test ID: TEST-T-30E
 
-        Covers requirements: REQ-FUN-303
+        Covers requirements: REQ-AWM-303
         """
         for _ in range(10):
             Width = self.TestObject.Width
@@ -2221,7 +2243,7 @@ class Test_Matrix(Test_Array2D):
 
         Test ID: TEST-T-30E
 
-        Covers requirements: REQ-FUN-303
+        Covers requirements: REQ-AWM-302
         """
         for _ in range(10):
             for Item in self.NotMatrix:
@@ -2238,7 +2260,7 @@ class Test_Matrix(Test_Array2D):
 
         Test ID: TEST-T-30E
 
-        Covers requirements: REQ-FUN-303
+        Covers requirements: REQ-AWM-302
         """
         for _ in range(10):
             for Item in self.NotMatrix:
@@ -2248,15 +2270,384 @@ class Test_Matrix(Test_Array2D):
                     Temp = Item + self.TestObject
             self.tearDown()
             self.setUp()
+    
+    def test_mul(self):
+        """
+        Checks the implementation of the matrix multiplication, including by
+        scalar, column, row and another matrix.
+
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        for _ in range (10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            Data = list(self.TestObject.Data)
+            #by scalar (left and right)
+            Scalar = random.randint(-10, 10)
+            objTest = self.TestObject * Scalar
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] * Scalar)
+            del objTest
+            objTest = Scalar * self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] * Scalar)
+            del objTest
+            Scalar += random.random()
+            objTest = self.TestObject * Scalar
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] * Scalar)
+            del objTest
+            objTest = Scalar * self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] * Scalar)
+            del objTest
+            #by row vector (left)
+            Elements = [random.random() + random.randint(-10, 10)
+                                                        for _ in range(Height)]
+            Other = testmodule.Row(*Elements)
+            objTest = Other * self.TestObject
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertListEqual(list(Other.Data), Elements)
+            self.assertIsInstance(objTest, testmodule.Row)
+            self.assertEqual(objTest.Size, Width)
+            for Index, Item in enumerate(objTest.Data):
+                self.assertIsInstance(Item, (int, float))
+                self.assertAlmostEqual(Item,
+                                    Other * self.TestObject.getColumn(Index))
+            del Other
+            del objTest
+            #by column vector (right)
+            Elements = [random.random() + random.randint(-10, 10)
+                                                        for _ in range(Width)]
+            Other = testmodule.Column(*Elements)
+            objTest = self.TestObject * Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertListEqual(list(Other.Data), Elements)
+            self.assertIsInstance(objTest, testmodule.Column)
+            self.assertEqual(objTest.Size, Height)
+            for Index, Item in enumerate(objTest.Data):
+                self.assertIsInstance(Item, (int, float))
+                self.assertAlmostEqual(Item,
+                                    self.TestObject.getRow(Index) * Other)
+            del Other
+            del objTest
+            #by generic matrix (right)
+            NewWidth = Height + random.randint(1, 3)
+            Elements = list()
+            for _ in range(Width):
+                Row = list()
+                for _ in range(NewWidth):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            objTest = self.TestObject * Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertListEqual(list(Other.Data), Elements)
+            self.assertIsInstance(objTest, testmodule.Matrix)
+            self.assertEqual(objTest.Width, NewWidth)
+            self.assertEqual(objTest.Height, Height)
+            if Height == NewWidth:
+                self.assertIsInstance(objTest, testmodule.SquareMatrix)
+            else:
+                self.assertNotIsInstance(objTest, testmodule.SquareMatrix)
+            for Row in range(Height):
+                for Col in range(NewWidth):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject.getRow(Row) *
+                                                        Other.getColumn(Col))
+            del Other
+            del objTest
+            NewWidth = max(2, Height - random.randint(1, 3))
+            Elements = list()
+            for _ in range(Width):
+                Row = list()
+                for _ in range(NewWidth):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            objTest = self.TestObject * Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertListEqual(list(Other.Data), Elements)
+            self.assertIsInstance(objTest, testmodule.Matrix)
+            self.assertEqual(objTest.Width, NewWidth)
+            self.assertEqual(objTest.Height, Height)
+            if Height == NewWidth:
+                self.assertIsInstance(objTest, testmodule.SquareMatrix)
+            else:
+                self.assertNotIsInstance(objTest, testmodule.SquareMatrix)
+            for Row in range(Height):
+                for Col in range(NewWidth):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject.getRow(Row) *
+                                                        Other.getColumn(Col))
+            del Other
+            del objTest
+            #+ expected square matrix!
+            Elements = list()
+            for _ in range(Width):
+                Row = list()
+                for _ in range(Height):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.Matrix(Elements)
+            objTest = self.TestObject * Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertListEqual(list(Other.Data), Elements)
+            self.assertIsInstance(objTest, testmodule.SquareMatrix)
+            self.assertEqual(objTest.Size, Height)
+            for Row in range(Height):
+                for Col in range(Height):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject.getRow(Row) *
+                                                        Other.getColumn(Col))
+            del Other
+            del objTest
+            #by square matrix (right)
+            Elements = list()
+            for _ in range(Width):
+                Row = list()
+                for _ in range(Width):
+                    Value = random.randint(-5, 5)
+                    if random.random() > 0.5:
+                        Value += random.random()
+                    Row.append(Value)
+                Elements.append(Row)
+            Other = testmodule.SquareMatrix(Elements)
+            objTest = self.TestObject * Other
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertListEqual(list(Other.Data), Elements)
+            self.assertIsInstance(objTest, testmodule.Matrix)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            if Width == Height:
+                self.assertIsInstance(objTest, testmodule.SquareMatrix)
+            else:
+                self.assertNotIsInstance(objTest, testmodule.SquareMatrix)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject.getRow(Row) *
+                                                        Other.getColumn(Col))
+            del Other
+            del objTest
+            self.tearDown()
+            self.setUp()
+    
+    def test_mul_TypeError(self):
+        """
+        Checks the implementation of the matrix multiplication - improper types.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-AWM-302
+        """
+        for _ in range(10):
+            for Item in self.BadTypeRight:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject * Item
+            for Item in self.BadTypeLeft:
+                with self.assertRaises(TypeError):
+                    Temp = Item * self.TestObject
+            self.tearDown()
+            self.setUp()
+    
+    def test_mul_ValueError(self):
+        """
+        Checks the implementation of the matrix multiplication - mismatching
+        sizes.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-AWM-303
+        """
+        for _ in range(10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            Elements = [1 for _ in range(Width + random.randint(1, 3))]
+            Other = testmodule.Column(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject * Other
+            del Other
+            if Width > 2:
+                Elements = [1 for _ in
+                                range(max(2, Width - random.randint(1, 3)))]
+                Other = testmodule.Column(*Elements)
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject * Other
+                del Other
+            Elements = [1 for _ in range(Height + random.randint(1, 3))]
+            Other = testmodule.Row(*Elements)
+            with self.assertRaises(ValueError):
+                Temp = Other * self.TestObject
+            del Other
+            if Height > 2:
+                Elements = [1 for _ in
+                                range(max(2, Height - random.randint(1, 3)))]
+                Other = testmodule.Row(*Elements)
+                with self.assertRaises(ValueError):
+                    Temp = Other * self.TestObject
+                del Other
+            Elements = [[1 for _ in range(3)]
+                                for _ in range(Width + random.randint(1, 3))]
+            Other = testmodule.Matrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject * Other
+            del Other
+            if Width > 2:
+                Elements = [[1 for _ in range(3)] for _ in range(
+                                        max(2, Width - random.randint(1, 3)))]
+                Other = testmodule.Matrix(Elements)
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject * Other
+                del Other
+            Size = Width + random.randint(1, 3)
+            Elements = [[1 for _ in range(Size)] for _ in range(Size)]
+            Other = testmodule.SquareMatrix(Elements)
+            with self.assertRaises(ValueError):
+                Temp = self.TestObject * Other
+            del Other
+            if Width > 2:
+                Size = max(2, Width - random.randint(1, 3))
+                Elements = [[1 for _ in range(Size)] for _ in range(Size)]
+                Other = testmodule.SquareMatrix(Elements)
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject * Other
+                del Other
+            self.tearDown()
+            self.setUp()
+    
+    def test_div(self):
+        """
+        Checks the implementation of the matrix division by a scalar.
+
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        for _ in range (10):
+            Width = self.TestObject.Width
+            Height = self.TestObject.Height
+            Data = list(self.TestObject.Data)
+            #by scalar (left and right)
+            Scalar = random.randint(-10, 10)
+            if not Scalar:
+                Scalar = 2
+            objTest = self.TestObject / Scalar
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] / Scalar)
+            del objTest
+            Scalar += random.random()
+            objTest = self.TestObject / Scalar
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, Width)
+            self.assertEqual(objTest.Height, Height)
+            for Row in range(Height):
+                for Col in range(Width):
+                    Item = objTest[Col, Row]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[Col, Row] / Scalar)
+            del objTest
+    
+    def test_div_ValueError(self):
+        """
+        Checks the implementation of the matrix division by zero.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-AWM-304
+        """
+        for _ in range(10):
+            for Item in self.NotScalar:
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject / 0
+            for Item in self.NotScalar:
+                with self.assertRaises(ValueError):
+                    Temp = self.TestObject / 0.0
+            self.tearDown()
+            self.setUp()
+    
+    def test_div_TypeError(self):
+        """
+        Checks the implementation of the matrix division - improper types.
+
+        Test ID: TEST-T-30E
+
+        Covers requirements: REQ-AWM-303
+        """
+        for _ in range(10):
+            for Item in self.NotScalar:
+                with self.assertRaises(TypeError):
+                    Temp = self.TestObject / Item
+            self.tearDown()
+            self.setUp()
 
 class Test_SquareMatrix(Test_Matrix):
     """
     Set of unit tests for the class SquareMatrix.
     
-    Implements tests: TEST-T-30A, TEST-T-30D and TEST-T-30F
+    Implements tests: TEST-T-30A, TEST-T-30B, TEST-T-30D, TEST-T-30E
+    and TEST-T-30F
     
-    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-AWM-300, REQ-AWM-301,
-    REQ-AWM-307 and REQ-AWM-308
+    Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-FUN-306, REQ-FUN-320,
+    REQ-FUN-330, REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303,
+    REQ-AWM-304, REQ-AWM-307 and REQ-AWM-308
     """
     
     @classmethod

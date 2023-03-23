@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '18-01-2023'
+__date__ = '23-03-2023'
 __status__ = 'Development'
 
 #imports
@@ -1045,7 +1045,8 @@ class Column(Vector):
         Version 1.0.0.0
         """
         return '|{}|^T'.format(', '.join(map(str, self._Elements)))
-
+    
+    # Is overloaded later
     def __mul__(self, Other: Union[TReal, TRow]) -> Union[TColumn, TMatrix]:
         """
         Magic method implementing right multiplication of a column vector by a
@@ -1113,6 +1114,7 @@ class Column(Vector):
     
     #public methods
     
+    # Is overloaded later
     def transpose(self) -> TRow:
         """
         Transposes the current column vector into a row vector preserving the
@@ -1343,14 +1345,14 @@ class Matrix(Array2D):
                 same size
         
         Returns:
-            'MAtrix: instance of the generic or square matrix class, which is
+            'Matrix: instance of the generic or square matrix class, which is
                 the result of the operation; square matrix is returned only if
                 one of the arguments is an instance of square matrix class
         
         Raises:
-            UT_TypeError: the second operand is not an instance of the same
-                vector class
-            UT_ValueError: different sizes of the vectors
+            UT_TypeError: the second operand is not an instance of the matrix
+                (sub-) class
+            UT_ValueError: different sizes of the matrices
         
         Version 1.0.0.0
         """
@@ -1395,14 +1397,14 @@ class Matrix(Array2D):
                 same size
         
         Returns:
-            'MAtrix: instance of the generic or square matrix class, which is
+            'Matrix: instance of the generic or square matrix class, which is
                 the result of the operation; square matrix is returned only if
                 one of the arguments is an instance of square matrix class
         
         Raises:
-            UT_TypeError: the second operand is not an instance of the same
-                vector class
-            UT_ValueError: different sizes of the vectors
+            UT_TypeError: the second operand is not an instance of the matrix
+                (sub-) class
+            UT_ValueError: different sizes of the matrices
         
         Version 1.0.0.0
         """
@@ -1435,21 +1437,119 @@ class Matrix(Array2D):
             Elements.append(RowItems)
         return clsResult(Elements)
     
+    # Is overloaded later
     def __mul__(self, Other: Union[TReal, Column, TMatrix]
                                                 ) -> Union[Column, TMatrix]:
         """
+        Magic method implementing multiplication of two matrices, right
+        multiplication of a matrix by a column vector or by a scalar.
+
+        Signature:
+            'Matrix OR Column OR int OR float -> 'Matrix OR Column
+        
+        Args:
+            Other: 'Matrix OR Column OR int OR float; another instance of the
+                generic or square matrix with height equal to the width of the
+                left operand, or an instance of the Column vector class with
+                length equal to the width of the left operand, or a real number
+        
+        Returns:
+            'Matrix: instance of the generic or square matrix class, which is
+                the result of the matrix by matrix or matrix by scalar
+                multiplication; a square matrix sub-type is returned only if
+                the width and height of the resulting (generic) matrix are equal
+            Column: instance of the column vector class, which is the result of
+                the matrix by column multiplication
+        
+        Raises:
+            UT_TypeError: the second operand is neither a matrix nor a column
+                vector nor a real number
+            UT_ValueError: for two matrices left operand width is not equal to
+                the right operand height, OR the length of the column is not
+                equal to the width of the matrix
+        
+        Version 1.0.0.0
         """
         return NotImplemented
     
     def __rmul__(self, Other: Union[TReal, Row]) -> Union[Row, TMatrix]:
         """
+        Magic method implementing multiplication of two matrices, right
+        multiplication of a matrix by a column vector or by a scalar.
+
+        Signature:
+            Row OR int OR float -> 'Matrix OR Row
+        
+        Args:
+            Other: Row OR int OR float; an instance of the Row vector class with
+                length equal to the height of the right operand, or a real
+                number
+        
+        Returns:
+            'Matrix: instance of the same (generic or square) matrix class,
+                which is the result of the matrix by scalar multiplication
+            Row: instance of the row vector class, which is the result of
+                the row vector by matrix multiplication
+        
+        Raises:
+            UT_TypeError: the second operand is neither a row vector nor a real
+                number
+            UT_ValueError: the length of the column vector is not equal to the
+                height of the matrix
+        
+        Version 1.0.0.0
         """
-        return NotImplemented
+        Result = None
+        if isinstance(Other, (int, float)):
+            Elements = [[Item * Other for Item in tupRow]
+                                                for tupRow in self._Elements]
+            Result = self.__class__(Elements)
+        elif isinstance(Other, Row):
+            Height = len(self._Elements)
+            Width = len(self._Elements[0])
+            Length = len(Other._Elements)
+            if Length != Height:
+                raise UT_ValueError(Length,
+                            '== {} - row vector size != matrix height'.format(
+                                                        Height), SkipFrames = 1)
+            Elements= [sum(self._Elements[RowIndex][ColumnIndex]*Other[RowIndex]
+                                        for RowIndex in range(Height))
+                                                for ColumnIndex in range(Width)]
+            Result = Row(*Elements)
+        else:
+            raise UT_TypeError(Other, (int, float, Row), SkipFrames = 1)
+        return Result
     
     def __truediv__(self, Other: TReal) -> TMatrix:
         """
+        Magic method implementing division of a matrix by a real number.
+
+        Signature:
+            int OR float -> 'Matrix
+        
+        Args:
+            Other: int OR float; a real number as the divisor
+        
+        Returns:
+            'Matrix: instance of the same (generic or square) matrix class,
+                which is the result of the operation
+        
+        Raises:
+            UT_TypeError: the second operand is not a real number
+            UT_ValueError: the divisor is zero
+        
+        Version 1.0.0.0
         """
-        return NotImplemented
+        Result = None
+        if isinstance(Other, (int, float)):
+            if Other == 0:
+                raise UT_ValueError(Other, '!= 0 - division by zero',
+                                                                SkipFrames = 1)
+            Elements= [[Item / Other for Item in Row] for Row in self._Elements]
+            Result = self.__class__(Elements)
+        else:
+            raise UT_TypeError(Other, (int, float), SkipFrames = 1)
+        return Result
     
     def __iadd__(self, Other: Any) -> NoReturn:
         """
@@ -1912,6 +2012,77 @@ def _Column_transpose(self: Column) -> Row:
     """
     return Row(*(self._Elements))
 
+#Dynamic patching of the Matrix class, instance method __mul__()
+
+def _Matrix__mul__(self: Matrix,
+                Other: Union[Matrix, Column, TReal]) -> Union[Column, Matrix]:
+    """
+    Special helper function to patch the right multiplication of a Matrix hook
+    magical method.
+    
+    Signature:
+        'Matrix, 'Matrix OR Column OR int OR float -> Column OR 'Matrix
+    
+    Args:
+        self: 'Matrix; instance of Matrix (sub-) class as the left operand
+        Other: 'Matrix OR Column OR int OR float; an instance of the Matrix
+            (sub-) class or an instance of Column vector class or a real number
+            as the right operand
+    
+    Returns:
+        Column: instance of the Column class, which is the result of the
+            operation with the Column right operand
+        'Matrix: result of the matrix x matrix or matrix x scalar multiplication
+            with an instance of SquareMatrix class returned if the width of the
+            resulting (generic) matrix equal its height
+    
+    Raises:
+        UT_TypeError: the second operand is not an instance of the Column vector
+            vector class nor a real number nor an instance of Matrix (sub-)
+            class
+        UT_ValueError: for two matrices left operand width is not equal to
+                the right operand height, OR the length of the column is not
+                equal to the width of the matrix
+        
+    Version 1.0.0.0
+    """
+    Result = None
+    if isinstance(Other, (int, float)):
+        Elements = [[Item * Other for Item in Row] for Row in self._Elements]
+        Result = self.__class__(Elements)
+    elif isinstance(Other, Column):
+        Height = len(self._Elements)
+        Width = len(self._Elements[0])
+        Length = len(Other._Elements)
+        if Length != Width:
+            raise UT_ValueError(Length,
+                            '== {} - column vector size != matrix width'.format(
+                                                        Width), SkipFrames = 1)
+        Elements = [sum(Item * Other._Elements[Index]
+                        for Index, Item in enumerate(self._Elements[RowIndex]))
+                                                for RowIndex in range(Height)]
+        Result = Column(*Elements)
+    elif isinstance(Other, Matrix):
+        SelfWidth = len(self._Elements[0])
+        SelfHeight = len(self._Elements)
+        Width = len(Other._Elements[0])
+        Height = len(Other._Elements)
+        if SelfWidth != Height:
+            raise UT_ValueError(SelfWidth,
+                            '== {} - left matrix width != right height'.format(
+                                                        Height), SkipFrames = 1)
+        Elements = [[sum(
+            self._Elements[RowIndex][Index]*Other._Elements[Index][ColIndex]
+                                                for Index in range(SelfWidth))
+                for ColIndex in range(Width)] for RowIndex in range(SelfHeight)]
+        if SelfHeight == Width:
+            Result = SquareMatrix(Elements)
+        else:
+            Result = Matrix(Elements)
+    else:
+        raise UT_TypeError(Other, (int, float, Column, Matrix), SkipFrames = 1)
+    return Result
+
 #tweaking and patching the classes
 
 TempDoc = Column.__mul__.__doc__
@@ -1920,3 +2091,7 @@ Column.__mul__.__doc__ = TempDoc
 TempDoc = Column.transpose.__doc__
 setattr(Column, "transpose", _Column_transpose)
 Column.transpose.__doc__ = TempDoc
+
+TempDoc = Matrix.__mul__.__doc__
+setattr(Matrix, "__mul__", _Matrix__mul__)
+Matrix.__mul__.__doc__ = TempDoc

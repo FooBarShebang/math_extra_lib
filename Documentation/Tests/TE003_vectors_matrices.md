@@ -410,8 +410,14 @@ These arithmetical operations do not change the content of the operands.
 * Check that in all cases the result is a matrix of the same class (type) and the dimentions; check that the content of the operands is not changed; check that the values of the elements of the resulting matrix are the sum / difference of the corresponding column / row intersection elements of the operands
 * Repeat the previous tests with two square matrices (width = height = size)
 * Also try a generic matrix as one of the operands (with width equal to the height) and a square matrix of the same size as the second operand - check that the result is an instance of the square matrix class of the same size and the elements are calculated properly
+* Multiply a random matrix (both generic and square) by a random scalar as the right operand (try integer and float) - check that the result is a matrix of the same (sub-) class and of the same sizes, the original matrix is not changed, and each element of the resulting matrix equals the product of the used scalar and the respective (same row and column indexes) element of the original matrix.
+* Multiply a random matrix (both generic and square) by a random scalar as the left operand (try integer and float) - check that the result is a matrix of the same (sub-) class and of the same sizes, the original matrix is not changed, and each element of the resulting matrix equals the product of the used scalar and the respective (same row and column indexes) element of the original matrix.
+* Divide a random matrix (both generic and square) by a random but non-zero value scalar as the right operand (try integer and float) - check that the result is a matrix of the same (sub-) class and of the same sizes, the original matrix is not changed, and each element of the resulting matrix equals the respective (same row and column indexes) element of the original matrix divided by this scalar value.
+* Multiply a random matrix (both generic and square) by a random column vector with the size (length) equal to the matrix width as the right operand. Check that the result is a column vector class instance with the size equal to the matrix height, and each i-th element being the result of the dot product of the i-th row of the matrix and the initial column vector.
+* Multiply a random matrix (both generic and square) by a random row vector with the size (length) equal to the matrix jeight as the left operand. Check that the result is a row vector class instacne with the size equal to the matrix width, and each i-th element being the result of the dot product of the initial row vector and i-th column of the matrix.
+* Generate a random matrix (try both generic and square) as the left operand and a second matrix with a random width but the height equal to the width of the first matrix (may be square or generic) as the right operand. Multiply them. Check that the result is a matrix class instance with the width of the right operand and height of the left operand, and each element at the intersection of i-th column and j-th row is the dot product of the j-th row of the left operand and i-th column of the right operand. Check that if the width of the resulting matrix equals its height the resulting matrix is also an instance of the square matrix class.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -481,8 +487,20 @@ The exception compatible with / sub-class of ValueError is raised if:
 * Repeat with mis-matching heights.
 * Repeat the tests with the square matrices.
 * Check that that a sub-class of ValueError exception is raised when two unequal sized square matrices are added or subtracted.
+* Try to add and subtract any data type value from the matrix, except for a matrix instance - check that a sub-class of TypeError exception is raised. Repeat with a number of the different data types.
+* Try to add a matrix to and subtract a matrix from any data type value, except for a matrix instance - check that a sub-class of TypeError exception is raised. Repeat with a number of the different data types.
+* Generate a (generic or square) marix of width and height with the random values of elements.
+* Generate a random column vector of the length not equal to the matrix width. Try to multiply the matrix by this column vector - check that check that a sub-class of ValueError exception is raised.
+* Generate a random row vector of the length not equal to the matrix width. Try to multiply this row vector by the matrix - check that check that a sub-class of ValueError exception is raised.
+* Generate the second matrix (generic) with an arbutrary width and the height not equal to the width of the first matrix. Try to multiply the first matrix by the second - check that a sub-class of ValueError exception is raised.
+* Generate a square with an arbutrary width and the size not equal to the width of the first matrix. Try to multiply the first matrix by the second - check that a sub-class of ValueError exception is raised.
+* Try to multiply (right) the matrix by different data types values except for integer, floating point number, matrix (generic or square) class instance and column vector class instance - check that a sub-class of TypeError exception is raised each time.
+* Try to multiply (left) the matrix by different data types values except for integer, floating point number, matrix (generic or square) class instance and row vector class instance - check that a sub-class of TypeError exception is raised each time.
+* Try to divide the matrix by any data type value, except for an integer or a floating point number. Check that a sub-class of TypeError exception is raised. Repeat several times with the different data types.
+* Try to divide the matrix by an integer zero and a floating point zero value. Check that a sub-class of ValueError exception is raised each time.
+* Check the multiplication and division related errors with the both generic and square matrix classes.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -496,7 +514,7 @@ The exception compatible with / sub-class of ValueError is raised if:
 
 **Expected result:** The both matrix classes raise a sub-class of TypeError when
 
-* Element index access is done in the form obj[index], not in the form obj[col_index, row_index], i.e. with only single index of any data type, including slice
+* Element index access is done in the form obj\[index\], not in the form obj[col_index, row_index], i.e. with only single index of any data type, including slice
 * Element is accessed in the form obj[col_index, row_index], but either column or row index is of any data type except for an integer number, including slice
 * Column (method getColum(index)) or row (method getRow(index)) is accessed using any data type argument except for an integer number, including slice
 
@@ -543,17 +561,17 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-303        | TEST-T-309                                                   | YES                     |
 | REQ-FUN-304        | TEST-T-30A                                                   | YES                     |
 | REQ-FUN-305        | TEST-T-30A                                                   | YES                     |
-| REQ-FUN-306        | TEST-T-30B                                                   | NO                      |
+| REQ-FUN-306        | TEST-T-30B                                                   | YES                     |
 | REQ-FUN-307        | TEST-T-30C                                                   | NO                      |
 | REQ-FUN-310        | TEST-T-305                                                   | YES                     |
-| REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | NO                      |
-| REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | NO                      |
+| REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | YES                     |
+| REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | YES                     |
 | REQ-FUN-340        |                                                              | NO                      |
 | REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                     |
 | REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                     |
-| REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | NO                      |
-| REQ-AWM-303        | TEST-T-307, TEST-T-30E                                       | NO                      |
-| REQ-AWM-304        | TEST-T-308, TEST-T-30E                                       | NO                      |
+| REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | YES                     |
+| REQ-AWM-303        | TEST-T-307, TEST-T-30E                                       | YES                     |
+| REQ-AWM-304        | TEST-T-308, TEST-T-30E                                       | YES                     |
 | REQ-AWM-305        | TEST-T-309                                                   | YES                     |
 | REQ-AWM-306        | TEST-T-309                                                   | YES                     |
 | REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                     |

@@ -8,7 +8,7 @@ unit tests see TE00 and TE003 documents, and arithmetics.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "18-01-2023"
+__date__ = "23-03-2023"
 __status__ = "Testing"
 
 #imports
@@ -38,6 +38,7 @@ def PrintError(Error: Exception) -> None:
 #test area
 
 if __name__=='__main__':
+    print('Demonstration test DT003 - vectors and matrices')
     print('Generic vectors arithmetics...')
     Vector1 = testmodule.Vector(1, 2, 3)
     Vector2 = testmodule.Vector(4, 5, 6)
@@ -136,6 +137,22 @@ if __name__=='__main__':
     print('SMatrix1=', SMatrix1, 'which is', repr(SMatrix1))
     print('SMatrix2=', SMatrix2, 'which is', repr(SMatrix2))
     print('SMatrix3=', SMatrix3, 'which is', repr(SMatrix3))
+    input('Press Enter...')
+    Test = Matrix1 + Matrix2
+    print('Matrix1 + Matrix2 =', Test)
+    print('which is', repr(Test))
+    Test = Row3 * Matrix1
+    print('Row3 * Matrix1 =', Test)
+    print('which is', repr(Test))
+    Test = SMatrix3 * Column1
+    print('SMatrix3 * Column1 =', Test)
+    print('which is', repr(Test))
+    Test = Matrix1 * SMatrix3
+    print('Matrix1 * SMatrix3 =', Test)
+    print('which is', repr(Test))
+    Test = Matrix1 * Matrix3
+    print('Matrix1 * Matrix3 =', Test)
+    print('which is', repr(Test))
     input('Press Enter...')
     print('Demonstration of sanity checks and exceptions...')
     print('Generic vector instantiation')
@@ -356,6 +373,19 @@ if __name__=='__main__':
         Row3 @ Row1
     except Exception as err:
         PrintError(err)
+    input('Press Enter')
+    try:
+        Matrix1 - 1
+    except Exception as err:
+        PrintError(err)
+    try:
+        Column1 * SMatrix1
+    except Exception as err:
+        PrintError(err)
+    try:
+        Matrix1 * Row1
+    except Exception as err:
+        PrintError(err)
     print('Press Enter')
     del Vector1
     del Vector2
@@ -372,3 +402,4 @@ if __name__=='__main__':
     del SMatrix1
     del SMatrix2
     del SMatrix3
+    print('Finished! Bye!')
