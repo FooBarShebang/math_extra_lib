@@ -1725,7 +1725,7 @@ class SquareMatrix(Matrix):
     
     Class methods:
         generateIdentity(Size):
-            int >= 2 -> SquareMatrix
+            int > 1 -> SquareMatrix
         generatePermutation(Permutation):
             seq(int >= 0) -> SquareMatrix
     
@@ -1760,14 +1760,79 @@ class SquareMatrix(Matrix):
     @classmethod
     def generateIdentity(cls, Size: int) -> TSquareMatrix:
         """
+        Creates a new instance of a square matrix with all elements on the
+        main diagonal being equal to 1, and all other elements being zeroes.
+        Class method.
+
+        Signature:
+            int > 1 -> SquareMatrix
+        
+        Args:
+            Size: int > 1; the requested size of the identity matrix
+        
+        Returns:
+            SquareMatrix: a new instance of the class
+        
+        Raises:
+            UT_TypeError: the passed argument is not an integer number
+            UT_ValueError: the passed argument is an integer, but less than 2
+        
+        Version 1.0.0.0
         """
-        pass
+        if not isinstance(Size, int):
+            raise UT_TypeError(Size, int, SkipFrames = 1)
+        if Size < 2:
+            raise UT_ValueError(Size, '> 1 - matrix size', SkipFrames = 1)
     
     @classmethod
     def generatePermutation(cls, Permutation: Sequence[int]) -> TSquareMatrix:
         """
+        Generates a permutation matrix of the size N from the passed 0..N-1
+        numbers permutation sequence. Basically, the identity matrix with some
+        columns (or rows) shufled. Class method.
+
+        Signature:
+            seq(int >= 0) -> SquareMatrix
+
+        Args:
+            Permutation: seq(int >= 0); a proper 0..N-1 permutation sequence
+        
+        Returns:
+            SquareMatrix: a new instance of the class
+        
+        Raises:
+            UT_TypeError: the passed argument is not a sequence of integer
+                numbers
+            UT_ValueError: the sequence is shorter that 2 elements, OR any of
+                the elements is negative OR equal to or greater than the
+                sequence length, OR any of the elements is not unique.
+        
+        Version 1.0.0.0
         """
-        pass
+        if (not isinstance(Permutation, c_abc.Sequence) or
+                                                isinstance(Permutation, str)):
+            raise UT_TypeError(Permutation, (list, tuple), SkipFrames = 1)
+        Size = len(Permutation)
+        if Size < 2:
+            raise UT_ValueError(Size, '> 1 - sequence length', SkipFrames = 1)
+        Elements = list()
+        for Index, Item in enumerate(Permutation):
+            PostFix = ' - element at index {} in {}'.format(Index, Permutation)
+            if not isinstance(Item, int):
+                objError = UT_TypeError(Item, int, SkipFrames = 1)
+                strMessage = objError.args[0]
+                strMessage = '{}{}'.format(strMessage, PostFix)
+                objError.agrs = (strMessage, )
+                raise objError
+            if Item < 0 or Item >= Size:
+                strMessage = 'in range [0, {}]{}'.format(Size - 1, PostFix)
+                raise UT_ValueError(Item, strMessage, SkipFrames = 1)
+            if not (Item in Elements):
+                Elements.append(Item)
+            else:
+                raise UT_ValueError(Item,
+                                    'all elements are unique{}'.format(PostFix),
+                                                                SkipFrames = 1)
     
     #special methods
     

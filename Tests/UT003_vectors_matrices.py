@@ -1843,7 +1843,7 @@ class Test_Matrix(Test_Array2D):
                             testmodule.Column, testmodule.Row,
                             testmodule.Vector(1, 2, 3),
                             testmodule.Column(1, 2, 3)]
-        cls.NotScalar = [int, float, bool, [1], (1.0, 1), {1:1},
+        cls.NotScalar = [int, float, bool, [1, 2], (1.0, 1), {1:1},
                             {1, 2}, list, tuple, dict, set, testmodule.Matrix,
                             testmodule.SquareMatrix, testmodule.Vector,
                             testmodule.Column, testmodule.Row,
@@ -2668,11 +2668,12 @@ class Test_SquareMatrix(Test_Matrix):
     Set of unit tests for the class SquareMatrix.
     
     Implements tests: TEST-T-30A, TEST-T-30B, TEST-T-30D, TEST-T-30E
-    and TEST-T-30F
+    and TEST-T-30F, TEST-T-340, TEST-T-341, TEST-T-342
     
     Covers requirements: REQ-FUN-304, REQ-FUN-305, REQ-FUN-306, REQ-FUN-320,
     REQ-FUN-330, REQ-AWM-300, REQ-AWM-301, REQ-AWM-302, REQ-AWM-303,
-    REQ-AWM-304, REQ-AWM-307 and REQ-AWM-308
+    REQ-AWM-304, REQ-AWM-307, REQ-AWM-308, REQ-AWM-340, REQ-AWM-341 and
+    REQ-AWM-342
     """
     
     @classmethod
@@ -3075,7 +3076,7 @@ class Test_SquareMatrix(Test_Matrix):
         Covers requirements: REQ-FUN-306
         """
         super().test_sub()
-        for _ in range (10):
+        for _ in range(10):
             Size = self.TestObject.Size
             Data = list(self.TestObject.Data)
             Elements = list()
@@ -3115,6 +3116,99 @@ class Test_SquareMatrix(Test_Matrix):
             del Other
             self.tearDown()
             self.setUp()
+    
+    def test_generateIdentity_TypeError(self):
+        """
+        Checks improper input data type treatment.
+
+        Test ID: TEST-T-341
+
+        Covers requirements: REQ-AMW-341
+        """
+        for Item in self.NotScalar:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass.generateIdentity(Item)
+        with self.assertRaises(TypeError):
+            Temp = self.TestClass.generateIdentity(random.random())
+    
+    def test_generateIdentity_ValueError(self):
+        """
+        Checks improper input data value treatment.
+
+        Test ID: TEST-T-342
+
+        Covers requirements: REQ-AMW-342
+        """
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass.generateIdentity(1)
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass.generateIdentity(0)
+        for _ in range(100):
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass.generateIdentity(random.randint(-100, 0))
+    
+    def test_generatePermutation_TypeError(self):
+        """
+        Checks improper input data type treatment.
+
+        Test ID: TEST-T-341
+
+        Covers requirements: REQ-AMW-341
+        """
+        for Item in self.NotSequence:
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass.generatePermutation(Item)
+        for Item in self.NotScalar:
+            Args = list([Item for Item in range(random.randint(0, 2))])
+            Args.append(Item)
+            Args.extend([Item + 3 for Item in range(random.randint(1, 2))])
+            with self.assertRaises(TypeError):
+                Temp = self.TestClass.generatePermutation(Args)
+        Args = list([Item for Item in range(random.randint(0, 2))])
+        Args.append(random.random())
+        Args.extend([Item + 3 for Item in range(random.randint(1, 2))])
+        with self.assertRaises(TypeError):
+            Temp = self.TestClass.generatePermutation(Args)
+    
+    def test_generatePermutation_ValueError(self):
+        """
+        Checks improper input data value treatment.
+
+        Test ID: TEST-T-342
+
+        Covers requirements: REQ-AMW-342
+        """
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass.generatePermutation([])
+        with self.assertRaises(ValueError):
+            Temp = self.TestClass.generatePermutation([0])
+        for _ in range(100):
+            Data = [Item for Item in range(random.randint(3, 10))]
+            random.shuffle(Data)
+            Size = len(Data)
+            if Data[-1] == Size - 1:
+                Test = Data[1:]
+            else:
+                Test = Data[:-1]
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass.generatePermutation(Test)
+            Position = random.randint(0, Size - 1)
+            Test = list(Data)
+            Test[Position] = - Data[Position] - 1
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass.generatePermutation(Test)
+            Test[Position] = Size
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass.generatePermutation(Test)
+            Test[Position] = Size + random.randint(1, 10)
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass.generatePermutation(Test)
+            Position1 = random.randint(0, Size - 2)
+            Position2 = random.randint(Position1 + 1, Size - 1)
+            Test = list(Data)
+            Test[Position2] = Data[Position1]
+            with self.assertRaises(ValueError):
+                Temp = self.TestClass.generatePermutation(Test)
 
 #+ test suites
 

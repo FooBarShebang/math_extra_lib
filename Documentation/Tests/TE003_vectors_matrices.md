@@ -629,7 +629,7 @@ The class inmplements the following instance methods:
 * Try to generate an identity matrix using different non-integer data types values (except for an integer) - check that sub-class of TypeError exception is raised each time
 * Try to generate a permutation matrix using different data types except for sequences - check that sub-class of TypeError exception is raised each time. Also try strings and sequences containg different non-integer elements.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -659,7 +659,7 @@ The class inmplements the following instance methods:
   * Replace one or more elements with negative integer values
   * Replace one or more elements with values >= N
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ## Traceability
 
@@ -689,8 +689,8 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                     |
 | REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                     |
 | REQ-AWM-340        | TEST-T-340                                                   | NO                      |
-| REQ-AWM-341        | TEST-T-341                                                   | NO                      |
-| REQ-AWM-342        | TEST-T-342                                                   | NO                      |
+| REQ-AWM-341        | TEST-T-341                                                   | YES                     |
+| REQ-AWM-342        | TEST-T-342                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
