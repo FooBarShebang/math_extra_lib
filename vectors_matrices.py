@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '23-03-2023'
+__date__ = '24-03-2023'
 __status__ = 'Development'
 
 #imports
@@ -1615,8 +1615,15 @@ class Matrix(Array2D):
     
     def transpose(self) -> TMatrix:
         """
+        Method to generate a transposition of the current matrix (new instance
+        of the same class).
+
+        Signature:
+            None -> 'Matrix
+        
+        Version 1.0.0.0
         """
-        pass
+        return self.__class__(self._Elements, isColumnsFirst = True)
     
     def getColumn(self, Index: int) -> Column:
         """
@@ -1734,7 +1741,7 @@ class SquareMatrix(Matrix):
         getLUPdecomposition():
             None -> SquareMatrix, SquareMatrix, tuple(int OR float), int
         getFullDecomposition():
-            None -> SquareMatrix, SquareMatrix, SquareMatrix,
+            None -> SquareMatrix, SquareMatrix, tuple(int OR float),
                 tuple(int OR float), int
         getDeterminant():
             None -> int OR float
@@ -1924,7 +1931,7 @@ class SquareMatrix(Matrix):
                                                 TSquareMatrix, TRealTuple, int]:
         """
         Signature:
-            None -> SquareMatrix, SquareMatrix, SquareMatrix,
+            None -> SquareMatrix, SquareMatrix, tuple(int OR float),
                 tuple(int OR float), int
         """
         pass

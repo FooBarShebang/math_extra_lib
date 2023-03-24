@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "23-03-2023"
+__date__ = "24-03-2023"
 __status__ = "Testing"
 
 #imports
@@ -2635,6 +2635,31 @@ class Test_Matrix(Test_Array2D):
             for Item in self.NotScalar:
                 with self.assertRaises(TypeError):
                     Temp = self.TestObject / Item
+            self.tearDown()
+            self.setUp()
+    
+    def test_transpose(self):
+        """
+        Checks the implementation of the matrix transposition.
+
+        Test ID: TEST-T-30C
+
+        Covers requirements: REQ-FUN-307
+        """
+        for _ in range(10):
+            Data = list(self.TestObject.Data)
+            objTest = self.TestObject.transpose()
+            self.assertListEqual(list(self.TestObject.Data), Data)
+            self.assertIsInstance(objTest, self.TestClass)
+            self.assertIs(objTest.__class__, self.TestClass)
+            self.assertEqual(objTest.Width, self.TestObject.Height)
+            self.assertEqual(objTest.Height, self.TestObject.Width)
+            for RowIndex in range(self.TestObject.Height):
+                for ColIndex in range(self.TestObject.Width):
+                    Item = objTest[RowIndex, ColIndex]
+                    self.assertIsInstance(Item, (int, float))
+                    self.assertEqual(Item, self.TestObject[ColIndex, RowIndex])
+            del objTest
             self.tearDown()
             self.setUp()
 

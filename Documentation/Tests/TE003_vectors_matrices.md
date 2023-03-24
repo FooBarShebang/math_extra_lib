@@ -421,6 +421,27 @@ These arithmetical operations do not change the content of the operands.
 
 ---
 
+**Test Identifier:** TEST-T-30C
+
+**Requirement ID(s)**: REQ-FUN-307
+
+**Verification method:** T
+
+**Test goal:** Proper implementation of the matrix transposition
+
+**Expected result:** Both the generic and square matrix classes have an instance method, which returns a new instance of the same class with the data of the original matrix being copied and transposed, i.e. each row of the original matrix becomes a column of the transposed matrix, and each column of the original matrix becomes a row of the transposed matrix. In terms of the elements, $\mathbf{A} \rightarrow \mathbf{A}^T \; : \; \mathbf{A}_{i,j} = \mathbf{A}_{j,i}^T \; \forall i,j$
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Generate a random generic NxM matrix and transpose it. Check that the outcome is an instance of the generic matrix with the sizes MxN. Let **A** be the intial matrix, and **B** - the transposed matrix, check that **A**[i, j] = **B**[j, i] for all indexes.
+* Generate a random square matrix with the size N and transpose it. Check that the outcome is an instance of the square matrix with the same size N. Let **A** be the intial matrix, and **B** - the transposed matrix, check that **A**[i, j] = **B**[j, i] for all indexes.
+* Check that the content of the intial matrices is not changed in the both cases.
+* Repeat these testes several times with the random selection of the sizes and values of the elements.
+
+**Test result:** PASS
+
+---
+
 **Test Identifier:** TEST-T-30D
 
 **Requirement ID(s)**: REQ-AWM-300, REQ-AWM-301
@@ -533,21 +554,112 @@ Try to access an element using two integer index values, with one or both being 
 
 ---
 
-**Test Identifier:** TEST-T-301
+**Test Identifier:** TEST-T-340
 
-**Requirement ID(s)**: REQ-???-3??
+**Requirement ID(s)**: REQ-FUN-340, REQ-AWM-340
 
 **Verification method:** T
 
-**Test goal:** Description of what is to be tested
+**Test goal:** Proper impementation of the additional functionality of the square matrix class
 
-**Expected result:** What test result is expected for the test to pass
+**Expected result:** The class implements the following class methods:
+
+* Generation of an identity matrix of the given size N
+* Generation of the corresponding permutation matrix of size N from the given permutation of numbers 0 to N-1 inclusively, each consequetive element defining the unity (non-zero) element position (column index) in the respective index row
+
+The class inmplements the following instance methods:
+
+* Calculation of the trace (sum of the main diagonal elements) of the matrix
+* Calculation of the determinant of the matrix.
+* Calculation of the multiplication inverse matrix. If it does not exist (singular matrix, determinant is zero), no exception should be raised, but the meaningful value of None should be returned.
+* Calculation of the LUP-decomposition of the matrix, for the singular matrix one or more diagonal elements in the upper-diagonal matrix are zeroes.
+* Calculation of the LUDP-decomposition of the matrix, for the singular matrix one of more diafonal elements in the diagonal matrix are zeros.
+* Calculation of all real eigen values and the respective eigen vectors bound to thise eigen values as a dictionary real -> column vector. If all eigen values are complex / imaginary numbers, the returned value is None instead of a dictionary, no exceptions are raised.
 
 **Test steps:** Step by step instructions on how to perform the test
+
+* Try to generate using the class itself (no instantiation is required) a number of different sizes identity matrices. In each case check that an instance of a square matrix of the expected size is returned, with all main diagonal elements being 1s and all other elements - zeroes.
+* Try to generate using the class itself (no instantiation is required) a number of different sizes permutation matrices using various 0..N-1 permutations (Python Standard Library, random.sample() or random.shuffle() functions). In each case check that an instance of a square matrix of the expected size is returned, with each i-th row containing only a single values of 1 at the position j with all other values being zeroes, where j is the value of i-th element of the permutation sequence.
+* Generate a random square matrix. Calculate its trace using the respective instance method. 'Manually' calculate the sum of the main diagonal elements. Check that the returned trace values is the same. Repeat several times with a new matrix each time.
+* Generate a random square matrix. Calculate its determinant using the respective methods. Check that a real number is returned. Repeat several times. Also check using several pre-computed examples.
+* Manually calculate LUP- and LUDP-decompositions of several example matrices. Check that the respective methods return the expected results.
+* For the LUP-decomposition method: generate a random square matrix and call the respective method. Check that
+  * The L-matrix is an instance of the square matrix class with all main diagonal elements being 1s, and all elements above - zeroes
+  * The U-matrix is an instance of the square matrix class with all zero elements below the main diagonal
+  * The product of all main diagonal elements of the U-matrix times the returned sign value (which is +1 or -1) equals the determinant of the original matrix
+  * The P - permutation - is an integer sequence containing a proper 0..N-1 permutation, and the respective permutation matrix can be generated from it
+  * The original matrix can be re-constructed as the product of L * U * P-matrix
+* For the LUP-decomposition method: generate a random square matrix and call the respective method. Check that
+  * The L-matrix is an instance of the square matrix class with all main diagonal elements being 1s, and all elements above - zeroes
+  * The U-matrix is an instance of the square matrix class with all zero elements below the main diagonal and 1s on the main diagonal
+  * The D - component is a squence of real number of the length N with the product of all elements times the returned sign value (which is +1 or -1) being equal to the determinant of the original matrix
+  * The P - permutation - is an integer sequence containing a proper 0..N-1 permutation, and the respective permutation matrix can be generated from it
+  * The original matrix can be re-constructed as the product of L * U * D-matrix * P-matrix, where the D-matrix is a diagonal matrix constructed by the D - component values.
+* Check the calculation of the inverse matrix using several pre-calculated cases. Also check using several random generated square matrices:
+  * If the determinant of the original matrix is not zero, check that an instance of a square matrix is returned by the inverse matrix method (and of the same size), and the product of the inverse and original matrices results in an identity matrix
+  * Otherwise, check that None value is returned by this method and no exception is raised.
+* Check the calculation of the eigen values and eigen vectors using several pre-computed cases, including all simple eigen values (N) and one or more multiple eigen values (more than a single eigen vector per eigen value) and no real value eigen values (None as the return value, no exceptions).
+  * Check that each eigen vector is normalized to the unity length and is an instance of column vector class.
+  * Check that the product of the original matrix and an eigen vector results in the same vector scaled by the respective eigen value.
+  * For the multiple eigen value (more than a single eigen vector bound to the same eigen value) - all vectors are othogonal, i.e. their dot product is always zero.
+  * The total number of eigen values and the total number of eigen vectors do not exceed the size of the matrix.
+  * All eigen values and all elements of all eigen values are real numbers.
+  * Generate several random normalized and linearly independed column vectors (determinant of the matrix **V** formed from them is non zero), also generate random non-zero eigen values. Construct a diagonal matrix **M** from these eigen values. Then, construct a matrix **A** = **V** * **M** * **V**^-1. Check that the method calculates eigen values and eigen vectors of the matrix **A** close to the expected values.
 
 **Test result:** PASS/FAIL
 
 ---
+
+**Test Identifier:** TEST-T-341
+
+**Requirement ID(s)**: REQ-AWM-341
+
+**Verification method:** T
+
+**Test goal:** Treatment of the improper data type of the arguments of the square matrix class methods (constructors / generators)
+
+**Expected result:** An exception of a sub-class of TypeError is raised if:
+
+* The identity matrix generator class method receives an argument of non-integer data type
+* The permutation matrix generator class method receives an argument, which is any data type except for a sequence of integers
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Use the class itself, no instantiation is required
+* Try to generate an identity matrix using different non-integer data types values (except for an integer) - check that sub-class of TypeError exception is raised each time
+* Try to generate a permutation matrix using different data types except for sequences - check that sub-class of TypeError exception is raised each time. Also try strings and sequences containg different non-integer elements.
+
+**Test result:** PASS/FAIL
+
+---
+
+**Test Identifier:** TEST-T-342
+
+**Requirement ID(s)**: REQ-AWM-342
+
+**Verification method:** T
+
+**Test goal:** Treatment of the imporper values of the arguments of the square matrix class methods (constructors / generators)
+
+**Expected result:** An exception of a sub-class of TypeError is raised if:
+
+* The identity matrix generator class method receives an argument, which is 1, zero or negative value integer
+* The permutation matrix generator class method receives an argument, which is a sequence of integers with:
+  * the length of the sequence is less than 2
+  * for the length of the sequence N > 1 any of the elements is < 0 or >= N, or
+  * there are, at least, two repetative values (not unique elements)
+
+**Test steps:** Step by step instructions on how to perform the test
+
+* Use the class itself, no instantiation is required
+* Try to generate an identity matrix using values 1, 0 and several random negative  - check that sub-class of ValueError exception is raised each time
+* Generate a random 0..N-1 numbers permutation (Python Standard Library, random.sample() or random.shuffle() functions). Try to generate a permutation matrix using different modifications of the this permutation - check that sub-class of ValueError exception is raised each time:
+  * Remove one or more elements
+  * Replace one or more elements with duplicating values
+  * Replace one or more elements with negative integer values
+  * Replace one or more elements with values >= N
+
+**Test result:** PASS/FAIL
 
 ## Traceability
 
@@ -562,11 +674,11 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-304        | TEST-T-30A                                                   | YES                     |
 | REQ-FUN-305        | TEST-T-30A                                                   | YES                     |
 | REQ-FUN-306        | TEST-T-30B                                                   | YES                     |
-| REQ-FUN-307        | TEST-T-30C                                                   | NO                      |
+| REQ-FUN-307        | TEST-T-30C                                                   | YES                     |
 | REQ-FUN-310        | TEST-T-305                                                   | YES                     |
 | REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | YES                     |
 | REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | YES                     |
-| REQ-FUN-340        |                                                              | NO                      |
+| REQ-FUN-340        | TEST-T-340                                                   | NO                      |
 | REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                     |
 | REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                     |
 | REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | YES                     |
@@ -576,9 +688,9 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-306        | TEST-T-309                                                   | YES                     |
 | REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                     |
 | REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                     |
-| REQ-AWM-340        |                                                              | NO                      |
-| REQ-AWM-341        |                                                              | NO                      |
-| REQ-AWM-342        |                                                              | NO                      |
+| REQ-AWM-340        | TEST-T-340                                                   | NO                      |
+| REQ-AWM-341        | TEST-T-341                                                   | NO                      |
+| REQ-AWM-342        | TEST-T-342                                                   | NO                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
