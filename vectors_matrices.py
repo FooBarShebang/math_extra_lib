@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '24-03-2023'
+__date__ = '28-03-2023'
 __status__ = 'Development'
 
 #imports
@@ -1512,8 +1512,9 @@ class Matrix(Array2D):
                 raise UT_ValueError(Length,
                             '== {} - row vector size != matrix height'.format(
                                                         Height), SkipFrames = 1)
-            Elements= [sum(self._Elements[RowIndex][ColumnIndex]*Other[RowIndex]
-                                        for RowIndex in range(Height))
+            Elements = [sum(
+                        self._Elements[RowIndex][ColumnIndex] * Other[RowIndex]
+                                    for RowIndex in range(Height))
                                                 for ColumnIndex in range(Width)]
             Result = Row(*Elements)
         else:
@@ -1728,6 +1729,8 @@ class SquareMatrix(Matrix):
             int > 1 -> SquareMatrix
         generatePermutation(Permutation):
             seq(int >= 0) -> SquareMatrix
+        generateDiagonal(Elements):
+            seq(int OR floar) -> SquareMatrix
     
     Methods:
         transpose():
@@ -1739,10 +1742,10 @@ class SquareMatrix(Matrix):
         getTrace():
             None -> int OR float
         getLUPdecomposition():
-            None -> SquareMatrix, SquareMatrix, tuple(int OR float), int
+            None -> SquareMatrix, SquareMatrix, tuple(int), int
         getFullDecomposition():
-            None -> SquareMatrix, SquareMatrix, tuple(int OR float),
-                tuple(int OR float), int
+            None -> SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int),
+                int
         getDeterminant():
             None -> int OR float
         getInverse():
@@ -1783,6 +1786,9 @@ class SquareMatrix(Matrix):
             raise UT_TypeError(Size, int, SkipFrames = 1)
         if Size < 2:
             raise UT_ValueError(Size, '> 1 - matrix size', SkipFrames = 1)
+        Elements = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
+                                                    for RowIdx in range(Size)]
+        return cls(Elements)
     
     @classmethod
     def generatePermutation(cls, Permutation: Sequence[int]) -> TSquareMatrix:
@@ -1833,6 +1839,41 @@ class SquareMatrix(Matrix):
                 raise UT_ValueError(Item,
                                     'all elements are unique{}'.format(PostFix),
                                                                 SkipFrames = 1)
+        Elements = [[1 if ColIdx == Index else 0 for ColIdx in range(Size)]
+                                                    for Index in Permutation]
+        return cls(Elements)
+    
+    @classmethod
+    def generateDiagonal(cls, Elements: Sequence[TReal]) -> TSquareMatrix:
+        """
+        Generates a square diagonal matrix with the elements on the main
+        diagonal defined by the passed real numbers sequence argument.
+        
+        Signature:
+            seq(int OR float) -> SquareMatrix
+        
+        Args:
+            Elements: seq(int OR float); the main diagonal elements
+        
+        Returns:
+            SquareMatrix: a new instance of the class
+        
+        Raises:
+            UT_TypeError: the passed argument is not a sequence of integer or
+                floating point numbers
+            UT_ValueError: the sequence is shorter that 2 elements
+        
+        Version 1.0.0.0
+        """
+        _CheckIfRealSequence(Elements)
+        Size = len(Elements)
+        if Size < 2:
+            raise UT_ValueError(Size, '> 1 - number of diagonal elements',
+                                                                SkipFrames = 1)
+        MatrixElements = [[Elements[ColIdx] if ColIdx == RowIdx else 0
+                                                for ColIdx in range(Size)]
+                                                    for RowIdx in range(Size)]
+        return cls(MatrixElements)
     
     #special methods
     
@@ -1979,42 +2020,207 @@ class SquareMatrix(Matrix):
     
     def getTrace(self) -> TReal:
         """
+        Calculates the trace of a square matrix, i.e. the sum of all main
+        diagonal elements.
+        
         Signature:
             None -> int OR float
+        
+        Version 1.0.0.0
         """
-        pass
+        Size = len(self._Elements)
+        return sum(self._Elements[Idx][Idx] for Idx in range(Size))
     
     def getLUPdecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
-                                                            TRealTuple, int]:
+                                                        Tuple[int, ...], int]:
         """
+        Calculates the decomposion of a matrix into a product of three matrices:
+        lower-diagonal (with all main diagnal elements being 1), upper-diagonal
+        matrix and a permutation matrix. Uses Gauss-Jordan elimination algorithm
+        with columns pivoting.
+        
         Signature:
-            None -> SquareMatrix, SquareMatrix, tuple(int OR float), int
+            None -> SquareMatrix, SquareMatrix, tuple(int), int
+        
+        Returns:
+            SquareMatrix, SquareMatrix, tuple(int), int: unpacked tuple of two
+                square matrices of the same size (lower- and upper-diagonal
+                respectively), followed by the permutation tuple representing
+                the swapping of the columns (the actual permutation matrix can
+                be generated from it directly), followed by +1 or -1 number as
+                the permutation sign.
+        
+        Version 1.0.0.0
         """
-        pass
+        Size = len(self._Elements)
+        Sign = 1
+        Permutations = [Item for Item in range(Size)]
+        Upper = [list(tupRow) for tupRow in self._Elements]
+        Lower = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
+                                                    for RowIdx in range(Size)]
+        for RowIndex in range(Size - 1):
+            MaxIndex = Permutations[RowIndex]
+            RealColIdx = RowIndex
+            Item = Upper[RowIndex][MaxIndex]
+            #selecting maximum element (abs) in the row
+            for ColIdx in range(RowIndex, Size):
+                NewIndex = Permutations[ColIdx]
+                NewItem = Upper[RowIndex][NewIndex]
+                if abs(NewItem) > abs(Item):
+                    Item = NewItem
+                    MaxIndex = NewIndex
+                    RealColIdx = ColIdx
+            #swapping elements in Permutations
+            if MaxIndex != Permutations[RowIndex]:
+                OldIndex = Permutations[RowIndex]
+                Permutations[RowIndex] = MaxIndex
+                Permutations[RealColIdx] = OldIndex
+                Sign *= -1
+            #Gauss elimination
+            RealColIdx = Permutations[RowIndex]
+            Base = Upper[RowIndex][RealColIdx]
+            if Base != 0:
+                for Index in range(RowIndex + 1, Size):
+                    Coefficient = Upper[Index][RealColIdx] / Base
+                    Lower[Index][RowIndex] = Coefficient
+                    Upper[Index][RealColIdx] = 0
+                    for ColIdx in range(RowIndex + 1, Size):
+                        RealIdx = Permutations[ColIdx]
+                        Value = (Upper[Index][RealIdx] - Coefficient *
+                                                    Upper[RowIndex][RealIdx])
+                        Upper[Index][RealIdx] = Value
+        LowerMatrix = self.__class__(Lower)
+        UpperElements = [[lstRow[Idx] for Idx in Permutations]
+                                                            for lstRow in Upper]
+        UpperMatrix = self.__class__(UpperElements)
+        Permutations = tuple(Permutations)
+        return LowerMatrix, UpperMatrix, Permutations, Sign
     
     def getFullDecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
-                                                TSquareMatrix, TRealTuple, int]:
+                                    Tuple[TReal, ...], Tuple[int, ...], int]:
         """
+        Calculates the decomposion of a matrix into a product of four matrices:
+        lower-diagonal (with all main diagnal elements being 1), upper-diagonal
+        matrix (with all main diagnal elements being 1), a diagonal matrix (all
+        non-zero elements only on the main diagon) and a permutation matrix.
+        Uses Gauss-Jordan elimination algorithm with columns pivoting to
+        calculate the LUP-decomposition first, then decomposes the upper-
+        diagonal matrix into a diagonal and upper-diagonal with onses at the
+        main diagonal using Gauss elimination algorithm.
+        
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int OR float),
-                tuple(int OR float), int
+                tuple(int), int
+        
+        Returns:
+            SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int), int:
+                unpacked tuple of three square matrices of the same size (lower-
+                and upper-diagonal respectively), followed by the tuple or real
+                numbers representing the main diagonal elements of the diagonal
+                matrix (can be generated directly from it), followed by the
+                permutation tuple representing the swapping of the columns (the
+                actual permutation matrix can be generated from it directly),
+                followed by +1 or -1 number as the permutation sign.
+        
+        Version 1.0.0.0
         """
-        pass
+        LowerMatrix, UpperMatrix, Permutations, Sign =self.getLUPdecomposition()
+        Size = len(self._Elements)
+        Diagonal=tuple([UpperMatrix._Elements[Idx][Idx] for Idx in range(Size)])
+        Upper = [list(tupRow) for tupRow in UpperMatrix._Elements]
+        del UpperMatrix
+        for RowIdx in range(Size - 1, 0, -1):
+            Base = Upper[RowIdx][RowIdx]
+            if Base != 0:
+                for Index in range(0, RowIdx):
+                    Coefficient = Upper[Index][RowIdx] / Base
+                    Upper[Index][RowIdx] = Coefficient
+            Upper[RowIdx][RowIdx] = 1
+        Upper[0][0] = 1
+        UpperMatrix = self.__class__(Upper)
+        return LowerMatrix, UpperMatrix, Diagonal, Permutations, Sign
     
     def getDeterminant(self) -> TReal:
         """
+        Calculates the determinant of a square matrix using LUP-decomposition.
+        
         Signature:
             None -> int OR float
+        
+        Version 1.0.0.0
         """
-        pass
+        Size = len(self._Elements)
+        if Size < 4:
+            a = self._Elements
+            if Size == 2:
+                Result = a[0][0] * a[1][1] - a[0][1] * a[1][0]
+            else:
+                Result = a[0][0] * a[1][1] * a[2][2]
+                Result += a[0][1] * a[1][2] * a[2][0]
+                Result += a[1][0] * a[2][1] * a[0][2]
+                Result -= a[2][0] * a[1][1] * a[0][2]
+                Result -= a[0][1] * a[1][0] * a[2][2]
+                Result -= a[0][0] * a[1][2] * a[2][1]
+        else:
+            _, Upper, _, Sign = self.getLUPdecomposition()
+            Result = Sign
+            for Index in range(Size):
+                Result *= Upper._Elements[Index][Index]
+        if not Result:
+            Result = 0
+        return Result
     
     def getInverse(self) -> Union[TSquareMatrix, None]:
         """
+        Calculates the inverse matrix if one exists using full (LUDP)
+        decomposition.
+        
         Signature:
             None -> SquareMatrix OR None
+        
+        Returns:
+            SquareMatrix: the inverse of the current square matrix, unless the
+                current matrix is singular (determinant is zero)
+            None: the current matrix is singular, so the inverse does not
+                exist
+        
+        Version 1.0.0.0
         """
-        pass
-    
+        Size = len(self._Elements)
+        Lower, Upper, Diag, Perm, _ = self.getFullDecomposition()
+        Low = [list(lstRow) for lstRow in Lower._Elements]
+        Up = [list(lstRow) for lstRow in Upper._Elements]
+        del Lower
+        del Upper
+        Det = 1
+        for Idx in range(Size):
+            Det *= Diag[Idx]
+        if Det:
+            Data = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
+                                                    for RowIdx in range(Size)]
+            for ColIdx in range(Size - 1):
+                for RowIdx in range(ColIdx + 1, Size):
+                    Coeff = Low[RowIdx][ColIdx]
+                    for Idx in range(Size):
+                        Data[RowIdx][Idx] -= Coeff * Data[ColIdx][Idx]
+            for ColIdx in range(Size - 1, 0, -1):
+                for RowIdx in range(0, ColIdx):
+                    Coeff = Up[RowIdx][ColIdx]
+                    for Idx in range(Size):
+                        Data[RowIdx][Idx] -= Coeff * Data[ColIdx][Idx]
+            for RowIdx in range(Size):
+                for ColIdx in range(Size):
+                    Value = Data[RowIdx][ColIdx] / Diag[RowIdx]
+                    Data[RowIdx][ColIdx] = Value
+            PermIndexes = [Pos[0] for Pos in sorted([(Idx, Item)
+                                            for Idx, Item in enumerate(Perm)],
+                                                key = lambda Value: Value[1])]
+            Data = [Data[PermIndexes[Idx]] for Idx in range(Size)]
+            Result = self.__class__(Data)
+        else:
+            Result = None
+        return Result
+
     def getEigenValues(self) -> Union[TRealTuple, None]:
         """
         Signature:
@@ -2144,9 +2350,10 @@ def _Matrix__mul__(self: Matrix,
                             '== {} - left matrix width != right height'.format(
                                                         Height), SkipFrames = 1)
         Elements = [[sum(
-            self._Elements[RowIndex][Index]*Other._Elements[Index][ColIndex]
-                                                for Index in range(SelfWidth))
-                for ColIndex in range(Width)] for RowIndex in range(SelfHeight)]
+                self._Elements[RowIndex][Index]*Other._Elements[Index][ColIndex]
+                                    for Index in range(SelfWidth))
+                                        for ColIndex in range(Width)]
+                                            for RowIndex in range(SelfHeight)]
         if SelfHeight == Width:
             Result = SquareMatrix(Elements)
         else:

@@ -581,20 +581,20 @@ The class inmplements the following instance methods:
 * Try to generate using the class itself (no instantiation is required) a number of different sizes identity matrices. In each case check that an instance of a square matrix of the expected size is returned, with all main diagonal elements being 1s and all other elements - zeroes.
 * Try to generate using the class itself (no instantiation is required) a number of different sizes permutation matrices using various 0..N-1 permutations (Python Standard Library, random.sample() or random.shuffle() functions). In each case check that an instance of a square matrix of the expected size is returned, with each i-th row containing only a single values of 1 at the position j with all other values being zeroes, where j is the value of i-th element of the permutation sequence.
 * Generate a random square matrix. Calculate its trace using the respective instance method. 'Manually' calculate the sum of the main diagonal elements. Check that the returned trace values is the same. Repeat several times with a new matrix each time.
-* Generate a random square matrix. Calculate its determinant using the respective methods. Check that a real number is returned. Repeat several times. Also check using several pre-computed examples.
+* Generate a random square matrix. Calculate its determinant using the respective methods. Check that a real number is returned. Repeat several times. Also check using several pre-computed examples with the known determinant values.
 * Manually calculate LUP- and LUDP-decompositions of several example matrices. Check that the respective methods return the expected results.
 * For the LUP-decomposition method: generate a random square matrix and call the respective method. Check that
   * The L-matrix is an instance of the square matrix class with all main diagonal elements being 1s, and all elements above - zeroes
   * The U-matrix is an instance of the square matrix class with all zero elements below the main diagonal
   * The product of all main diagonal elements of the U-matrix times the returned sign value (which is +1 or -1) equals the determinant of the original matrix
   * The P - permutation - is an integer sequence containing a proper 0..N-1 permutation, and the respective permutation matrix can be generated from it
-  * The original matrix can be re-constructed as the product of L * U * P-matrix
-* For the LUP-decomposition method: generate a random square matrix and call the respective method. Check that
+  * The original matrix can be re-constructed as the product of L \* U \* P-matrix
+* For the LUDP-decomposition method: generate a random square matrix and call the respective method. Check that
   * The L-matrix is an instance of the square matrix class with all main diagonal elements being 1s, and all elements above - zeroes
   * The U-matrix is an instance of the square matrix class with all zero elements below the main diagonal and 1s on the main diagonal
   * The D - component is a squence of real number of the length N with the product of all elements times the returned sign value (which is +1 or -1) being equal to the determinant of the original matrix
   * The P - permutation - is an integer sequence containing a proper 0..N-1 permutation, and the respective permutation matrix can be generated from it
-  * The original matrix can be re-constructed as the product of L * U * D-matrix * P-matrix, where the D-matrix is a diagonal matrix constructed by the D - component values.
+  * The original matrix can be re-constructed as the product of L \* U \* D-matrix * P-matrix, where the D-matrix is a diagonal matrix constructed by the D - component values.
 * Check the calculation of the inverse matrix using several pre-calculated cases. Also check using several random generated square matrices:
   * If the determinant of the original matrix is not zero, check that an instance of a square matrix is returned by the inverse matrix method (and of the same size), and the product of the inverse and original matrices results in an identity matrix
   * Otherwise, check that None value is returned by this method and no exception is raised.
@@ -604,7 +604,7 @@ The class inmplements the following instance methods:
   * For the multiple eigen value (more than a single eigen vector bound to the same eigen value) - all vectors are othogonal, i.e. their dot product is always zero.
   * The total number of eigen values and the total number of eigen vectors do not exceed the size of the matrix.
   * All eigen values and all elements of all eigen values are real numbers.
-  * Generate several random normalized and linearly independed column vectors (determinant of the matrix **V** formed from them is non zero), also generate random non-zero eigen values. Construct a diagonal matrix **M** from these eigen values. Then, construct a matrix **A** = **V** * **M** * **V**^-1. Check that the method calculates eigen values and eigen vectors of the matrix **A** close to the expected values.
+  * Generate several random normalized and linearly independed column vectors (determinant of the matrix **V** formed from them is non zero), also generate random non-zero eigen values. Construct a diagonal matrix **M** from these eigen values. Then, construct a matrix **A** = **V** \* **M** \* **V**^-1. Check that the method calculates eigen values and eigen vectors of the matrix **A** close to the expected values.
 
 **Test result:** PASS/FAIL
 
