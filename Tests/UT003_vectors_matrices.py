@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "28-03-2023"
+__date__ = "29-03-2023"
 __status__ = "Testing"
 
 #imports
@@ -3447,89 +3447,184 @@ class Test_SquareMatrix(Test_Matrix):
         """
         #known cases
         objTest = self.TestClass([[0, 1], [2, 3]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 2)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 2)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (1, 0))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, -1)
         self.assertListEqual(Lower.Data, [[1, 0], [3, 1]])
         self.assertListEqual(Upper.Data, [[1, 0], [0, 2]])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1], [2, 3]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 2)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 2)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (0, 1))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0], [2, 1]])
         self.assertListEqual(Upper.Data, [[1, 1], [0, 1]])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1], [2, 2]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 2)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 2)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (0, 1))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0], [2, 1]])
         self.assertListEqual(Upper.Data, [[1, 1], [0, 0]])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1, 2], [2, 1, 2], [3, 1, 1]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 3)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 3)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 0, 1))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1, 2))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0, 0], [1, 1, 0], [0.5, 2.5, 1]])
         self.assertListEqual(Upper.Data, [[2, 1, 1], [0, 1, 0], [0, 0, 0.5]])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1, 2], [2, 1, 2], [1, 1, 2]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 3)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 3)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 0, 1))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1, 2))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0, 0], [1, 1, 0], [1, 0, 1]])
         self.assertListEqual(Upper.Data, [[2, 1, 1], [0, 1, 0], [0, 0, 0]])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
+        del objTest
+        del Lower
+        del Upper
+        objTest = self.TestClass([[1, 1, 2], [1, 1, 2], [2, 2, 1]])
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
+        self.assertIsInstance(Lower, self.TestClass)
+        self.assertEqual(Lower.Size, 3)
+        self.assertIsInstance(Upper, self.TestClass)
+        self.assertEqual(Upper.Size, 3)
+        self.assertIsInstance(Perm, tuple)
+        self.assertTupleEqual(Perm, (2, 1, 0))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 2, 1))
+        self.assertIsInstance(Sign, int)
+        self.assertEqual(Sign, 1)
+        self.assertListEqual(Lower.Data, [[1, 0, 0], [0.5, 1, 0], [1, 0, 1]])
+        self.assertListEqual(Upper.Data, [[2, 1, 1], [0, 1.5, 1.5], [0, 0, 0]])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
         objTest = self.TestClass([[1, 0.5, 2, 0], [2, 2, 1, 3], [1, 1, 1, 1],
                                                                 [2.5, 1, 2, 2]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 4)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 4)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 3, 1, 0))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1, 2, 3))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, -1)
         Check = [[1, 0, 0, 0], [0.5, 1, 0, 0],
@@ -3544,32 +3639,56 @@ class Test_SquareMatrix(Test_Matrix):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Upper[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
         objTest = self.TestClass([[1, 0.5, 2, 0], [2, 2, 1, 3], [1, 0.5, 2, 0],
                                                                 [2.5, 1, 2, 2]])
-        Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+        Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 4)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 4)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 3, 0, 1))
+        self.assertIsInstance(RowPerm, tuple)
+        self.assertTupleEqual(RowPerm, (0, 1, 3, 2))
         self.assertIsInstance(Sign, int)
-        self.assertEqual(Sign, 1)
+        self.assertEqual(Sign, -1)
         Check = [[1, 0, 0, 0], [0.5, 1, 0, 0],
-                                        [1, 0, 1, 0], [1, 2 / 3, 0, 1]]
+                                        [1, 2/3, 1, 0], [1, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Lower[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
         Check = [[2, 0, 1, 0.5], [0, 3, 1.5, 1.75],
-                                        [0, 0, 0, 0], [0, 0, 0.5, - 2 / 3]]
+                                        [0, 0, 0.5, -2/3], [0, 0, 0, 0]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Upper[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
+        Size = objTest.Size
+        PermMatrix = self.TestClass.generatePermutation(Perm)
+        RowCor = self.TestClass.generatePermutation(RowPerm)
+        Check = RowCor * Lower * Upper * PermMatrix
+        for RowIdx in range(Size):
+            for ColIdx in range(Size):
+                self.assertAlmostEqual(Check[ColIdx, RowIdx],
+                                                        objTest[ColIdx, RowIdx])
+        del Check
+        del PermMatrix
+        del RowCor
         del objTest
         del Lower
         del Upper
@@ -3577,11 +3696,15 @@ class Test_SquareMatrix(Test_Matrix):
         #+ identity matrices
         for Size in range(2, 10):
             objTest = self.TestClass.generateIdentity(Size)
-            Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+            Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
             CheckPerm = tuple([Item for Item in range(Size)])
             self.assertTupleEqual(Perm, CheckPerm)
+            self.assertTupleEqual(RowPerm, CheckPerm)
             self.assertIsInstance(Sign, int)
             self.assertEqual(Sign, 1)
+            self.assertIsInstance(RowPerm, tuple)
+            for Idx in range(Size):
+                self.assertEqual(RowPerm[Idx], Idx)
             for RowIdx in range(Size):
                 for ColIdx in range(Size):
                     if ColIdx != RowIdx:
@@ -3599,10 +3722,13 @@ class Test_SquareMatrix(Test_Matrix):
             random.shuffle(CheckPerm)
             CheckPerm = tuple(CheckPerm)
             objTest = self.TestClass.generatePermutation(CheckPerm)
-            Lower, Upper, Perm, Sign = objTest.getLUPdecomposition()
+            Lower, Upper, Perm, RowPerm, Sign = objTest.getLUPdecomposition()
             self.assertTupleEqual(Perm, CheckPerm)
             self.assertIsInstance(Sign, int)
             self.assertEqual(abs(Sign), 1)
+            self.assertIsInstance(RowPerm, tuple)
+            for Idx in range(Size):
+                self.assertEqual(RowPerm[Idx], Idx)
             for RowIdx in range(Size):
                 for ColIdx in range(Size):
                     if ColIdx != RowIdx:
@@ -3616,7 +3742,8 @@ class Test_SquareMatrix(Test_Matrix):
             del Upper
         #general case
         for _ in range(10):
-            Lower, Upper, Perm, Sign = self.TestObject.getLUPdecomposition()
+            Lower, Upper, Perm, RowPerm, Sign = (
+                                        self.TestObject.getLUPdecomposition())
             Size = self.TestObject.Size
             self.assertIsInstance(Lower, self.TestClass)
             self.assertEqual(Lower.Size, Size)
@@ -3624,8 +3751,11 @@ class Test_SquareMatrix(Test_Matrix):
             self.assertEqual(Upper.Size, Size)
             self.assertIsInstance(Perm, tuple)
             self.assertEqual(len(Perm), Size)
+            self.assertIsInstance(RowPerm, tuple)
+            self.assertEqual(len(RowPerm), Size)
             #no exception should occur here
             PermMatrix = self.TestClass.generatePermutation(Perm)
+            RowCor = self.TestClass.generatePermutation(RowPerm)
             self.assertIsInstance(Sign, int)
             self.assertEqual(abs(Sign), 1)
             for RowIdx in range(Size):
@@ -3636,7 +3766,7 @@ class Test_SquareMatrix(Test_Matrix):
                         self.assertEqual(Upper[ColIdx, RowIdx], 0)
                     else:
                         self.assertEqual(Lower[ColIdx, RowIdx], 1)
-            Check = Lower * Upper * PermMatrix
+            Check = RowCor * Lower * Upper * PermMatrix
             for RowIdx in range(Size):
                 for ColIdx in range(Size):
                     self.assertAlmostEqual(Check[ColIdx, RowIdx],
@@ -3658,13 +3788,15 @@ class Test_SquareMatrix(Test_Matrix):
         """
         #known cases
         objTest = self.TestClass([[0, 1], [2, 3]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 2)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 2)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (1, 0))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1))
         self.assertIsInstance(Diag, tuple)
         self.assertTupleEqual(Diag, (1, 2))
         self.assertIsInstance(Sign, int)
@@ -3675,13 +3807,15 @@ class Test_SquareMatrix(Test_Matrix):
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1], [2, 3]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 2)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 2)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (0, 1))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1))
         self.assertIsInstance(Diag, tuple)
         self.assertTupleEqual(Diag, (1, 1))
         self.assertIsInstance(Sign, int)
@@ -3692,13 +3826,15 @@ class Test_SquareMatrix(Test_Matrix):
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1], [2, 2]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 2)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 2)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (0, 1))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1))
         self.assertIsInstance(Diag, tuple)
         self.assertTupleEqual(Diag, (1, 0))
         self.assertIsInstance(Sign, int)
@@ -3709,13 +3845,15 @@ class Test_SquareMatrix(Test_Matrix):
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1, 2], [2, 1, 2], [3, 1, 1]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 3)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 3)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 0, 1))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1, 2))
         self.assertIsInstance(Diag, tuple)
         self.assertTupleEqual(Diag, (2, 1, 0.5))
         self.assertIsInstance(Sign, int)
@@ -3726,7 +3864,7 @@ class Test_SquareMatrix(Test_Matrix):
         del Lower
         del Upper
         objTest = self.TestClass([[1, 1, 2], [2, 1, 2], [1, 1, 2]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 3)
         self.assertIsInstance(Upper, self.TestClass)
@@ -3735,6 +3873,8 @@ class Test_SquareMatrix(Test_Matrix):
         self.assertTupleEqual(Perm, (2, 0, 1))
         self.assertIsInstance(Diag, tuple)
         self.assertTupleEqual(Diag, (2, 1, 0))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1, 2))
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0, 0], [1, 1, 0], [1, 0, 1]])
@@ -3744,13 +3884,15 @@ class Test_SquareMatrix(Test_Matrix):
         del Upper
         objTest = self.TestClass([[1, 0.5, 2, 0], [2, 2, 1, 3], [1, 1, 1, 1],
                                                                 [2.5, 1, 2, 2]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 4)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 4)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 3, 1, 0))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1, 2, 3))
         self.assertIsInstance(Diag, tuple)
         for Idx, Item in enumerate((2, 3, 1/6, 0.5)):
             self.assertAlmostEqual(Diag[Idx], Item)
@@ -3773,26 +3915,28 @@ class Test_SquareMatrix(Test_Matrix):
         del Upper
         objTest = self.TestClass([[1, 0.5, 2, 0], [2, 2, 1, 3], [1, 0.5, 2, 0],
                                                                 [2.5, 1, 2, 2]])
-        Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+        Lower, Upper, Diag, Perm, RPerm, Sign = objTest.getFullDecomposition()
         self.assertIsInstance(Lower, self.TestClass)
         self.assertEqual(Lower.Size, 4)
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 4)
         self.assertIsInstance(Perm, tuple)
         self.assertTupleEqual(Perm, (2, 3, 0, 1))
+        self.assertIsInstance(RPerm, tuple)
+        self.assertTupleEqual(RPerm, (0, 1, 3, 2))
         self.assertIsInstance(Diag, tuple)
-        for Idx, Item in enumerate((2, 3, 0, -2/3)):
+        for Idx, Item in enumerate((2, 3, 0.5, 0)):
             self.assertAlmostEqual(Diag[Idx], Item)
         self.assertIsInstance(Sign, int)
-        self.assertEqual(Sign, 1)
+        self.assertEqual(Sign, -1)
         Check = [[1, 0, 0, 0], [0.5, 1, 0, 0],
-                                        [1, 0, 1, 0], [1, 2 / 3, 0, 1]]
+                                        [1, 2 / 3, 1, 0], [1, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Lower[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
-        Check = [[1, 0, 1, -0.75], [0, 1, 1.5, -2.625],
-                                        [0, 0, 1, 0], [0, 0, 0.5, 1]]
+        Check = [[1, 0, 2, 0.5], [0, 1, 3, 1.75],
+                                        [0, 0, 1, - 2 / 3], [0, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Upper[ColIdx, RowIdx],
@@ -3804,9 +3948,10 @@ class Test_SquareMatrix(Test_Matrix):
         #+ identity matrices
         for Size in range(2, 10):
             objTest = self.TestClass.generateIdentity(Size)
-            Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+            Lower, Upper, Diag, Perm, RPerm, Sign=objTest.getFullDecomposition()
             CheckPerm = tuple([Item for Item in range(Size)])
             self.assertTupleEqual(Perm, CheckPerm)
+            self.assertTupleEqual(RPerm, CheckPerm)
             self.assertIsInstance(Sign, int)
             self.assertEqual(Sign, 1)
             self.assertIsInstance(Diag, tuple)
@@ -3829,8 +3974,11 @@ class Test_SquareMatrix(Test_Matrix):
             random.shuffle(CheckPerm)
             CheckPerm = tuple(CheckPerm)
             objTest = self.TestClass.generatePermutation(CheckPerm)
-            Lower, Upper, Diag, Perm, Sign = objTest.getFullDecomposition()
+            Lower, Upper, Diag, Perm, RPerm, Sign=objTest.getFullDecomposition()
             self.assertTupleEqual(Perm, CheckPerm)
+            self.assertIsInstance(RPerm, tuple)
+            for Idx in range(Size):
+                self.assertEqual(RPerm[Idx], Idx)
             self.assertIsInstance(Sign, int)
             self.assertEqual(abs(Sign), 1)
             self.assertIsInstance(Diag, tuple)
@@ -3849,7 +3997,7 @@ class Test_SquareMatrix(Test_Matrix):
             del Upper
         #general case
         for _ in range(10):
-            Lower, Upper, Diag, Perm, Sign = (
+            Lower, Upper, Diag, Perm, RPerm, Sign = (
                                         self.TestObject.getFullDecomposition())
             Size = self.TestObject.Size
             self.assertIsInstance(Lower, self.TestClass)
@@ -3862,6 +4010,7 @@ class Test_SquareMatrix(Test_Matrix):
             self.assertEqual(len(Diag), Size)
             #no exception should occur here
             PermMatrix = self.TestClass.generatePermutation(Perm)
+            RowsCor = self.TestClass.generatePermutation(RPerm)
             #no exception should occur here
             DiagMatrix = self.TestClass.generateDiagonal(Diag)
             self.assertIsInstance(Sign, int)
@@ -3875,13 +4024,15 @@ class Test_SquareMatrix(Test_Matrix):
                     else:
                         self.assertEqual(Lower[ColIdx, RowIdx], 1)
                         self.assertEqual(Upper[ColIdx, RowIdx], 1)
-            Check = Lower * Upper * DiagMatrix * PermMatrix
+            Check = RowsCor * Lower * Upper * DiagMatrix * PermMatrix
             for RowIdx in range(Size):
                 for ColIdx in range(Size):
                     self.assertAlmostEqual(Check[ColIdx, RowIdx],
                                                 self.TestObject[ColIdx, RowIdx])
+            del Check
             del PermMatrix
             del DiagMatrix
+            del RowsCor
             del Lower
             del Upper
             self.tearDown()
@@ -3995,6 +4146,59 @@ class Test_SquareMatrix(Test_Matrix):
                 self.assertIsNone(Test)
             self.tearDown()
             self.setUp()
+    
+    def test_getEigenVectors(self):
+        """
+        Checks implementation of the calculation of an eigenvalues and
+        eigenvectors.
+        
+        Test ID: TEST-T-340
+        
+        Covers requirements: REQ-FUN-340, REQ-AWM-340
+        """
+        Converging = (
+            [[0, 1], [2, 3]],
+            [[1, 1], [2, 3]],
+            [[1, 1, 2], [2, 1, 2], [3, 1, 1]],
+            [[1, 1, 2, 0], [1, 2, 1, 2], [3, 1, 1, 1], [1, 1, 1, 1]],
+            [[1, 1, 0, 0, 0], [1, 2, 1, 0, 0], [0, 3, 1, 1, 0], [0, 0, 1, 1, 1],
+                                                                [0, 0, 0, 1, 1]]
+        )
+        for Sample in Converging:
+            objTest = self.TestClass(Sample)
+            Test = objTest.getEigenVectors()
+            self.assertIsInstance(Test, dict)
+            Size = len(Sample)
+            for Key in Test.keys():
+                NewSample = [[Sample[RowIdx][ColIdx] - Key if RowIdx == ColIdx
+                                                    else Sample[RowIdx][ColIdx]
+                                                for ColIdx in range(Size)]
+                                                    for RowIdx in range(Size)]
+                objCheck = self.TestClass(NewSample)
+                self.assertAlmostEqual(objCheck.getDeterminant(), 0)
+                del objCheck
+                #TODO - check orthonormality of the eigenvectors
+                #+ also check that they are indeed eigenvectors
+            del objTest
+        Singular = (
+            [[1, 2], [2, 4]], [[1, 2], [0, 0]],
+            [[0, 1, 2], [0, 1, 2], [0, 1, 1]],
+            [[1, 1, 2], [2, 1, 2], [3, 2, 4]],
+            [[1, 1, 2, 0], [1, 2, 1, 2], [0, 0, 0, 0], [1, 1, 1, 1]]
+        )
+        for Sample in Singular:
+            objTest = self.TestClass(Sample)
+            Test = objTest.getEigenVectors()
+            self.assertIsNone(Test)
+            del objTest
+        NotConverging = (
+            [[1, 0.5, 2, 0], [2, 2, 1, 3], [1, 1, 1, 1], [2.5, 1, 2, 2]],
+        )
+        for Sample in NotConverging:
+            objTest = self.TestClass(Sample)
+            Test = objTest.getEigenVectors()
+            self.assertIsNone(Test)
+            del objTest
 
 #+ test suites
 

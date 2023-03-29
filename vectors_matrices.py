@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '28-03-2023'
+__date__ = '29-03-2023'
 __status__ = 'Development'
 
 #imports
@@ -41,7 +41,7 @@ if not (ROOT_FOLDER in sys.path):
 #++ actual import
 
 from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
-from introspection_lib.base_exceptions import GetObjectClass
+from introspection_lib.base_exceptions import GetObjectClass, UT_Exception
 
 #types
 
@@ -65,7 +65,17 @@ TMatrix = "Matrix"
 
 TSquareMatrix = "SquareMatrix"
 
+#globals
+
+MAX_ITER = 100000 #maximum number of iterations for the QR-algorithm
+
+ALMOST_ZERO = 1.0E-14 #threshold for the convergence of the QR-algorithm
+
+DEBUG_MODE = False #if True - will print fault messages of the QR-algorithm
+
 #helper functions
+
+#+ input data types
 
 def _CheckIfRealSequence(Value: Any) -> None:
     """
@@ -122,6 +132,173 @@ def _CheckIfSequenceRealSequence(Value: Any) -> None:
                                                             Index, Inner, Value)
                 Error.args = (Message, )
                 raise Error
+
+#+ Gram-Schmidt and QR decomposition related
+
+def _Dot(Vector1: Sequence[TReal], Vector2: Sequence[TReal]) -> TReal:
+    """
+    Calculates the dot product of two vectors, passed as generic sequences.
+    It does not any data sanity checks! It is not supposed to be used outside
+    the module.
+    
+    Signature:
+        seq(int OR float), seq(int OR float) -> int OR float
+    
+    Version 1.0.0.0
+    """
+    return sum([Vector1[Idx] * Vector2[Idx] for Idx in range(len(Vector1))])
+
+def _Norm(Vector: Sequence[TReal]) -> float:
+    """
+    Calculates the norm (length) of a vector, passed as generic sequence. Note:
+    it does not any data sanity checks! It is not supposed to be used outside
+    the module.
+    
+    Signature:
+        seq(int OR float) -> float
+    
+    Version 1.0.0.0
+    """
+    return sqrt(sum([Item * Item for Item in Vector]))
+
+def _NormSquared(Vector: Sequence[TReal]) -> float:
+    """
+    Calculates the square of the norm (length) of a vector, passed as generic
+    sequence. Note: it does not any data sanity checks! It is not supposed to be
+    used outside the module.
+    
+    Signature:
+        seq(int OR float) -> float
+    
+    Version 1.0.0.0
+    """
+    return sum([Item * Item for Item in Vector])
+
+def _Project(Vector1: Sequence[TReal], Vector2: Sequence[TReal]) -> List[float]:
+    """
+    Calculates the projection of the second vector onto the first vector, which
+    are both passed as generic sequences. It does not any data sanity checks!
+    It is not supposed to be used outside the module.
+    
+    Signature:
+        seq(int OR float), seq(int OR float) -> list(float)
+    
+    Raises:
+        UT_Exception: the first vector has zero 'length' - all elements are zero
+    
+    Version 1.0.0.0
+    """
+    Divider = _NormSquared(Vector1)
+    if not Divider:
+        raise UT_Exception('Zero length vector.')
+    Coeff = _Dot(Vector1, Vector2) / Divider
+    return [Coeff * Item for Item in Vector1]
+
+def _GetOrthonormal(Vectors: Sequence[Sequence[TReal]]) -> List[List[float]]:
+    """
+    Calculates a set of orthonormal (orthogonal and of the unity length) set of
+    vectors based on the passed set of vectors (as generic sequences of real
+    numbers). It does not any data sanity checks! It is not supposed to be used
+    outside the module.
+    
+    This is the modified Gram-Schmidt algorithm.
+    
+    Signature:
+        seq(seq(int OR float)) -> list(list(float))
+    
+    Raises:
+        UT_Exception: set cannot be orthogonolized, there are linear dependent
+            vectors (or zero 'length' ones) in the set
+    
+    Version 1.0.0.0
+    """
+    NVectors = len(Vectors)
+    VectorLenght = len(Vectors[0])
+    Data = [list(Vectors[Idx]) for Idx in range(NVectors)]
+    for Iteration in range(NVectors - 1):
+        for Idx in range(Iteration + 1, NVectors):
+            Previous = Data[Idx]
+            Projection = _Project(Data[Iteration], Previous)
+            Data[Idx] = [Data[Idx][ItemIdx] - Projection[ItemIdx]
+                                            for ItemIdx in range(VectorLenght)]
+    Result = []
+    for Vector in Data:
+        Norm = _Norm(Vector)
+        if not Norm:
+            raise UT_Exception('Linear dependent vectors.')
+        Normalized = [Element / Norm for Element in Vector]
+        Result.append(Normalized)
+    return Result
+
+#+ QR-algorithm related (Francis, Kublanovskaya)
+
+def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
+                                                Union[List[TReal], None], str]:
+    """
+    Implementation of the QR-algorithm by Francis and Kublanovskaya for finding
+    the eigenvalues of a square matrix.
+    
+    Signature:
+        seq(seq(int OR float)) -> list(int OR float) OR None, str
+    
+    Args:
+        seq(seq(int OR float)): the matrix elements packed into nested sequences
+            in the columns-first order
+    
+    Returns:
+        list(int OR float), str: unpacked tuple of the list of the unique real
+            number value eigenvalues and a string message ('Ok')
+        None, str: unpacked tuple of the None value to indicate the failure of
+            the algorithm and a string message explaining the reason
+    
+    Version 1.0.0.0
+    """
+    bStop = False
+    Counter = 0
+    Size = len(Vectors)
+    A = Vectors #orginal matrix in the columns-first order
+    while (not bStop) and (Counter < MAX_ITER):
+        try:
+            Q = _GetOrthonormal(A) #Q-matrix as the set of orthonormal vectors
+        except UT_Exception:
+            break
+        #Q-matrix convergence test - check if it is almost an identity matrix
+        Q_Res = sum([abs(abs(Q[ColIdx][RowIdx])-1) if ColIdx == RowIdx
+                        else abs(Q[ColIdx][RowIdx]) for ColIdx in range(Size)
+                            for RowIdx in range(Size)]) / (Size * Size)
+        if Q_Res < ALMOST_ZERO:
+            bStop = True
+        else:
+            R = [[_Dot(A[ColIdx], Q[RowIdx]) if RowIdx <= ColIdx else 0
+                        for RowIdx in range(Size)] for ColIdx in range(Size)]
+            #R-matrix, projection, such that A{k-1} = Q{k-1} * R{k-1}
+            A = [[sum([R[Idx][RowIdx] * Q[ColIdx][Idx] for Idx in range(Size)])
+                        for RowIdx in range(Size)] for ColIdx in range(Size)]
+            #next iteration A{k} = R{k-1} * Q{k-1}
+        Counter += 1
+    if bStop:
+        Elements = [A[Idx][Idx] for Idx in range(Size)]
+        Elements = [int(round(Item)) if abs(Item - round(Item)) < ALMOST_ZERO
+                                                else Item for Item in Elements]
+        Result = []
+        for Item in Elements:
+            if not Item:
+                continue
+            bNotPresent = True
+            for AddedItem in Result:
+                if abs((AddedItem - Item)/(AddedItem)) < ALMOST_ZERO:
+                    bNotPresent = False
+                    break
+            if bNotPresent:
+                Result.append(Item)
+        Message = 'Ok!'
+    elif Counter < MAX_ITER:
+        Result = None
+        Message = 'Matrix cannot be orthogonolized - linear dependent columns.'
+    else:
+        Result = None
+        Message = 'Maximum number of iterations is reached - not converging.'
+    return Result, Message
 
 #classes
 
@@ -1742,10 +1919,10 @@ class SquareMatrix(Matrix):
         getTrace():
             None -> int OR float
         getLUPdecomposition():
-            None -> SquareMatrix, SquareMatrix, tuple(int), int
+            None -> SquareMatrix, SquareMatrix, tuple(int), tuple(int), int
         getFullDecomposition():
             None -> SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int),
-                int
+                tuple(int), int
         getDeterminant():
             None -> int OR float
         getInverse():
@@ -2032,36 +2209,46 @@ class SquareMatrix(Matrix):
         return sum(self._Elements[Idx][Idx] for Idx in range(Size))
     
     def getLUPdecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
-                                                        Tuple[int, ...], int]:
+                                        Tuple[int, ...], Tuple[int, ...], int]:
         """
-        Calculates the decomposion of a matrix into a product of three matrices:
-        lower-diagonal (with all main diagnal elements being 1), upper-diagonal
-        matrix and a permutation matrix. Uses Gauss-Jordan elimination algorithm
-        with columns pivoting.
+        Calculates the decomposion of a matrix into a product of four matrices:
+        the rows permutation matrix (which is identity unless some rows are not
+        linear independent), the lower-diagonal (with all main diagonal elements
+        being 1), the upper-diagonal matrix and the columns permutation matrix.
+        Uses Gauss-Jordan elimination algorithm with full pivoting.
+        
+        Note that the rows pivoting occurs only if a row becomes all zeroes in
+        the elimination process, which means, that the determinant is zero and
+        the matrix is singular. Therefore, the rows permutations can be usually
+        ignored. The columns permutations are used for the numerical stability
+        even if no zeroes appear on the main diagonal during elimination.
         
         Signature:
-            None -> SquareMatrix, SquareMatrix, tuple(int), int
+            None -> SquareMatrix, SquareMatrix, tuple(int), tuple(int), int
         
         Returns:
-            SquareMatrix, SquareMatrix, tuple(int), int: unpacked tuple of two
-                square matrices of the same size (lower- and upper-diagonal
-                respectively), followed by the permutation tuple representing
-                the swapping of the columns (the actual permutation matrix can
-                be generated from it directly), followed by +1 or -1 number as
-                the permutation sign.
+            SquareMatrix, SquareMatrix, tuple(int), tuple(int), int: unpacked
+                tuple of two square matrices of the same size (lower- and upper
+                diagonal respectively), followed by the permutation tuple
+                representing the swapping of the columns (the actual permutation
+                matrix can be generated from it directly), followed by (tuple)
+                permutation of rows, followed by +1 or -1 number as the
+                permutation sign.
         
         Version 1.0.0.0
         """
         Size = len(self._Elements)
         Sign = 1
         Permutations = [Item for Item in range(Size)]
+        RowsPerm = [Item for Item in range(Size)]
         Upper = [list(tupRow) for tupRow in self._Elements]
         Lower = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
                                                     for RowIdx in range(Size)]
         for RowIndex in range(Size - 1):
+            RealRowIndex = RowsPerm[RowIndex]
             MaxIndex = Permutations[RowIndex]
             RealColIdx = RowIndex
-            Item = Upper[RowIndex][MaxIndex]
+            Item = Upper[RealRowIndex][MaxIndex]
             #selecting maximum element (abs) in the row
             for ColIdx in range(RowIndex, Size):
                 NewIndex = Permutations[ColIdx]
@@ -2076,55 +2263,83 @@ class SquareMatrix(Matrix):
                 Permutations[RowIndex] = MaxIndex
                 Permutations[RealColIdx] = OldIndex
                 Sign *= -1
-            #Gauss elimination
             RealColIdx = Permutations[RowIndex]
-            Base = Upper[RowIndex][RealColIdx]
+            Base = Upper[RealRowIndex][RealColIdx]
+            if not Base: #try to swap rows (first found)
+                for RowIdx in range(RowIndex + 1, Size):
+                    Item = Upper[RowsPerm[RowIdx]][RealColIdx]
+                    if Item != 0:
+                        OldIndex = RowsPerm[RowIdx]
+                        RowsPerm[RowIdx] = RealRowIndex
+                        RowsPerm[RowIndex] = OldIndex
+                        #swapping elements in the Lower matrix as well
+                        for ColIdx in range(RowIndex):
+                            OldValue = Lower[OldIndex][ColIdx]
+                            Lower[OldIndex][ColIdx]= Lower[RealRowIndex][ColIdx]
+                            Lower[RealRowIndex][ColIdx] = OldValue
+                        Sign *= -1
+                        break
+            #Gauss elimination
+            RealRowIndex = RowsPerm[RowIndex]
+            Base = Upper[RealRowIndex][RealColIdx]
             if Base != 0:
                 for Index in range(RowIndex + 1, Size):
-                    Coefficient = Upper[Index][RealColIdx] / Base
+                    MRowIndex = RowsPerm[Index]
+                    Coefficient = Upper[MRowIndex][RealColIdx] / Base
                     Lower[Index][RowIndex] = Coefficient
-                    Upper[Index][RealColIdx] = 0
+                    Upper[MRowIndex][RealColIdx] = 0
                     for ColIdx in range(RowIndex + 1, Size):
                         RealIdx = Permutations[ColIdx]
-                        Value = (Upper[Index][RealIdx] - Coefficient *
-                                                    Upper[RowIndex][RealIdx])
-                        Upper[Index][RealIdx] = Value
+                        Value = (Upper[MRowIndex][RealIdx] - Coefficient *
+                                                Upper[RealRowIndex][RealIdx])
+                        Upper[MRowIndex][RealIdx] = Value
         LowerMatrix = self.__class__(Lower)
-        UpperElements = [[lstRow[Idx] for Idx in Permutations]
-                                                            for lstRow in Upper]
+        UpperElements = [[Upper[RowIdx][ColIdx] for ColIdx in Permutations]
+                                                        for RowIdx in RowsPerm]
         UpperMatrix = self.__class__(UpperElements)
         Permutations = tuple(Permutations)
-        return LowerMatrix, UpperMatrix, Permutations, Sign
+        RowsPermutations = tuple(RowsPerm)
+        return LowerMatrix, UpperMatrix, Permutations, RowsPermutations, Sign
     
     def getFullDecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
                                     Tuple[TReal, ...], Tuple[int, ...], int]:
         """
-        Calculates the decomposion of a matrix into a product of four matrices:
-        lower-diagonal (with all main diagnal elements being 1), upper-diagonal
-        matrix (with all main diagnal elements being 1), a diagonal matrix (all
-        non-zero elements only on the main diagon) and a permutation matrix.
-        Uses Gauss-Jordan elimination algorithm with columns pivoting to
-        calculate the LUP-decomposition first, then decomposes the upper-
-        diagonal matrix into a diagonal and upper-diagonal with onses at the
-        main diagonal using Gauss elimination algorithm.
+        Calculates the decomposion of a matrix into a product of five matrices:
+        the rows permutation matrix (which is identity unless some rows are not
+        linear independent), the lower-diagonal (with all main diagonal elements
+        being 1), the upper-diagonal matrix (with all main diagnal elements
+        being 1), a diagonal matrix (all non-zero elements only on the main
+        diagonal) and a permutation matrix. Uses Gauss-Jordan elimination
+        algorithm with full pivoting to calculate the LUP-decomposition first,
+        then decomposes the upper- diagonal matrix into a diagonal and
+        upper-diagonal with onses at the main diagonal using Gauss elimination
+        algorithm.
+        
+        Note that the rows pivoting occurs only if a row becomes all zeroes in
+        the elimination process, which means, that the determinant is zero and
+        the matrix is singular. Therefore, the rows permutations can be usually
+        ignored. The columns permutations are used for the numerical stability
+        even if no zeroes appear on the main diagonal during elimination.
         
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int OR float),
                 tuple(int), int
         
         Returns:
-            SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int), int:
-                unpacked tuple of three square matrices of the same size (lower-
-                and upper-diagonal respectively), followed by the tuple or real
-                numbers representing the main diagonal elements of the diagonal
-                matrix (can be generated directly from it), followed by the
-                permutation tuple representing the swapping of the columns (the
-                actual permutation matrix can be generated from it directly),
+            SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int),
+                tuple(int), int: unpacked tuple of two square matrices of the
+                same size (lower- and upper-diagonal respectively), followed by
+                the tuple or real numbers representing the main diagonal
+                elements of the diagonal matrix (can be generated directly from
+                it), followed by the permutation tuple representing the swapping
+                of the columns (the actual permutation matrix can be generated
+                from it directly), followed by the rows permutation tuple,
                 followed by +1 or -1 number as the permutation sign.
         
         Version 1.0.0.0
         """
-        LowerMatrix, UpperMatrix, Permutations, Sign =self.getLUPdecomposition()
+        LowerMatrix, UpperMatrix, Permutations, RowsPerm, Sign = (
+                                                    self.getLUPdecomposition())
         Size = len(self._Elements)
         Diagonal=tuple([UpperMatrix._Elements[Idx][Idx] for Idx in range(Size)])
         Upper = [list(tupRow) for tupRow in UpperMatrix._Elements]
@@ -2138,7 +2353,7 @@ class SquareMatrix(Matrix):
             Upper[RowIdx][RowIdx] = 1
         Upper[0][0] = 1
         UpperMatrix = self.__class__(Upper)
-        return LowerMatrix, UpperMatrix, Diagonal, Permutations, Sign
+        return LowerMatrix, UpperMatrix, Diagonal, Permutations, RowsPerm, Sign
     
     def getDeterminant(self) -> TReal:
         """
@@ -2162,7 +2377,7 @@ class SquareMatrix(Matrix):
                 Result -= a[0][1] * a[1][0] * a[2][2]
                 Result -= a[0][0] * a[1][2] * a[2][1]
         else:
-            _, Upper, _, Sign = self.getLUPdecomposition()
+            _, Upper, _, _, Sign = self.getLUPdecomposition()
             Result = Sign
             for Index in range(Size):
                 Result *= Upper._Elements[Index][Index]
@@ -2187,7 +2402,7 @@ class SquareMatrix(Matrix):
         Version 1.0.0.0
         """
         Size = len(self._Elements)
-        Lower, Upper, Diag, Perm, _ = self.getFullDecomposition()
+        Lower, Upper, Diag, Perm, _, _ = self.getFullDecomposition()
         Low = [list(lstRow) for lstRow in Lower._Elements]
         Up = [list(lstRow) for lstRow in Upper._Elements]
         del Lower
@@ -2223,17 +2438,40 @@ class SquareMatrix(Matrix):
 
     def getEigenValues(self) -> Union[TRealTuple, None]:
         """
+        Calculates the real number valued eigenvalues.
+        
         Signature:
             None -> tuple(int OR float) OR None
+        
+        Returns:
+            tuple(int OR float): all unique real number value eigenvalues
+            None: no eigenvalues are found
+        
+        Version 1.0.0.0
         """
-        pass
+        #re-pack data into columns-first order
+        Original = self._Elements
+        Size = len(Original)
+        Data = [[Original[RowIdx][ColIdx] for RowIdx in range(Size)]
+                                                    for ColIdx in range(Size)]
+        Result, Message = _FindEigenValuesQR(Data)
+        if not (Result is None):
+            Result = tuple(Result)
+        elif DEBUG_MODE:
+            print(Message)
+        return Result
     
     def getEigenVectors(self) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
         """
         Signature:
             None -> dict(int OR float -> tuple(Column)) OR None
         """
-        pass
+        Values = self.getEigenValues()
+        if not (Values is None):
+            Result = {EigenValue : [] for EigenValue in Values}
+        else:
+            Result = Values
+        return Result
 
 #Dynamic patching of the Column class, instance method __mul__()
 
