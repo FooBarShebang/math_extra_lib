@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '29-03-2023'
+__date__ = '30-03-2023'
 __status__ = 'Development'
 
 #imports
@@ -2223,6 +2223,12 @@ class SquareMatrix(Matrix):
         ignored. The columns permutations are used for the numerical stability
         even if no zeroes appear on the main diagonal during elimination.
         
+        Naming the initial matrix A, lower-diagonal L, upper-diagonal U, columns
+        permutation Pc and rows permutation matrix Pr, for the non-singular
+        matrix A = L * U * Pc, with Pr == I - identity matrix. Even for a
+        singular matrix A = Pr * L * U * Pc with U being the row echelon form
+        with all zeroes rows at the bottom.
+        
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int), tuple(int), int
         
@@ -2239,47 +2245,56 @@ class SquareMatrix(Matrix):
         """
         Size = len(self._Elements)
         Sign = 1
-        Permutations = [Item for Item in range(Size)]
+        #look-up table for the columns swapping
+        ColsPerm = [Item for Item in range(Size)]
+        #look-up table for the rows swapping
         RowsPerm = [Item for Item in range(Size)]
+        #future upper-diagonal matrix, indexed via pivoting look-up tables
         Upper = [list(tupRow) for tupRow in self._Elements]
+        #future lower-diagonal matrix, index using real indexes
         Lower = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
                                                     for RowIdx in range(Size)]
+        #go along the main diagonal, moving one row lower at each step
         for RowIndex in range(Size - 1):
             RealRowIndex = RowsPerm[RowIndex]
-            MaxIndex = Permutations[RowIndex]
+            MaxIndex = ColsPerm[RowIndex]
             RealColIdx = RowIndex
             Item = Upper[RealRowIndex][MaxIndex]
-            #selecting maximum element (abs) in the row
+            #selecting maximum element (abs) in the row - columns pivoting
             for ColIdx in range(RowIndex, Size):
-                NewIndex = Permutations[ColIdx]
+                NewIndex = ColsPerm[ColIdx]
                 NewItem = Upper[RowIndex][NewIndex]
                 if abs(NewItem) > abs(Item):
                     Item = NewItem
                     MaxIndex = NewIndex
                     RealColIdx = ColIdx
-            #swapping elements in Permutations
-            if MaxIndex != Permutations[RowIndex]:
-                OldIndex = Permutations[RowIndex]
-                Permutations[RowIndex] = MaxIndex
-                Permutations[RealColIdx] = OldIndex
+            #swapping columns (look-up table not actual data!)
+            if MaxIndex != ColsPerm[RowIndex]:
+                OldIndex = ColsPerm[RowIndex]
+                ColsPerm[RowIndex] = MaxIndex
+                ColsPerm[RealColIdx] = OldIndex
                 Sign *= -1
-            RealColIdx = Permutations[RowIndex]
+            RealColIdx = ColsPerm[RowIndex]
             Base = Upper[RealRowIndex][RealColIdx]
-            if not Base: #try to swap rows (first found)
+            if not Base: #rows pivoting is required, use the first found below
                 for RowIdx in range(RowIndex + 1, Size):
                     Item = Upper[RowsPerm[RowIdx]][RealColIdx]
                     if Item != 0:
+                        #swap indexes in the look-up table, not real rows!
                         OldIndex = RowsPerm[RowIdx]
                         RowsPerm[RowIdx] = RealRowIndex
                         RowsPerm[RowIndex] = OldIndex
                         #swapping elements in the Lower matrix as well
+                        #+ real data, but only two 'partial' rows - from the
+                        #+ column index 0 to the current position - 1 on the
+                        #+ main diagonal
                         for ColIdx in range(RowIndex):
                             OldValue = Lower[OldIndex][ColIdx]
                             Lower[OldIndex][ColIdx]= Lower[RealRowIndex][ColIdx]
                             Lower[RealRowIndex][ColIdx] = OldValue
                         Sign *= -1
                         break
-            #Gauss elimination
+            #Gauss elimination, inline data modification
             RealRowIndex = RowsPerm[RowIndex]
             Base = Upper[RealRowIndex][RealColIdx]
             if Base != 0:
@@ -2289,17 +2304,21 @@ class SquareMatrix(Matrix):
                     Lower[Index][RowIndex] = Coefficient
                     Upper[MRowIndex][RealColIdx] = 0
                     for ColIdx in range(RowIndex + 1, Size):
-                        RealIdx = Permutations[ColIdx]
+                        RealIdx = ColsPerm[ColIdx]
                         Value = (Upper[MRowIndex][RealIdx] - Coefficient *
                                                 Upper[RealRowIndex][RealIdx])
                         Upper[MRowIndex][RealIdx] = Value
+        #covert lower matrix into the square matrix class instance directly
         LowerMatrix = self.__class__(Lower)
-        UpperElements = [[Upper[RowIdx][ColIdx] for ColIdx in Permutations]
+        #convert upper matrix into the suqare matrix class instance with the
+        #+ rows and columns re-arrangement according the made pivoting
+        UpperElements = [[Upper[RowIdx][ColIdx] for ColIdx in ColsPerm]
                                                         for RowIdx in RowsPerm]
         UpperMatrix = self.__class__(UpperElements)
-        Permutations = tuple(Permutations)
-        RowsPermutations = tuple(RowsPerm)
-        return LowerMatrix, UpperMatrix, Permutations, RowsPermutations, Sign
+        #columns and rows permutations are already in the right format and order
+        ColsPerm = tuple(ColsPerm)
+        RowsPerm = tuple(RowsPerm)
+        return LowerMatrix, UpperMatrix, ColsPerm, RowsPerm, Sign
     
     def getFullDecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
                                     Tuple[TReal, ...], Tuple[int, ...], int]:
@@ -2321,6 +2340,15 @@ class SquareMatrix(Matrix):
         ignored. The columns permutations are used for the numerical stability
         even if no zeroes appear on the main diagonal during elimination.
         
+        Naming the initial matrix A, lower-diagonal L, upper-diagonal U,
+        diagonal matrix D, columns permutation Pc and rows permutation matrix
+        Pr, for the non-singular matrix A = L * U * D * Pc, with Pr == I being
+        the identity matrix.
+        
+        Even for a singular matrix det(A) = 0, A != Pr * L * U * D * Pc, since
+        the Gauss elimination method fails to eliminate all non-diagonal
+        elements, thus D is not, actually diagonal, but it is treates as one.
+        
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int OR float),
                 tuple(int), int
@@ -2338,12 +2366,13 @@ class SquareMatrix(Matrix):
         
         Version 1.0.0.0
         """
-        LowerMatrix, UpperMatrix, Permutations, RowsPerm, Sign = (
-                                                    self.getLUPdecomposition())
+        LowerMtrx, UpperMtrx, ColsPrm, RowsPrm, Sign= self.getLUPdecomposition()
         Size = len(self._Elements)
-        Diagonal=tuple([UpperMatrix._Elements[Idx][Idx] for Idx in range(Size)])
-        Upper = [list(tupRow) for tupRow in UpperMatrix._Elements]
-        del UpperMatrix
+        #the algorithm is wrong for the singular matrices, due to the taken
+        #+ shortcuts!
+        Diagonal = tuple([UpperMtrx._Elements[Idx][Idx] for Idx in range(Size)])
+        Upper = [list(tupRow) for tupRow in UpperMtrx._Elements]
+        del UpperMtrx
         for RowIdx in range(Size - 1, 0, -1):
             Base = Upper[RowIdx][RowIdx]
             if Base != 0:
@@ -2352,12 +2381,14 @@ class SquareMatrix(Matrix):
                     Upper[Index][RowIdx] = Coefficient
             Upper[RowIdx][RowIdx] = 1
         Upper[0][0] = 1
-        UpperMatrix = self.__class__(Upper)
-        return LowerMatrix, UpperMatrix, Diagonal, Permutations, RowsPerm, Sign
+        UpperMtrx = self.__class__(Upper)
+        return LowerMtrx, UpperMtrx, Diagonal, ColsPrm, RowsPrm, Sign
     
     def getDeterminant(self) -> TReal:
         """
-        Calculates the determinant of a square matrix using LUP-decomposition.
+        Calculates the determinant of a square matrix using LUP-decomposition
+        for large (Size > 3) matrices, and the direct analytical expression for
+        2 x 2 and 3 x 3 matrices for speed.
         
         Signature:
             None -> int OR float
@@ -2411,6 +2442,7 @@ class SquareMatrix(Matrix):
         for Idx in range(Size):
             Det *= Diag[Idx]
         if Det:
+            #inverse modifications applied to an identity matrix
             Data = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
                                                     for RowIdx in range(Size)]
             for ColIdx in range(Size - 1):
@@ -2427,9 +2459,12 @@ class SquareMatrix(Matrix):
                 for ColIdx in range(Size):
                     Value = Data[RowIdx][ColIdx] / Diag[RowIdx]
                     Data[RowIdx][ColIdx] = Value
+            #re-arrange the columns according the columns permutations tuple
+            #+ find the inverse permutation, equivalent to the matrix transpose
             PermIndexes = [Pos[0] for Pos in sorted([(Idx, Item)
                                             for Idx, Item in enumerate(Perm)],
                                                 key = lambda Value: Value[1])]
+            #+ re-arrange the columns
             Data = [Data[PermIndexes[Idx]] for Idx in range(Size)]
             Result = self.__class__(Data)
         else:
@@ -2438,14 +2473,15 @@ class SquareMatrix(Matrix):
 
     def getEigenValues(self) -> Union[TRealTuple, None]:
         """
-        Calculates the real number valued eigenvalues.
+        Calculates the real number valued eigenvalues. Based on the Francis
+        QR-algorithm with Gram-Schmidt orthogonalization method.
         
         Signature:
             None -> tuple(int OR float) OR None
         
         Returns:
-            tuple(int OR float): all unique real number value eigenvalues
-            None: no eigenvalues are found
+            tuple(int OR float): all unique real number valued eigenvalues
+            None: no real number valued eigenvalues are found
         
         Version 1.0.0.0
         """
@@ -2463,12 +2499,24 @@ class SquareMatrix(Matrix):
     
     def getEigenVectors(self) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
         """
+        Calculates the real number valued eigenvalues and the respective eigen
+        vectors, which form orthonormal basis for each eigenvalue. Based on the
+        Francis QR-algorithm with Gram-Schmidt orthogonalization method.
+        
         Signature:
             None -> dict(int OR float -> tuple(Column)) OR None
+        
+        Returns:
+            dict(int OR float -> tuple(Column)): dictionary mapping all unique
+                real number valued eigenvalues to the respective orthonormal
+                set of eigenvectors as a tuple of column vector class instances
+            None: no real number valued eigenvalues are found
+        
+        Version 1.0.0.0
         """
         Values = self.getEigenValues()
         if not (Values is None):
-            Result = {EigenValue : [] for EigenValue in Values}
+            Result = {EigenValue : tuple() for EigenValue in Values}
         else:
             Result = Values
         return Result
