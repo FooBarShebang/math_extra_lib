@@ -655,7 +655,7 @@ class Vector:
         Data: (read-only) list(int OR float)
         
     Class methods:
-        generateOrtogonal(Length, Index):
+        generateOrthogonal(Length, Index):
             int >= 2, int >= 0 -> Vector
     
     Methods:
@@ -1069,7 +1069,7 @@ class Vector:
     #public class methods
     
     @classmethod
-    def generateOrtogonal(cls, Length: int, Index: int) -> TVector:
+    def generateOrthogonal(cls, Length: int, Index: int) -> TVector:
         """
         Class method to generate a vector from the unity orthogonal set such,
         that only a single element is 1, thereas all other elements are 0.
@@ -1198,7 +1198,7 @@ class Column(Vector):
         Data: (read-only) list(int OR float)
         
     Class methods:
-        generateOrtogonal(Length, Index):
+        generateOrthogonal(Length, Index):
             int >= 2, int >= 0 -> Column
     
     Methods:
@@ -1338,7 +1338,7 @@ class Row(Vector):
         Data: (read-only) list(int OR float)
         
     Class methods:
-        generateOrtogonal(Length, Index):
+        generateOrthogonal(Length, Index):
             int >= 2, int >= 0 -> Row
     
     Methods:
@@ -2490,6 +2490,7 @@ class SquareMatrix(Matrix):
         Size = len(Original)
         Data = [[Original[RowIdx][ColIdx] for RowIdx in range(Size)]
                                                     for ColIdx in range(Size)]
+        #use Francis QR-algorithm
         Result, Message = _FindEigenValuesQR(Data)
         if not (Result is None):
             Result = tuple(Result)
@@ -2515,8 +2516,46 @@ class SquareMatrix(Matrix):
         Version 1.0.0.0
         """
         Values = self.getEigenValues()
+        Size = len(self._Elements)
         if not (Values is None):
             Result = {EigenValue : tuple() for EigenValue in Values}
+            for EigenValue in Values:
+                #construct singular matrix
+                Data = [[Item - EigenValue if ColIdx == RowIdx else Item
+                            for ColIdx, Item in enumerate(tupRow)]
+                                for RowIdx, tupRow in enumerate(self._Elements)]
+                Data = self.__class__(Data)
+                #compute LUP-decomposition, U is in the row echelon form
+                _, Upper, ColPerm, _, _ = Data.getLUPdecomposition()
+                #lower-diagonal matrix, rows permutation and sign can be ignored
+                del Data
+                Data = [list(tupRow) for tupRow in Upper._Elements]
+                del Upper
+                Diag = [Data[Idx][Idx] for Idx in range(Size)]
+                if not any(Diag): #all diagonal elements are zero
+                    #it can happen only if there is only one eigenvalue
+                    EigenVectors = tuple(Column.generateOrthogonal(Size, Idx)
+                                                        for Idx in range(Size))
+                    Result[EigenValue] = EigenVectors
+                else:
+                    #there is no way to be sure to find only 0 and not 0.0, thus
+                    #+ list.index() or list.count() may misfire
+                    ZeroesCount = 1
+                    for Idx in range(Size - 2, 0, -1): #1st element must be != 0
+                        if Diag[Idx]: #first non-zero element found
+                            break
+                        ZeroesCount += 1
+                    #there must be ZeroesCount orthonormal eigenvectors set
+                    ReducedSize = Size - ZeroesCount
+                    ReducedData = [[Data[RowIdx][ColIdx]
+                                        for ColIdx in range(ReducedSize)]
+                                            for RowIdx in range(ReducedSize)]
+                    FreeCoeffs = [[Data[RowIdx][ColIdx] 
+                                    for RowIdx in range(ReducedSize)]
+                                        for ColIdx in range(ReducedSize, Size)]
+                    #TODO - implement back-substitution algorithm
+                    for FreeIdx in range(ZeroesCount):
+                        pass
         else:
             Result = Values
         return Result

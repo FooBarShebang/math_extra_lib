@@ -790,7 +790,7 @@ class Test_Vector(unittest.TestCase):
             self.tearDown()
             self.setUp()
     
-    def test_generateOrtogonal(self):
+    def test_generateOrthogonal(self):
         """
         Checks generation of a unity orthogonal vectors set.
         
@@ -801,7 +801,7 @@ class Test_Vector(unittest.TestCase):
         for _ in range(10):
             Size = random.randint(2, 10)
             for Index in range(Size):
-                Test = self.TestClass.generateOrtogonal(Size, Index)
+                Test = self.TestClass.generateOrthogonal(Size, Index)
                 self.assertIsInstance(Test, self.TestClass)
                 self.assertIs(Test.__class__, self.TestClass)
                 self.assertEqual(Test.Size, Size)
@@ -814,7 +814,7 @@ class Test_Vector(unittest.TestCase):
             self.tearDown()
             self.setUp()
     
-    def test_generateOrtogonal_TypeError(self):
+    def test_generateOrthogonal_TypeError(self):
         """
         Checks generation of a unity orthogonal vectors set - input data types.
         
@@ -827,19 +827,19 @@ class Test_Vector(unittest.TestCase):
         Index = random.randint(0, Size - 1)
         for Item in self.NotScalar:
             with self.assertRaises(TypeError):
-                self.TestClass.generateOrtogonal(Item, Index)
+                self.TestClass.generateOrthogonal(Item, Index)
             self.assertListEqual(self.TestObject.Data, Data)
             with self.assertRaises(TypeError):
-                self.TestClass.generateOrtogonal(Size, Item)
+                self.TestClass.generateOrthogonal(Size, Item)
             self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
-            self.TestClass.generateOrtogonal(3.0, Index)
+            self.TestClass.generateOrthogonal(3.0, Index)
         self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(TypeError):
-            self.TestClass.generateOrtogonal(Size, 1.0)
+            self.TestClass.generateOrthogonal(Size, 1.0)
         self.assertListEqual(self.TestObject.Data, Data)
     
-    def test_generateOrtogonal_ValueError(self):
+    def test_generateOrthogonal_ValueError(self):
         """
         Checks generation of a unity orthogonal vectors set - input data values.
         
@@ -849,23 +849,23 @@ class Test_Vector(unittest.TestCase):
         """
         Data = list(self.TestObject.Data)
         with self.assertRaises(ValueError):
-            self.TestClass.generateOrtogonal(0, 1)
+            self.TestClass.generateOrthogonal(0, 1)
         self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
-            self.TestClass.generateOrtogonal(1, 1)
+            self.TestClass.generateOrthogonal(1, 1)
         self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
-            self.TestClass.generateOrtogonal(random.randint(-10, -1), 1)
+            self.TestClass.generateOrthogonal(random.randint(-10, -1), 1)
         self.assertListEqual(self.TestObject.Data, Data)
         Size = random.randint(2, 10)
         with self.assertRaises(ValueError):
-            self.TestClass.generateOrtogonal(Size, random.randint(-10, -1))
+            self.TestClass.generateOrthogonal(Size, random.randint(-10, -1))
         self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
-            self.TestClass.generateOrtogonal(Size, Size)
+            self.TestClass.generateOrthogonal(Size, Size)
         self.assertListEqual(self.TestObject.Data, Data)
         with self.assertRaises(ValueError):
-            self.TestClass.generateOrtogonal(Size, Size + random.randint(1, 10))
+            self.TestClass.generateOrthogonal(Size, Size + random.randint(1, 10))
         self.assertListEqual(self.TestObject.Data, Data)
 
 class Test_Column(Test_Vector):
@@ -4156,6 +4156,29 @@ class Test_SquareMatrix(Test_Matrix):
         
         Covers requirements: REQ-FUN-340, REQ-AWM-340
         """
+        #simple cases
+        #+ identity matrices - should be eigenvalue = 1 and set of orthonormal
+        #+ vectors e_i for the eigenvectors
+        for Size in range(2, 11):
+            objTest = self.TestClass.generateIdentity(Size)
+            Test = objTest.getEigenVectors()
+            del objTest
+            self.assertIsInstance(Test, dict)
+            self.assertEqual(len(Test), 1)
+            EigenValue = list(Test.keys())[0]
+            self.assertEqual(EigenValue, 1)
+            Vectors = Test[EigenValue]
+            self.assertIsInstance(Vectors, tuple)
+            self.assertEqual(len(Vectors), Size)
+            for Idx, Vector in enumerate(Vectors):
+                self.assertIsInstance(Vector, testmodule.Column)
+                self.assertEqual(Vector.Size, Size)
+                for ElemIdx in range(Size):
+                    if ElemIdx == Idx:
+                        self.assertEqual(Vector[ElemIdx], 1)
+                    else:
+                        self.assertEqual(Vector[ElemIdx], 0)
+        #known cases
         Converging = (
             [[0, 1], [2, 3]],
             [[1, 1], [2, 3]],
