@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '30-03-2023'
+__date__ = '31-03-2023'
 __status__ = 'Development'
 
 #imports
@@ -2255,55 +2255,57 @@ class SquareMatrix(Matrix):
         Lower = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
                                                     for RowIdx in range(Size)]
         #go along the main diagonal, moving one row lower at each step
-        for RowIndex in range(Size - 1):
-            RealRowIndex = RowsPerm[RowIndex]
-            MaxIndex = ColsPerm[RowIndex]
-            RealColIdx = RowIndex
-            Item = Upper[RealRowIndex][MaxIndex]
-            #selecting maximum element (abs) in the row - columns pivoting
-            for ColIdx in range(RowIndex, Size):
-                NewIndex = ColsPerm[ColIdx]
-                NewItem = Upper[RowIndex][NewIndex]
-                if abs(NewItem) > abs(Item):
-                    Item = NewItem
-                    MaxIndex = NewIndex
-                    RealColIdx = ColIdx
-            #swapping columns (look-up table not actual data!)
-            if MaxIndex != ColsPerm[RowIndex]:
-                OldIndex = ColsPerm[RowIndex]
-                ColsPerm[RowIndex] = MaxIndex
-                ColsPerm[RealColIdx] = OldIndex
-                Sign *= -1
-            RealColIdx = ColsPerm[RowIndex]
-            Base = Upper[RealRowIndex][RealColIdx]
-            if not Base: #rows pivoting is required, use the first found below
-                for RowIdx in range(RowIndex + 1, Size):
-                    Item = Upper[RowsPerm[RowIdx]][RealColIdx]
-                    if Item != 0:
+        for BaseIndex in range(Size - 1):
+            RealRowIndex = RowsPerm[BaseIndex] #in upper matrix coordinates
+            RealColIdx = ColsPerm[BaseIndex]
+            CurrentRow = Upper[RealRowIndex]
+            if not any(CurrentRow ): #all elements in the current row are 0
+                #rows pivoting is required, use the first found below
+                for RowIdx in range(BaseIndex + 1, Size):
+                    NextRow = Upper[RowsPerm[RowIdx]]
+                    if any(NextRow):
                         #swap indexes in the look-up table, not real rows!
                         OldIndex = RowsPerm[RowIdx]
                         RowsPerm[RowIdx] = RealRowIndex
-                        RowsPerm[RowIndex] = OldIndex
+                        RowsPerm[BaseIndex] = OldIndex
                         #swapping elements in the Lower matrix as well
                         #+ real data, but only two 'partial' rows - from the
                         #+ column index 0 to the current position - 1 on the
                         #+ main diagonal
-                        for ColIdx in range(RowIndex):
-                            OldValue = Lower[OldIndex][ColIdx]
-                            Lower[OldIndex][ColIdx]= Lower[RealRowIndex][ColIdx]
-                            Lower[RealRowIndex][ColIdx] = OldValue
+                        for ColIdx in range(BaseIndex):
+                            OldValue = Lower[BaseIndex][ColIdx]
+                            Lower[BaseIndex][ColIdx]= Lower[RowIdx][ColIdx]
+                            Lower[RowIdx][ColIdx] = OldValue
                         Sign *= -1
+                        RealRowIndex = RowsPerm[BaseIndex]
                         break
+            #check if extra column swapping is required
+            MaxIndex = BaseIndex
+            Item = Upper[RealRowIndex][ColsPerm[MaxIndex]]
+            #selecting maximum element (abs) in the row - columns pivoting
+            for ColIdx in range(BaseIndex, Size):
+                NewIndex = ColsPerm[ColIdx]
+                NewItem = Upper[RealRowIndex][NewIndex]
+                if abs(NewItem) > abs(Item):
+                    Item = NewItem
+                    MaxIndex = ColIdx
+                    break
+            #swapping columns (look-up table not actual data!)
+            if MaxIndex != BaseIndex:
+                OldIndex = ColsPerm[BaseIndex]
+                ColsPerm[BaseIndex] = ColsPerm[MaxIndex]
+                ColsPerm[MaxIndex] = OldIndex
+                Sign *= -1
+                RealColIdx = ColsPerm[BaseIndex]
             #Gauss elimination, inline data modification
-            RealRowIndex = RowsPerm[RowIndex]
             Base = Upper[RealRowIndex][RealColIdx]
             if Base != 0:
-                for Index in range(RowIndex + 1, Size):
+                for Index in range(BaseIndex + 1, Size):
                     MRowIndex = RowsPerm[Index]
                     Coefficient = Upper[MRowIndex][RealColIdx] / Base
-                    Lower[Index][RowIndex] = Coefficient
+                    Lower[Index][BaseIndex] = Coefficient
                     Upper[MRowIndex][RealColIdx] = 0
-                    for ColIdx in range(RowIndex + 1, Size):
+                    for ColIdx in range(BaseIndex + 1, Size):
                         RealIdx = ColsPerm[ColIdx]
                         Value = (Upper[MRowIndex][RealIdx] - Coefficient *
                                                 Upper[RealRowIndex][RealIdx])
@@ -2379,6 +2381,9 @@ class SquareMatrix(Matrix):
                 for Index in range(0, RowIdx):
                     Coefficient = Upper[Index][RowIdx] / Base
                     Upper[Index][RowIdx] = Coefficient
+            else:
+                for Index in range(0, RowIdx):
+                    Upper[Index][RowIdx] = 0
             Upper[RowIdx][RowIdx] = 1
         Upper[0][0] = 1
         UpperMtrx = self.__class__(Upper)

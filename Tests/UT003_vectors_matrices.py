@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "30-03-2023"
+__date__ = "31-03-2023"
 __status__ = "Testing"
 
 #imports
@@ -3661,19 +3661,19 @@ class Test_SquareMatrix(Test_Matrix):
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 4)
         self.assertIsInstance(Perm, tuple)
-        self.assertTupleEqual(Perm, (2, 3, 0, 1))
+        self.assertTupleEqual(Perm, (2, 3, 1, 0))
         self.assertIsInstance(RowPerm, tuple)
         self.assertTupleEqual(RowPerm, (0, 1, 3, 2))
         self.assertIsInstance(Sign, int)
-        self.assertEqual(Sign, -1)
+        self.assertEqual(Sign, 1)
         Check = [[1, 0, 0, 0], [0.5, 1, 0, 0],
                                         [1, 2/3, 1, 0], [1, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Lower[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
-        Check = [[2, 0, 1, 0.5], [0, 3, 1.5, 1.75],
-                                        [0, 0, 0.5, -2/3], [0, 0, 0, 0]]
+        Check = [[2, 0, 0.5, 1], [0, 3, 1.75, 1.5],
+                                        [0, 0, -2/3, 0.5], [0, 0, 0, 0]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Upper[ColIdx, RowIdx],
@@ -3840,7 +3840,7 @@ class Test_SquareMatrix(Test_Matrix):
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0], [2, 1]])
-        self.assertListEqual(Upper.Data, [[1, 1], [0, 1]])
+        self.assertListEqual(Upper.Data, [[1, 0], [0, 1]])
         del objTest
         del Lower
         del Upper
@@ -3878,7 +3878,7 @@ class Test_SquareMatrix(Test_Matrix):
         self.assertIsInstance(Sign, int)
         self.assertEqual(Sign, 1)
         self.assertListEqual(Lower.Data, [[1, 0, 0], [1, 1, 0], [1, 0, 1]])
-        self.assertListEqual(Upper.Data, [[1, 1, 1], [0, 1, 0], [0, 0, 1]])
+        self.assertListEqual(Upper.Data, [[1, 1, 0], [0, 1, 0], [0, 0, 1]])
         del objTest
         del Lower
         del Upper
@@ -3921,24 +3921,25 @@ class Test_SquareMatrix(Test_Matrix):
         self.assertIsInstance(Upper, self.TestClass)
         self.assertEqual(Upper.Size, 4)
         self.assertIsInstance(Perm, tuple)
-        self.assertTupleEqual(Perm, (2, 3, 0, 1))
+        self.assertTupleEqual(Perm, (2, 3, 1, 0))
         self.assertIsInstance(RPerm, tuple)
         self.assertTupleEqual(RPerm, (0, 1, 3, 2))
         self.assertIsInstance(Diag, tuple)
-        for Idx, Item in enumerate((2, 3, 0.5, 0)):
+        for Idx, Item in enumerate((2, 3, -2/3, 0)):
             self.assertAlmostEqual(Diag[Idx], Item)
         self.assertIsInstance(Sign, int)
-        self.assertEqual(Sign, -1)
+        self.assertEqual(Sign, 1)
         Check = [[1, 0, 0, 0], [0.5, 1, 0, 0],
                                         [1, 2 / 3, 1, 0], [1, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
                 self.assertAlmostEqual(Lower[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
-        Check = [[1, 0, 2, 0.5], [0, 1, 3, 1.75],
-                                        [0, 0, 1, - 2 / 3], [0, 0, 0, 1]]
+        Check = [[1, 0, -0.75, 0], [0, 1, -2.625, 0],
+                                        [0, 0, 1, 0], [0, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
+                print(RowIdx, ColIdx)
                 self.assertAlmostEqual(Upper[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
         del objTest
