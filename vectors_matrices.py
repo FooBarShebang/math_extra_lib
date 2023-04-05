@@ -2213,9 +2213,10 @@ class SquareMatrix(Matrix):
         """
         Calculates the decomposion of a matrix into a product of four matrices:
         the rows permutation matrix (which is identity unless some rows are not
-        linear independent), the lower-diagonal (with all main diagonal elements
-        being 1), the upper-diagonal matrix and the columns permutation matrix.
-        Uses Gauss-Jordan elimination algorithm with full pivoting.
+        linear independent), the lower-triangular (with all main diagonal
+        elements being 1), the upper-triangular matrix and the rows and columns
+        permutation matrices. Uses Gauss-Jordan elimination algorithm with full
+        pivoting.
         
         Note that the rows pivoting occurs only if a row becomes all zeroes in
         the elimination process, which means, that the determinant is zero and
@@ -2223,11 +2224,11 @@ class SquareMatrix(Matrix):
         ignored. The columns permutations are used for the numerical stability
         even if no zeroes appear on the main diagonal during elimination.
         
-        Naming the initial matrix A, lower-diagonal L, upper-diagonal U, columns
-        permutation Pc and rows permutation matrix Pr, for the non-singular
-        matrix A = L * U * Pc, with Pr == I - identity matrix. Even for a
-        singular matrix A = Pr * L * U * Pc with U being the row echelon form
-        with all zeroes rows at the bottom.
+        Naming the initial matrix A, lower-triangular L, upper-triangular U,
+        columns permutation Pc and rows permutation matrix Pr, for any
+        non-singular matrix A = L * U * Pc, with Pr == I - identity matrix. Even
+        for a singular matrix A = Pr * L * U * Pc with U being the row echelon
+        form with all zeroes rows at the bottom.
         
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int), tuple(int), int
@@ -2235,7 +2236,7 @@ class SquareMatrix(Matrix):
         Returns:
             SquareMatrix, SquareMatrix, tuple(int), tuple(int), int: unpacked
                 tuple of two square matrices of the same size (lower- and upper
-                diagonal respectively), followed by the permutation tuple
+                triangular respectively), followed by the permutation tuple
                 representing the swapping of the columns (the actual permutation
                 matrix can be generated from it directly), followed by (tuple)
                 permutation of rows, followed by +1 or -1 number as the
@@ -2249,9 +2250,9 @@ class SquareMatrix(Matrix):
         ColsPerm = [Item for Item in range(Size)]
         #look-up table for the rows swapping
         RowsPerm = [Item for Item in range(Size)]
-        #future upper-diagonal matrix, indexed via pivoting look-up tables
+        #future upper-triangular matrix, indexed via pivoting look-up tables
         Upper = [list(tupRow) for tupRow in self._Elements]
-        #future lower-diagonal matrix, index using real indexes
+        #future lower-triangular matrix, index using real indexes
         Lower = [[1 if ColIdx == RowIdx else 0 for ColIdx in range(Size)]
                                                     for RowIdx in range(Size)]
         #go along the main diagonal, moving one row lower at each step
@@ -2327,14 +2328,14 @@ class SquareMatrix(Matrix):
         """
         Calculates the decomposion of a matrix into a product of five matrices:
         the rows permutation matrix (which is identity unless some rows are not
-        linear independent), the lower-diagonal (with all main diagonal elements
-        being 1), the upper-diagonal matrix (with all main diagnal elements
-        being 1), a diagonal matrix (all non-zero elements only on the main
-        diagonal) and a permutation matrix. Uses Gauss-Jordan elimination
-        algorithm with full pivoting to calculate the LUP-decomposition first,
-        then decomposes the upper- diagonal matrix into a diagonal and
-        upper-diagonal with onses at the main diagonal using Gauss elimination
-        algorithm.
+        linear independent), the lower-triangular (with all main diagonal
+        elements being 1), the upper-triangular matrix (with all main diagonal
+        elements being 1), a diagonal matrix (all non-zero elements only on the
+        main diagonal) and the permutation matrices. Uses Gauss-Jordan
+        elimination algorithm with full pivoting to calculate the
+        LUP-decomposition first, then decomposes the upper- traingular matrix
+        into a diagonal and upper-triangualr with onses at the main diagonal
+        using Gauss elimination algorithm.
         
         Note that the rows pivoting occurs only if a row becomes all zeroes in
         the elimination process, which means, that the determinant is zero and
@@ -2342,14 +2343,14 @@ class SquareMatrix(Matrix):
         ignored. The columns permutations are used for the numerical stability
         even if no zeroes appear on the main diagonal during elimination.
         
-        Naming the initial matrix A, lower-diagonal L, upper-diagonal U,
+        Naming the initial matrix A, lower-triangular L, upper-triangular U,
         diagonal matrix D, columns permutation Pc and rows permutation matrix
         Pr, for the non-singular matrix A = L * U * D * Pc, with Pr == I being
         the identity matrix.
         
-        Even for a singular matrix det(A) = 0, A != Pr * L * U * D * Pc, since
+        Note: for a singular matrix det(A) = 0, A != Pr * L * U * D * Pc, since
         the Gauss elimination method fails to eliminate all non-diagonal
-        elements, thus D is not, actually diagonal, but it is treates as one.
+        elements, thus D is not, actually diagonal, but it is treated as one.
         
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int OR float),
@@ -2358,8 +2359,8 @@ class SquareMatrix(Matrix):
         Returns:
             SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int),
                 tuple(int), int: unpacked tuple of two square matrices of the
-                same size (lower- and upper-diagonal respectively), followed by
-                the tuple or real numbers representing the main diagonal
+                same size (lower- and upper-triangular respectively), followed
+                by the tuple or real numbers representing the main diagonal
                 elements of the diagonal matrix (can be generated directly from
                 it), followed by the permutation tuple representing the swapping
                 of the columns (the actual permutation matrix can be generated
@@ -2532,7 +2533,8 @@ class SquareMatrix(Matrix):
                 Data = self.__class__(Data)
                 #compute LUP-decomposition, U is in the row echelon form
                 _, Upper, ColPerm, _, _ = Data.getLUPdecomposition()
-                #lower-diagonal matrix, rows permutation and sign can be ignored
+                #lower-triangular matrix, rows permutation and sign can be
+                #+ ignored
                 del Data
                 Data = [list(tupRow) for tupRow in Upper._Elements]
                 del Upper

@@ -572,9 +572,9 @@ The class inmplements the following instance methods:
 * Calculation of the trace (sum of the main diagonal elements) of the matrix
 * Calculation of the determinant of the matrix.
 * Calculation of the multiplication inverse matrix. If it does not exist (singular matrix, determinant is zero), no exception should be raised, but the meaningful value of None should be returned.
-* Calculation of the LUP-decomposition of the matrix, for the singular matrix one or more diagonal elements in the upper-diagonal matrix are zeroes.
-* Calculation of the LUDP-decomposition of the matrix, for the singular matrix one of more diafonal elements in the diagonal matrix are zeros.
-* Calculation of all real eigen values and the respective eigen vectors bound to thise eigen values as a dictionary real -> column vector. If all eigen values are complex / imaginary numbers, the returned value is None instead of a dictionary, no exceptions are raised.
+* Calculation of the LUP-decomposition of the matrix, for the singular matrix one or more diagonal elements in the upper-triangular matrix are zeroes.
+* Calculation of the LUDP-decomposition of the matrix, for the singular matrix one of more diagonal elements in the diagonal matrix are zeros.
+* Calculation of all real eigen values and the respective eigen vectors bound to these eigen values as a dictionary real -> column vector. If all eigen values are complex / imaginary numbers, the returned value is None instead of a dictionary, no exceptions are raised.
 
 **Test steps:** Step by step instructions on how to perform the test
 
@@ -604,7 +604,7 @@ The class inmplements the following instance methods:
   * For the multiple eigen value (more than a single eigen vector bound to the same eigen value) - all vectors are othogonal, i.e. their dot product is always zero.
   * The total number of eigen values and the total number of eigen vectors do not exceed the size of the matrix.
   * All eigen values and all elements of all eigen values are real numbers.
-  * Generate several random normalized and linearly independed column vectors (determinant of the matrix **V** formed from them is non zero), also generate random non-zero eigen values. Construct a diagonal matrix **M** from these eigen values. Then, construct a matrix **A** = **V** \* **M** \* **V**^-1. Check that the method calculates eigen values and eigen vectors of the matrix **A** close to the expected values.
+  * Generate several random normalized and linearly independed column vectors (determinant of the matrix **V** formed from them is non zero), also generate random non-zero eigen values. Construct a diagonal matrix **M** from these eigen values. Then, construct a matrix **A** = **V** \* **M** \* **V**^-1. Check that the method calculates eigen values of the matrix **A** close to the expected (generated) values. Check that the returned vectors are indeed eigenvectors of unity length, they are linearly independent and for the same eigenvalue are orthogonal.
 
 **Test result:** PASS/FAIL
 
