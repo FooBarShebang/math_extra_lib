@@ -39,7 +39,7 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '18-01-2023'
+__date__ = '20-04-2023'
 __status__ = 'Production'
 
 #imports
@@ -153,12 +153,17 @@ Q2_INV_ERF = (
 
 #+ precision and iteration related
 
-ITMAX = 10000 #maximum length of the iteration loop, 100 in the original
-#+ algorithm
+MAX_ITERATION = 10000
 
-EPS = 3.0E-7 #relative precision of series convergence criteria
+#maximum length of the iteration loop, 100 in the original algorithm
 
-FPMIN = 1.0E-60 #proxy for the smallest representative floating point number,
+REL_PRECISION = 3.0E-7
+
+#relative precision of series convergence criteria
+
+MIN_FLOAT = 1.0E-60
+
+#proxy for the smallest representative floating point number,
 #+ affectes the precision . In the original algorithm it is 1.0E-30 - near
 #+ single precision float min value; no reason to set it near 2.2E-308 for
 #+ double precision.
@@ -216,11 +221,11 @@ def _gammaSeries(x: TReal, y : TReal) -> float:
     Coeff = x
     Term = 1.0 / x
     Sum = Term
-    for n in range(1, ITMAX):
+    for _ in range(1, MAX_ITERATION):
         Coeff += 1
         Term *= y / Coeff
         Sum += Term
-        if math.fabs(Term) < EPS * math.fabs(Sum):
+        if math.fabs(Term) < REL_PRECISION * math.fabs(Sum):
             break
     else: #max number of iterations is reached - error
         raise Exception('Unable to converge the gamma series')
@@ -252,22 +257,22 @@ def _gammaContFraction(x: TReal, y : TReal) -> float:
     Version 1.0.0.0
     """
     b = 1.0 + y - x
-    c = 1.0 / FPMIN
+    c = 1.0 / MIN_FLOAT
     d = 1.0 / b
     h = d
-    for i in range(1, ITMAX):
+    for i in range(1, MAX_ITERATION):
         an = - i * (i - x)
         b += 2.0
         d = an * d + b
-        if (math.fabs(d) < FPMIN):
-            d = FPMIN
+        if (math.fabs(d) < MIN_FLOAT):
+            d = MIN_FLOAT
         c = b + an / c
-        if (math.fabs(c) < FPMIN):
-            c = FPMIN
+        if (math.fabs(c) < MIN_FLOAT):
+            c = MIN_FLOAT
         d = 1.0 / d
         res = d * c
         h *= res
-        if math.fabs(res - 1.0) < EPS:
+        if math.fabs(res - 1.0) < REL_PRECISION:
             break
     else: #max number of iterations is reached - error
         raise Exception('Unable to converge the gamma series')
@@ -303,32 +308,32 @@ def _betaContFraction(z: float, x: TReal, y : TReal) -> float:
     qam = x - 1.0
     c = 1.0
     d = 1.0 - qab * z / qap
-    if (math.fabs(d) < FPMIN):
-        d = FPMIN
+    if (math.fabs(d) < MIN_FLOAT):
+        d = MIN_FLOAT
     d = 1.0 / d
     h = d
-    for m in range(1, ITMAX):
+    for m in range(1, MAX_ITERATION):
         m2 = 2 * m
         aa = m * (y - m) * z / ((qam + m2) * (x + m2))
         d = 1.0 + aa * d
-        if (math.fabs(d) < FPMIN):
-            d = FPMIN
+        if (math.fabs(d) < MIN_FLOAT):
+            d = MIN_FLOAT
         c = 1.0 + aa / c
-        if (math.fabs(c) < FPMIN):
-            c = FPMIN
+        if (math.fabs(c) < MIN_FLOAT):
+            c = MIN_FLOAT
         d = 1.0 / d
         h *= d * c
         aa = - (x + m) * (qab + m) * z / ((x + m2) * (qap + m2))
         d = 1.0 + aa * d
-        if (math.fabs(d) < FPMIN):
-            d = FPMIN
+        if (math.fabs(d) < MIN_FLOAT):
+            d = MIN_FLOAT
         c = 1.0 + aa / c
-        if (math.fabs(c) < FPMIN):
-            c = FPMIN
+        if (math.fabs(c) < MIN_FLOAT):
+            c = MIN_FLOAT
         d = 1.0 / d
         res = d * c
         h *= res
-        if math.fabs(res - 1.0) < EPS:
+        if math.fabs(res - 1.0) < REL_PRECISION:
             break
     else: #max number of iterations is reached - error
         raise Exception('Unable to converge the gamma series')
@@ -880,9 +885,9 @@ def beta_incomplete(z: TReal, x: TReal, y : TReal) -> float:
     Version 1.0.0.0
     """
     _checkSanity4(z, x, y)
-    if z < FPMIN:
+    if z < MIN_FLOAT:
         Result = 0.0
-    elif (1 -z) < FPMIN:
+    elif (1 -z) < MIN_FLOAT:
         Result = beta(x, y)
     else:
         Factor = math.exp(x * math.log(z) + y * math.log(1 - z))
@@ -926,11 +931,11 @@ def log_beta_incomplete(z: TReal, x: TReal, y : TReal) -> float:
     Version 1.0.0.0
     """
     _checkSanity5(z, x, y)
-    if (1 - z) < FPMIN:
+    if (1 - z) < MIN_FLOAT:
         Result = log_beta(x, y)
     else:
         Temp = beta_incomplete(z, x, y)
-        if Temp < FPMIN:
+        if Temp < MIN_FLOAT:
             Result = - math.inf
         else:
             Result = math.log(Temp)
@@ -965,9 +970,9 @@ def beta_incomplete_reg(z: TReal, x: TReal, y : TReal) -> float:
     Version 1.0.0.0
     """
     _checkSanity4(z, x, y)
-    if z < FPMIN:
+    if z < MIN_FLOAT:
         Result = 0.0
-    elif (1 - z) < FPMIN :
+    elif (1 - z) < MIN_FLOAT :
         Result = 1.0
     else:
         Factor = math.exp(x * math.log(z) + y * math.log(1 - z) - log_beta(x,y))

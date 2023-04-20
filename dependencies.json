@@ -6,7 +6,7 @@
     "DO" : {
         "introspection_lib" : {
             "major" : 0,
-            "minor" : 4,
+            "minor" : 5,
             "path": "https://gitlab.com/diagnoptics/python/introspection_lib"
         }
     }
