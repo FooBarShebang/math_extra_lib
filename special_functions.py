@@ -63,7 +63,7 @@ if not (ROOT_FOLDER in sys.path):
 
 from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
 
-from math_extra_lib.polynomial import RationalFunction, TReal
+from .polynomial import RationalFunction, TReal
 
 #globals
 
