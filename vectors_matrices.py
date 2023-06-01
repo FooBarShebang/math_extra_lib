@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '31-03-2023'
+__date__ = '01-06-2023'
 __status__ = 'Development'
 
 #imports
@@ -71,7 +71,7 @@ MAX_ITER = 100000 #maximum number of iterations for the QR-algorithm
 
 ALMOST_ZERO = 1.0E-14 #threshold for the convergence of the QR-algorithm
 
-DEBUG_MODE = False #if True - will print fault messages of the QR-algorithm
+DEBUG_MODE = True #if True - will print fault messages of the QR-algorithm
 
 #helper functions
 
@@ -263,10 +263,19 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
         except UT_Exception:
             break
         #Q-matrix convergence test - check if it is almost an identity matrix
-        Q_Res = sum([abs(abs(Q[ColIdx][RowIdx])-1) if ColIdx == RowIdx
-                        else abs(Q[ColIdx][RowIdx]) for ColIdx in range(Size)
-                            for RowIdx in range(Size)]) / (Size * Size)
-        if Q_Res < ALMOST_ZERO:
+        IsIdentity = True
+        for ColIdx in range(Size):
+            for RowIdx, Item in enumerate(Q[ColIdx]):
+                if RowIdx == ColIdx:
+                    Check = abs(Q[ColIdx][RowIdx]-1) < ALMOST_ZERO
+                else:
+                    Check = abs(Q[ColIdx][RowIdx]) < ALMOST_ZERO
+                IsIdentity = Check
+                if not Check:
+                    break
+            if not IsIdentity:
+                break
+        if IsIdentity:
             bStop = True
         else:
             R = [[_Dot(A[ColIdx], Q[RowIdx]) if RowIdx <= ColIdx else 0
@@ -278,7 +287,8 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
         Counter += 1
     if bStop:
         Elements = [A[Idx][Idx] for Idx in range(Size)]
-        Elements = [int(round(Item)) if abs(Item - round(Item)) < ALMOST_ZERO
+        Elements = [int(round(Item))
+                        if abs(Item - round(Item)) < Size * Size * ALMOST_ZERO
                                                 else Item for Item in Elements]
         Result = []
         for Item in Elements:
@@ -1161,7 +1171,15 @@ class Vector:
         if not Length:
             raise UT_ValueError(Length, '> 0 - geometric length of the vector',
                                                                 SkipFrames = 1)
-        Elements = [Item / Length for Item in self._Elements]
+        Elements = []
+        for RealItem in self._Elements:
+            Item = RealItem / Length
+            #beautify only if along one of the orthonormal vectors (coordinates)
+            if abs(Item) < ALMOST_ZERO:
+                Item = 0
+            elif abs(abs(Item) - 1) < ALMOST_ZERO:
+                Item = 1
+            Elements.append(Item)
         return self.__class__(*Elements)
 
 class Column(Vector):
@@ -2538,31 +2556,53 @@ class SquareMatrix(Matrix):
                 del Data
                 Data = [list(tupRow) for tupRow in Upper._Elements]
                 del Upper
-                Diag = [Data[Idx][Idx] for Idx in range(Size)]
+                Diag = [Data[Idx][Idx]
+                        if abs(Data[Idx][Idx]) > Size * Size * ALMOST_ZERO
+                                                else 0 for Idx in range(Size-1)]
                 if not any(Diag): #all diagonal elements are zero
                     #it can happen only if there is only one eigenvalue
                     EigenVectors = tuple(Column.generateOrthogonal(Size, Idx)
                                                         for Idx in range(Size))
                     Result[EigenValue] = EigenVectors
                 else:
-                    #there is no way to be sure to find only 0 and not 0.0, thus
-                    #+ list.index() or list.count() may misfire
-                    ZeroesCount = 1
-                    for Idx in range(Size - 2, 0, -1): #1st element must be != 0
-                        if Diag[Idx]: #first non-zero element found
-                            break
-                        ZeroesCount += 1
+                    EigenVectors = []
+                    ZeroesCount = Diag.count(0) + 1
                     #there must be ZeroesCount orthonormal eigenvectors set
                     ReducedSize = Size - ZeroesCount
                     ReducedData = [[Data[RowIdx][ColIdx]
                                         for ColIdx in range(ReducedSize)]
                                             for RowIdx in range(ReducedSize)]
-                    FreeCoeffs = [[Data[RowIdx][ColIdx] 
+                    FreeCoeffs = [[Data[RowIdx][ColIdx]
                                     for RowIdx in range(ReducedSize)]
                                         for ColIdx in range(ReducedSize, Size)]
-                    #TODO - implement back-substitution algorithm
+                    #back-substitution algorithm
                     for FreeIdx in range(ZeroesCount):
-                        pass
+                        BoundCoefficients = []
+                        FreeColumn = FreeCoeffs[FreeIdx]
+                        for BoundIndex in range(ReducedSize - 1, -1, -1):
+                            Component = - FreeColumn[BoundIndex]
+                            Row = ReducedData[BoundIndex]
+                            for TempIndex, Coefficient in enumerate(
+                                                            BoundCoefficients):
+                                NextElement = Row[BoundIndex + TempIndex + 1]
+                                Component -= NextElement * Coefficient
+                            Component /= Row[BoundIndex]
+                            BoundCoefficients.insert(0, Component)
+                        SolutionVector = list(BoundCoefficients)
+                        SolutionVector.extend([0 for _ in range(ZeroesCount)])
+                        SolutionVector[ReducedSize + FreeIdx] = 1
+                        Norm = sqrt(sum(Item * Item for Item in SolutionVector))
+                        EigenVector = [0 for _ in range(Size)]
+                        #beautify eigenvector is it aligned with coordinates
+                        for PosIndex, Component in enumerate(SolutionVector):
+                            Item = Component / Norm
+                            if abs(Item) < ALMOST_ZERO:
+                                Item = 0
+                            elif abs(abs(Item) - 1) < ALMOST_ZERO:
+                                Item = 1
+                            EigenVector[ColPerm[PosIndex]] = Item
+                        EigenVectors.append(Column(*EigenVector))
+                    Result[EigenValue] = tuple(EigenVectors)
         else:
             Result = Values
         return Result

@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "31-03-2023"
+__date__ = "01-06-2023"
 __status__ = "Testing"
 
 #imports
@@ -3939,7 +3939,6 @@ class Test_SquareMatrix(Test_Matrix):
                                         [0, 0, 1, 0], [0, 0, 0, 1]]
         for RowIdx in range(4):
             for ColIdx in range(4):
-                print(RowIdx, ColIdx)
                 self.assertAlmostEqual(Upper[ColIdx, RowIdx],
                                                         Check[RowIdx][ColIdx])
         del objTest
@@ -4181,12 +4180,12 @@ class Test_SquareMatrix(Test_Matrix):
                         self.assertEqual(Vector[ElemIdx], 0)
         #known cases
         Converging = (
-            [[0, 1], [2, 3]],
+            [[1, 0, 0], [0, 2, 0], [0, 0, 3]],
+            [[1, 0, 0], [0, 2, 0], [0, 0, 1]],
             [[1, 1], [2, 3]],
-            [[1, 1, 2], [2, 1, 2], [3, 1, 1]],
-            [[1, 1, 2, 0], [1, 2, 1, 2], [3, 1, 1, 1], [1, 1, 1, 1]],
-            [[1, 1, 0, 0, 0], [1, 2, 1, 0, 0], [0, 3, 1, 1, 0], [0, 0, 1, 1, 1],
-                                                                [0, 0, 0, 1, 1]]
+            [[2, 1], [1, 2]],
+            [[2, 0, 0], [0, 3, 4], [0, 4, 9]],
+            [[1, 0, 0], [1, 2, 0], [2, 3, 3]]
         )
         for Sample in Converging:
             objTest = self.TestClass(Sample)
@@ -4210,7 +4209,7 @@ class Test_SquareMatrix(Test_Matrix):
                     self.assertIsInstance(Vector, testmodule.Column)
                     self.assertEqual(Vector.Size, Size)
                     for SecondIdx in range(Idx + 1, len(Values)):
-                        Second = Values(SecondIdx)
+                        Second = Values[SecondIdx]
                         DotProd = sum(Vector[PosId] * Second[PosId]
                                                     for PosId in range(Size))
                         self.assertAlmostEqual(DotProd, 0)
@@ -4229,22 +4228,18 @@ class Test_SquareMatrix(Test_Matrix):
             [[1, 1, 2, 0], [1, 2, 1, 2], [0, 0, 0, 0], [1, 1, 1, 1]]
         )
         for Sample in Singular:
-            #TODO - temporary turned off for speed
-            #objTest = self.TestClass(Sample)
-            #Test = objTest.getEigenVectors()
-            #self.assertIsNone(Test)
-            #del objTest
-            pass
+            objTest = self.TestClass(Sample)
+            Test = objTest.getEigenVectors()
+            self.assertIsNone(Test)
+            del objTest
         NotConverging = (
             [[1, 0.5, 2, 0], [2, 2, 1, 3], [1, 1, 1, 1], [2.5, 1, 2, 2]],
         )
         for Sample in NotConverging:
-            #TODO - temporary turned off for speed
-            #objTest = self.TestClass(Sample)
-            #Test = objTest.getEigenVectors()
-            #self.assertIsNone(Test)
-            #del objTest
-            pass
+            objTest = self.TestClass(Sample)
+            Test = objTest.getEigenVectors()
+            self.assertIsNone(Test)
+            del objTest
 
 #+ test suites
 
