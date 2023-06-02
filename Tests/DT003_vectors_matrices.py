@@ -8,7 +8,7 @@ unit tests see TE00 and TE003 documents, and arithmetics.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "23-03-2023"
+__date__ = "02-01-2023"
 __status__ = "Testing"
 
 #imports
@@ -294,15 +294,15 @@ if __name__=='__main__':
     input('Press Enter...')
     print('Improper arguments of vector classes methods')
     try:
-        Vector1.generateOrtogonal(1, 1)
+        Vector1.generateOrthogonal(1, 1)
     except Exception as err:
         PrintError(err)
     try:
-        Column1.generateOrtogonal(3, 4)
+        Column1.generateOrthogonal(3, 4)
     except Exception as err:
         PrintError(err)
     try:
-        Row1.generateOrtogonal(3, -1)
+        Row1.generateOrthogonal(3, -1)
     except Exception as err:
         PrintError(err)
     input('Press Enter...')

@@ -58,7 +58,7 @@
 | REQ-FUN-260        | TEST-T-260                                                   | YES                     |
 | REQ-AWM-200        | TEST-T-200                                                   | YES                     |
 | REQ-AWM-201        | TEST-T-201                                                   | YES                     |
-| REQ-FUN-300        | TEST-A-300                                                   | NO                      |
+| REQ-FUN-300        | TEST-A-300                                                   | YES                     |
 | REQ-FUN-301        | TEST-T-300                                                   | YES                     |
 | REQ-FUN-302        | TEST-T-300                                                   | YES                     |
 | REQ-FUN-303        | TEST-T-309                                                   | YES                     |
@@ -69,7 +69,7 @@
 | REQ-FUN-310        | TEST-T-305                                                   | YES                     |
 | REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | YES                     |
 | REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | YES                     |
-| REQ-FUN-340        | TEST-T-340                                                   | NO                      |
+| REQ-FUN-340        | TEST-T-340                                                   | YES                     |
 | REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                     |
 | REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                     |
 | REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | YES                     |
@@ -79,7 +79,7 @@
 | REQ-AWM-306        | TEST-T-309                                                   | YES                     |
 | REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                     |
 | REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                     |
-| REQ-AWM-340        | TEST-T-340                                                   | NO                      |
+| REQ-AWM-340        | TEST-T-340                                                   | YES                     |
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     ||
 

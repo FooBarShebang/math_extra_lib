@@ -45,7 +45,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Analyze the source code of the module [vectors\_matrices](../../vectors_matrices.py) as well as of the unit-test module [/Tests/UT003\_vectors\_matrices](../../Tests/UT003_vectors_matrices.py). Execute the mentioned unit-test module. Also execute the demonstration test [/Tests/DE003\_vectors\_matrices](../../Tests/DT003_vectors_matrices.py).
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Tests definition (Test)
 
@@ -606,7 +606,7 @@ The class inmplements the following instance methods:
   * All eigen values and all elements of all eigen values are real numbers.
   * Generate several random normalized and linearly independed column vectors (determinant of the matrix **V** formed from them is non zero), also generate random non-zero eigen values. Construct a diagonal matrix **M** from these eigen values. Then, construct a matrix **A** = **V** \* **M** \* **V**^-1. Check that the method calculates eigen values of the matrix **A** close to the expected (generated) values. Check that the returned vectors are indeed eigenvectors of unity length, they are linearly independent and for the same eigenvalue are orthogonal.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -667,7 +667,7 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
-| REQ-FUN-300        | TEST-A-300                                                   | NO                      |
+| REQ-FUN-300        | TEST-A-300                                                   | YES                     |
 | REQ-FUN-301        | TEST-T-300                                                   | YES                     |
 | REQ-FUN-302        | TEST-T-300                                                   | YES                     |
 | REQ-FUN-303        | TEST-T-309                                                   | YES                     |
@@ -678,7 +678,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-310        | TEST-T-305                                                   | YES                     |
 | REQ-FUN-320        | TEST-T-305, TEST-T-30B                                       | YES                     |
 | REQ-FUN-330        | TEST-T-305, TEST-T-30B                                       | YES                     |
-| REQ-FUN-340        | TEST-T-340                                                   | NO                      |
+| REQ-FUN-340        | TEST-T-340                                                   | YES                     |
 | REQ-AWM-300        | TEST-T-303, TEST-T-30D                                       | YES                     |
 | REQ-AWM-301        | TEST-T-304, TEST-T-30D                                       | YES                     |
 | REQ-AWM-302        | TEST-T-306, TEST-T-30E                                       | YES                     |
@@ -688,10 +688,10 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-306        | TEST-T-309                                                   | YES                     |
 | REQ-AWM-307        | TEST-T-301, TEST-T-30F                                       | YES                     |
 | REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                     |
-| REQ-AWM-340        | TEST-T-340                                                   | NO                      |
+| REQ-AWM-340        | TEST-T-340                                                   | YES                     |
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
-| NO                                           | Under development    |
+| YES                                          | All tests are passed |

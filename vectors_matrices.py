@@ -16,7 +16,7 @@ Classes:
 
 __version__= '1.0.0.0'
 __date__ = '01-06-2023'
-__status__ = 'Development'
+__status__ = 'Production'
 
 #imports
 
@@ -71,7 +71,7 @@ MAX_ITER = 100000 #maximum number of iterations for the QR-algorithm
 
 ALMOST_ZERO = 1.0E-14 #threshold for the convergence of the QR-algorithm
 
-DEBUG_MODE = True #if True - will print fault messages of the QR-algorithm
+DEBUG_MODE = False #if True - will print fault messages of the QR-algorithm
 
 #helper functions
 
@@ -97,8 +97,7 @@ def _CheckIfRealSequence(Value: Any) -> None:
     for Index, Item in enumerate(Value):
         if not isinstance(Item, (int, float)):
             Error = UT_TypeError(Item, (int, float), SkipFrames = 2)
-            Message = '{} at index {} in {}'.format(Error.args[0], Index, Value)
-            Error.args = (Message, )
+            Error.appendMessage(f'at index {Index} in {Value}')
             raise Error
 
 def _CheckIfSequenceRealSequence(Value: Any) -> None:
@@ -122,15 +121,12 @@ def _CheckIfSequenceRealSequence(Value: Any) -> None:
     for Index, Item in enumerate(Value):
         if (not isinstance(Item, c_abc.Sequence)) or isinstance(Item, str):
             Error = UT_TypeError(Item, (list, tuple), SkipFrames = 2)
-            Message = '{} at index {} in {}'.format(Error.args[0], Index, Value)
-            Error.args = (Message, )
+            Error.appendMessage(f'at index {Index} in {Value}')
             raise Error
         for Inner, Element in enumerate(Item):
             if not isinstance(Element, (int, float)):
                 Error = UT_TypeError(Element, (int, float), SkipFrames = 2)
-                Message = '{} at index [{}][{}] in {}'.format(Error.args[0],
-                                                            Index, Inner, Value)
-                Error.args = (Message, )
+                Error.appendMessage(f'at index [{Index}][{Inner}] in {Value}')
                 raise Error
 
 #+ Gram-Schmidt and QR decomposition related
@@ -253,11 +249,11 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
     
     Version 1.0.0.0
     """
-    bStop = False
+    DoStop = False
     Counter = 0
     Size = len(Vectors)
     A = Vectors #orginal matrix in the columns-first order
-    while (not bStop) and (Counter < MAX_ITER):
+    while (not DoStop) and (Counter < MAX_ITER):
         try:
             Q = _GetOrthonormal(A) #Q-matrix as the set of orthonormal vectors
         except UT_Exception:
@@ -276,7 +272,7 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
             if not IsIdentity:
                 break
         if IsIdentity:
-            bStop = True
+            DoStop = True
         else:
             R = [[_Dot(A[ColIdx], Q[RowIdx]) if RowIdx <= ColIdx else 0
                         for RowIdx in range(Size)] for ColIdx in range(Size)]
@@ -285,7 +281,7 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
                         for RowIdx in range(Size)] for ColIdx in range(Size)]
             #next iteration A{k} = R{k-1} * Q{k-1}
         Counter += 1
-    if bStop:
+    if DoStop:
         Elements = [A[Idx][Idx] for Idx in range(Size)]
         Elements = [int(round(Item))
                         if abs(Item - round(Item)) < Size * Size * ALMOST_ZERO
@@ -294,12 +290,12 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
         for Item in Elements:
             if not Item:
                 continue
-            bNotPresent = True
+            IsNotPresent = True
             for AddedItem in Result:
                 if abs((AddedItem - Item)/(AddedItem)) < ALMOST_ZERO:
-                    bNotPresent = False
+                    IsNotPresent = False
                     break
-            if bNotPresent:
+            if IsNotPresent:
                 Result.append(Item)
         Message = 'Ok!'
     elif Counter < MAX_ITER:
@@ -412,8 +408,7 @@ class Array2D:
         """
         if not isinstance(isColumnsFirst, bool):
             Error = UT_TypeError(isColumnsFirst, bool, SkipFrames = 1)
-            Message = '{} - isColumnsFirst argument'.format(Error.args[0])
-            Error.args = (Message, )
+            Error.appendMessage('- isColumnsFirst argument')
             raise Error
         if ((not isinstance(seqValues, c_abc.Sequence))
                                                 or isinstance(seqValues, str)):
@@ -428,8 +423,7 @@ class Array2D:
             if Width is None:
                 if not isinstance(Height, int):
                     Error = UT_TypeError(Height, int, SkipFrames = 1)
-                    Message = '{} - Height argument'.format(Error.args[0])
-                    Error.args = (Message, )
+                    Error.appendMessage('- Height argument')
                     raise Error
                 if Height < 2:
                     raise UT_ValueError(Height, '>= 2 - Height argument',
@@ -443,8 +437,7 @@ class Array2D:
             elif Height is None:
                 if not isinstance(Width, int):
                     Error = UT_TypeError(Width, int, SkipFrames = 1)
-                    Message = '{} - Width argument'.format(Error.args[0])
-                    Error.args = (Message, )
+                    Error.appendMessage('- Width argument')
                     raise Error
                 if Width < 2:
                     raise UT_ValueError(Width, '>= 2 - Width argument',
@@ -458,16 +451,14 @@ class Array2D:
             else:
                 if not isinstance(Height, int):
                     Error = UT_TypeError(Height, int, SkipFrames = 1)
-                    Message = '{} - Height argument'.format(Error.args[0])
-                    Error.args = (Message, )
+                    Error.appendMessage('- Height argument')
                     raise Error
                 if Height < 2:
                     raise UT_ValueError(Height, '>= 2 - Height argument',
                                                                 SkipFrames = 1)
                 if not isinstance(Width, int):
                     Error = UT_TypeError(Width, int, SkipFrames = 1)
-                    Message = '{} - Width argument'.format(Error.args[0])
-                    Error.args = (Message, )
+                    Error.appendMessage('- Width argumen')
                     raise Error
                 if Width < 2:
                     raise UT_ValueError(Width, '>= 2 - Width argument',
@@ -549,8 +540,7 @@ class Array2D:
         
         Version 1.0.0.0
         """
-        raise TypeError("'{}' object is not iterable".format(
-                                                    self.__class__.__name__))
+        raise TypeError(f"'{self.__class__.__name__}' object is not iterable")
     
     def __getitem__(self, Indexes: Tuple[int, int]) -> TReal:
         """
@@ -580,20 +570,18 @@ class Array2D:
         Width = len(self._Elements[0])
         if not isinstance(Column, int):
             Error = UT_TypeError(Column, int, SkipFrames = 1)
-            Message = '{} - column index'.format(Error.args[0])
-            Error.args = (Message, )
+            Error.appendMessage('- column index')
             raise Error
         if (Column < -Width) or (Column >= Width):
-            raise UT_ValueError(Column,
-                'in range [{}, {}]'.format(-Width, Width -1), SkipFrames = 1)
+            raise UT_ValueError(Column, f'in range [{-Width}, {Width - 1}]',
+                                                                SkipFrames = 1)
         if not isinstance(Row, int):
             Error = UT_TypeError(Row, int, SkipFrames = 1)
-            Message = '{} - row index'.format(Error.args[0])
-            Error.args = (Message, )
+            Error.appendMessage('- row index')
             raise Error
         if (Row < -Height) or (Row >= Height):
-            raise UT_ValueError(Column,
-                'in range [{}, {}]'.format(-Height, Height -1), SkipFrames = 1)
+            raise UT_ValueError(Column, f'in range [{-Height}, {Height - 1}]',
+                                                                SkipFrames = 1)
         return self._Elements[Row][Column]
     
     #public properties
@@ -737,8 +725,7 @@ class Vector:
         
         Version 1.0.0.0
         """
-        return "'{}(Size={})'".format(self.__class__.__name__,
-                                                            len(self._Elements))
+        return f"'{self.__class__.__name__}(Size={len(self._Elements)})'"
     
     def __getitem__(self, Index: int) -> TReal:
         """
@@ -763,8 +750,8 @@ class Vector:
             raise UT_TypeError(Index, int, SkipFrames = 1)
         Size = self.Size
         if (Index < - Size) or (Index >= Size):
-            raise UT_ValueError(Index, 'in range [{}, {}] - indexing'.format(
-                                                -Size, Size-1), SkipFrames = 1)
+            raise UT_ValueError(Index,
+                f'in range [{-Size}, {Size - 1}] - indexing', SkipFrames = 1)
         return self._Elements[Index]
     
     def __iter__(self) -> NoReturn:
@@ -778,8 +765,7 @@ class Vector:
         
         Version 1.0.0.0
         """
-        raise TypeError("'{}' object is not iterable".format(
-                                                    self.__class__.__name__))
+        raise TypeError(f"'{self.__class__.__name__}' object is not iterable")
     
     def __add__(self, Other: TVector) -> TVector:
         """
@@ -807,8 +793,8 @@ class Vector:
                         or (not (Other.__class__ is self.__class__))):
             raise UT_TypeError(Other, self.__class__, SkipFrames = 1)
         if Other.Size != self.Size:
-            raise UT_ValueError(Other.Size, '{} - vectors dimensions'.format(
-                                                    self.Size), SkipFrames = 1)
+            raise UT_ValueError(Other.Size, f'{self.Size} - vectors dimensions',
+                                                                SkipFrames = 1)
         Elements = [self._Elements[Index] + Item
                                 for Index, Item in enumerate(Other._Elements)]
         return self.__class__(*Elements)
@@ -839,8 +825,8 @@ class Vector:
                         or (not (Other.__class__ is self.__class__))):
             raise UT_TypeError(Other, self.__class__, SkipFrames = 1)
         if Other.Size != self.Size:
-            raise UT_ValueError(Other.Size, '{} - vectors dimensions'.format(
-                                                    self.Size), SkipFrames = 1)
+            raise UT_ValueError(Other.Size, f'{self.Size} - vectors dimensions',
+                                                                SkipFrames = 1)
         Elements = [self._Elements[Index] - Item
                                 for Index, Item in enumerate(Other._Elements)]
         return self.__class__(*Elements)
@@ -878,7 +864,7 @@ class Vector:
                                     and (Other.__class__ is self.__class__)):
             if Other.Size != self.Size:
                 raise UT_ValueError(Other.Size,
-                    '{} - vectors dimensions'.format(self.Size), SkipFrames = 1)
+                        f'{self.Size} - vectors dimensions', SkipFrames = 1)
             Result = sum(Item * Other[Index]
                                 for Index, Item in enumerate(self._Elements))
         else:
@@ -1104,18 +1090,18 @@ class Vector:
         """
         if not isinstance(Length, int):
             Error = UT_TypeError(Length, int, SkipFrames = 1)
-            Error.args = ('{} - the first argument'.format(Error.args[0]), )
+            Error.appendMessage('- the first argument')
             raise Error
         if not isinstance(Index, int):
             Error = UT_TypeError(Index, int, SkipFrames = 1)
-            Error.args = ('{} - the second argument'.format(Error.args[0]), )
+            Error.appendMessage('- the second argument')
             raise Error
         if Length < 2:
             raise UT_ValueError(Length, '>= 2 - requested size of the vector',
                                                                 SkipFrames = 1)
         if Index < 0 or Index >= Length:
             raise UT_ValueError(Index,
-                'in range [0, {}] - non-zero element index'.format(Length - 1),
+                        f'in range [0, {Length - 1}] - non-zero element index',
                                                                 SkipFrames = 1)
         Elements = [0 for _ in range(Length)]
         Elements[Index] = 1
@@ -1402,7 +1388,7 @@ class Row(Vector):
         elif isinstance(Other, Column):
             if Other.Size != self.Size:
                 raise UT_ValueError(Other.Size,
-                    '{} - vectors dimensions'.format(self.Size), SkipFrames = 1)
+                        f'{self.Size} - vectors dimensions', SkipFrames = 1)
             Result = sum(Item * Other[Index]
                                 for Index, Item in enumerate(self._Elements))
         elif isinstance(Other, Array2D):
@@ -1553,32 +1539,32 @@ class Matrix(Array2D):
         """
         if (not isinstance(Other, self.__class__)) and (
                                         not isinstance(self, Other.__class__)):
-            objError = UT_TypeError(Other, self.__class__, SkipFrames = 1)
-            strMessage = 'incompatible types {} and {} for addition'.format(
+            Error = UT_TypeError(Other, self.__class__, SkipFrames = 1)
+            Message = 'incompatible types {} and {} for addition'.format(
                                         self.__class__, GetObjectClass(Other))
-            objError.args = (strMessage, )
-            raise objError
+            Error.setMessage(Message)
+            raise Error
         elif isinstance(Other, self.__class__) and (
                                         not isinstance(self, Other.__class__)):
-            clsResult = Other.__class__
+            ResultClass = Other.__class__
         else:
-            clsResult = self.__class__
+            ResultClass = self.__class__
         selfWidth = len(self._Elements)
         selfHeight = len(self._Elements[0])
         otherWidth = len(Other._Elements)
         otherHeight = len(Other._Elements[0])
         if selfWidth != otherWidth:
-            raise UT_ValueError(otherWidth,
-                    '={} - matrices widths'.format(otherWidth), SkipFrames = 1)
+            raise UT_ValueError(otherWidth, f'={otherWidth} - matrices widths',
+                                                                SkipFrames = 1)
         elif selfHeight != otherHeight:
             raise UT_ValueError(otherHeight,
-                '={} - matrices heights'.format(otherHeight), SkipFrames = 1)
+                        f'={otherHeight} - matrices heights', SkipFrames = 1)
         Elements = list()
         for Row in range(self.Height):
             RowItems = list([Item + Other._Elements[Row][Index]
                              for Index, Item in enumerate(self._Elements[Row])])
             Elements.append(RowItems)
-        return clsResult(Elements)
+        return ResultClass(Elements)
     
     def __sub__(self, Other: TMatrix) -> TMatrix:
         """
@@ -1605,32 +1591,32 @@ class Matrix(Array2D):
         """
         if (not isinstance(Other, self.__class__)) and (
                                         not isinstance(self, Other.__class__)):
-            objError = UT_TypeError(Other, self.__class__, SkipFrames = 1)
-            strMessage = 'incompatible types {} and {} for addition'.format(
+            Error = UT_TypeError(Other, self.__class__, SkipFrames = 1)
+            Message = 'incompatible types {} and {} for addition'.format(
                                         self.__class__, GetObjectClass(Other))
-            objError.args = (strMessage, )
-            raise objError
+            Error.setMessage(Message)
+            raise Error
         elif isinstance(Other, self.__class__) and (
                                         not isinstance(self, Other.__class__)):
-            clsResult = Other.__class__
+            ResultClass = Other.__class__
         else:
-            clsResult = self.__class__
+            ResultClass = self.__class__
         selfWidth = len(self._Elements)
         selfHeight = len(self._Elements[0])
         otherWidth = len(Other._Elements)
         otherHeight = len(Other._Elements[0])
         if selfWidth != otherWidth:
-            raise UT_ValueError(otherWidth,
-                    '={} - matrices widths'.format(otherWidth), SkipFrames = 1)
+            raise UT_ValueError(otherWidth, f'={otherWidth} - matrices widths',
+                                                                SkipFrames = 1)
         elif selfHeight != otherHeight:
             raise UT_ValueError(otherHeight,
-                '={} - matrices heights'.format(otherHeight), SkipFrames = 1)
+                        f'={otherHeight} - matrices heights', SkipFrames = 1)
         Elements = list()
         for Row in range(self.Height):
             RowItems = list([Item - Other._Elements[Row][Index]
                              for Index, Item in enumerate(self._Elements[Row])])
             Elements.append(RowItems)
-        return clsResult(Elements)
+        return ResultClass(Elements)
     
     # Is overloaded later
     def __mul__(self, Other: Union[TReal, Column, TMatrix]
@@ -1705,8 +1691,8 @@ class Matrix(Array2D):
             Length = len(Other._Elements)
             if Length != Height:
                 raise UT_ValueError(Length,
-                            '== {} - row vector size != matrix height'.format(
-                                                        Height), SkipFrames = 1)
+                            f'== {Height} - row vector size != matrix height',
+                                                                SkipFrames = 1)
             Elements = [sum(
                         self._Elements[RowIndex][ColumnIndex] * Other[RowIndex]
                                     for RowIndex in range(Height))
@@ -1843,8 +1829,8 @@ class Matrix(Array2D):
             raise UT_TypeError(Index, int, SkipFrames = 1)
         Width = len(self._Elements[0])
         if (Index < - Width) or (Index >= Width):
-            raise UT_ValueError(Index,
-                'in range[{}, {}]'.format(-Width, Width - 1), SkipFrames = 1)
+            raise UT_ValueError(Index, f'in range[{-Width}, {Width - 1}]',
+                                                                SkipFrames = 1)
         Elements = [RowItem[Index] for RowItem in self._Elements]
         return Column(*Elements)
     
@@ -1869,8 +1855,8 @@ class Matrix(Array2D):
             raise UT_TypeError(Index, int, SkipFrames = 1)
         Height = len(self._Elements)
         if (Index < - Height) or (Index >= Height):
-            raise UT_ValueError(Index,
-                'in range[{}, {}]'.format(-Height, Height - 1), SkipFrames = 1)
+            raise UT_ValueError(Index, f'in range[{-Height}, {Height - 1}]',
+                                                                SkipFrames = 1)
         return Row(*(self._Elements[Index]))
 
 class SquareMatrix(Matrix):
@@ -2018,16 +2004,14 @@ class SquareMatrix(Matrix):
             raise UT_ValueError(Size, '> 1 - sequence length', SkipFrames = 1)
         Elements = list()
         for Index, Item in enumerate(Permutation):
-            PostFix = ' - element at index {} in {}'.format(Index, Permutation)
+            PostFix = f'- element at index {Index} in {Permutation}'
             if not isinstance(Item, int):
-                objError = UT_TypeError(Item, int, SkipFrames = 1)
-                strMessage = objError.args[0]
-                strMessage = '{}{}'.format(strMessage, PostFix)
-                objError.agrs = (strMessage, )
-                raise objError
+                Error = UT_TypeError(Item, int, SkipFrames = 1)
+                Error.appendMessage(PostFix)
+                raise Error
             if Item < 0 or Item >= Size:
-                strMessage = 'in range [0, {}]{}'.format(Size - 1, PostFix)
-                raise UT_ValueError(Item, strMessage, SkipFrames = 1)
+                Message = f'in range [0, {Size - 1}] {PostFix}'
+                raise UT_ValueError(Item, Message, SkipFrames = 1)
             if not (Item in Elements):
                 Elements.append(Item)
             else:
@@ -2118,8 +2102,7 @@ class SquareMatrix(Matrix):
         """
         if not isinstance(isColumnsFirst, bool):
             Error = UT_TypeError(isColumnsFirst, bool, SkipFrames = 1)
-            Message = '{} - isColumnsFirst argument'.format(Error.args[0])
-            Error.args = (Message, )
+            Error.appendMessage('- isColumnsFirst argument')
             raise Error
         if ((not isinstance(seqValues, c_abc.Sequence))
                                                 or isinstance(seqValues, str)):
@@ -2129,8 +2112,7 @@ class SquareMatrix(Matrix):
             Length = len(seqValues)
             if (not isinstance(Size, int)) and (not (Size is None)):
                 Error = UT_TypeError(Size, int, SkipFrames = 1)
-                Message = '{} - Size argument'.format(Error.args[0])
-                Error.args = (Message, )
+                Error.appendMessage('- Size argument')
                 raise Error
             if Size is None:
                 if Length < 4:
@@ -2170,12 +2152,12 @@ class SquareMatrix(Matrix):
                 CurrentLength = len(seqValues[Index])
                 if CurrentLength != FirstLength:
                     raise UT_ValueError(CurrentLength,
-                                '!= {} - sub-sequence index {} length'.format(
-                                            FirstLength, Index), SkipFrames = 1)
+                        f'!= {FirstLength} - sub-sequence index {Index} length',
+                                                                SkipFrames = 1)
             if FirstLength != NItems:
                 raise UT_ValueError(FirstLength,
-                    '= {} - mismatching width and height of the matrix'.format(
-                                                        NItems), SkipFrames = 1)
+                    f'= {NItems} - mismatching width and height of the matrix',
+                                                                SkipFrames = 1)
             if not isColumnsFirst:
                 self._Elements = tuple(tuple(seqValues[Index])
                                                     for Index in range(NItems))
@@ -2193,8 +2175,7 @@ class SquareMatrix(Matrix):
         
         Version 1.0.0.0
         """
-        return "'{}(Size={})'".format(self.__class__.__name__,
-                                                            len(self._Elements))
+        return f"'{self.__class__.__name__}(Size={self._Elements})'"
 
     #public properties
     
@@ -2706,8 +2687,8 @@ def _Matrix__mul__(self: Matrix,
         Length = len(Other._Elements)
         if Length != Width:
             raise UT_ValueError(Length,
-                            '== {} - column vector size != matrix width'.format(
-                                                        Width), SkipFrames = 1)
+                            f'== {Width} - column vector size != matrix width',
+                                                                SkipFrames = 1)
         Elements = [sum(Item * Other._Elements[Index]
                         for Index, Item in enumerate(self._Elements[RowIndex]))
                                                 for RowIndex in range(Height)]
@@ -2719,8 +2700,8 @@ def _Matrix__mul__(self: Matrix,
         Height = len(Other._Elements)
         if SelfWidth != Height:
             raise UT_ValueError(SelfWidth,
-                            '== {} - left matrix width != right height'.format(
-                                                        Height), SkipFrames = 1)
+                            f'== {Height} - left matrix width != right height',
+                                                                SkipFrames = 1)
         Elements = [[sum(
                 self._Elements[RowIndex][Index]*Other._Elements[Index][ColIndex]
                                     for Index in range(SelfWidth))
