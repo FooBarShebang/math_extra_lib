@@ -223,6 +223,13 @@ def _GetOrthonormal(Vectors: Sequence[Sequence[TReal]]) -> List[List[float]]:
         if not Norm:
             raise UT_Exception('Linear dependent vectors.')
         Normalized = [Element / Norm for Element in Vector]
+        #beautification, reduces effect of rounding errors in nearly orthogonal
+        #+ initial input case
+        for Index, Value in enumerate(Normalized):
+            if abs(Value) < ALMOST_ZERO:
+                Normalized[Index] = 0
+            elif abs(abs(Value) - 1) < ALMOST_ZERO:
+                Normalized[Index] = 1
         Result.append(Normalized)
     return Result
 
@@ -284,8 +291,9 @@ def _FindEigenValuesQR(Vectors: Sequence[Sequence[TReal]]) -> Tuple[
     if DoStop:
         Elements = [A[Idx][Idx] for Idx in range(Size)]
         Elements = [int(round(Item))
-                        if abs(Item - round(Item)) < Size * Size * ALMOST_ZERO
+                        if abs(Item - round(Item)) < Size*Size*Size*ALMOST_ZERO
                                                 else Item for Item in Elements]
+        #QR convergence is ~ O(N^3), hence the estimation of rounding error
         Result = []
         for Item in Elements:
             if not Item:
@@ -2503,24 +2511,40 @@ class SquareMatrix(Matrix):
             print(Message)
         return Result
     
-    def getEigenVectors(self) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
+    def getEigenVectors(self, Eigenvalue: Optional[TReal] = None
+                        ) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
         """
         Calculates the real number valued eigenvalues and the respective eigen
         vectors, which form orthonormal basis for each eigenvalue. Based on the
         Francis QR-algorithm with Gram-Schmidt orthogonalization method.
         
         Signature:
-            None -> dict(int OR float -> tuple(Column)) OR None
+            /int OR float/ -> dict(int OR float -> tuple(Column)) OR None
+        
+        Args:
+            Eigenvalue: (optional) int OR float; an a priori known eigenvalue
+                of the matrix, for which the eigenvectors are to be found.
+                Defaults to None, in which case the method attemts to calculate
+                all eigenvalues first.
         
         Returns:
             dict(int OR float -> tuple(Column)): dictionary mapping all unique
                 real number valued eigenvalues to the respective orthonormal
                 set of eigenvectors as a tuple of column vector class instances
-            None: no real number valued eigenvalues are found
+            None: no real number valued eigenvalues are found, OR the passed
+                value is not an eigenvalue of the matrix
+        
+        Raises:
+            UT_TypeError: the passed optional value is not a real number
         
         Version 1.0.0.0
         """
-        Values = self.getEigenValues()
+        if Eigenvalue is None:
+            Values = self.getEigenValues()
+        elif not isinstance(Eigenvalue, (int, float)):
+            raise UT_TypeError(Eigenvalue, (int, float), SkipFrames = 1)
+        else:
+            Values = [Eigenvalue]
         Size = len(self._Elements)
         if not (Values is None):
             Result = {EigenValue : tuple() for EigenValue in Values}
@@ -2537,10 +2561,16 @@ class SquareMatrix(Matrix):
                 del Data
                 Data = [list(tupRow) for tupRow in Upper._Elements]
                 del Upper
+                #LUP complexitity is O(N^2), hence the estimation of the
+                #+ rounding error
                 Diag = [Data[Idx][Idx]
                         if abs(Data[Idx][Idx]) > Size * Size * ALMOST_ZERO
                                                 else 0 for Idx in range(Size-1)]
-                if not any(Diag): #all diagonal elements are zero
+                if abs(Data[Size - 1][Size - 1]) > Size * Size * ALMOST_ZERO:
+                    #all diagonal elements are not 0 (wrong value passed)
+                    Result = None
+                    break
+                elif not any(Diag): #all diagonal elements are zero
                     #it can happen only if there is only one eigenvalue
                     EigenVectors = tuple(Column.generateOrthogonal(Size, Idx)
                                                         for Idx in range(Size))
@@ -2572,18 +2602,13 @@ class SquareMatrix(Matrix):
                         SolutionVector = list(BoundCoefficients)
                         SolutionVector.extend([0 for _ in range(ZeroesCount)])
                         SolutionVector[ReducedSize + FreeIdx] = 1
-                        Norm = sqrt(sum(Item * Item for Item in SolutionVector))
                         EigenVector = [0 for _ in range(Size)]
-                        #beautify eigenvector is it aligned with coordinates
                         for PosIndex, Component in enumerate(SolutionVector):
-                            Item = Component / Norm
-                            if abs(Item) < ALMOST_ZERO:
-                                Item = 0
-                            elif abs(abs(Item) - 1) < ALMOST_ZERO:
-                                Item = 1
-                            EigenVector[ColPerm[PosIndex]] = Item
-                        EigenVectors.append(Column(*EigenVector))
-                    Result[EigenValue] = tuple(EigenVectors)
+                            EigenVector[ColPerm[PosIndex]] = Component
+                        EigenVectors.append(EigenVector)
+                    EigenVectors = _GetOrthonormal(EigenVectors)
+                    Result[EigenValue] = tuple(Column(*Value)
+                                                    for Value in EigenVectors)
         else:
             Result = Values
         return Result
