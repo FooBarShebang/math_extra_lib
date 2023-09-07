@@ -15,6 +15,6 @@ $library(math_extra_lib) {
         !include ./special_functions/special_functions_components.iuml
     !endif
     
-    polynomial <--- special_functions
+    polynomial ---> special_functions
 }
 @enduml

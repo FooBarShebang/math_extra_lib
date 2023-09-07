@@ -391,3 +391,13 @@ In the both cases (nested and flat sequences) the default interpretation of the 
   * Non-unique, i.e. the same number has been used already
 
 **Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-AWM-343
+
+**Title:** Eigenvectors method - improper argument(s) type
+
+**Description:** An exception compatible with TypeError should be raised when the method receives as the optional argument any value except integer, floating point or None type.
+
+**Verification Method:** T

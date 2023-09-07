@@ -661,6 +661,18 @@ The class inmplements the following instance methods:
 
 **Test result:** PASS
 
+---
+
+**Test Identifier:** TEST-T-343
+
+**Requirement ID(s)**: REQ-AWM-343
+
+**Verification method:** T
+
+**Test goal:** Treatment of the imporper type optional argument of the eigenvector method
+
+**Expected result:** An exception of a sub-class of TypeError is raised if an argument of any type except int, float or None is passed.
+
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
@@ -691,6 +703,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-340        | TEST-T-340                                                   | YES                     |
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     |
+| REQ-AWM-343        | TEST-T-343                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |

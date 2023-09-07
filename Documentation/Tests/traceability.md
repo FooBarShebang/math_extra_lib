@@ -81,7 +81,8 @@
 | REQ-AWM-308        | TEST-T-302, TEST-T-30F                                       | YES                     |
 | REQ-AWM-340        | TEST-T-340                                                   | YES                     |
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
-| REQ-AWM-342        | TEST-T-342                                                   | YES                     ||
+| REQ-AWM-342        | TEST-T-342                                                   | YES                     |
+| REQ-AWM-343        | TEST-T-343                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

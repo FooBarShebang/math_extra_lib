@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "01-06-2023"
+__date__ = "07-09-2023"
 __status__ = "Testing"
 
 #imports
@@ -4180,12 +4180,16 @@ class Test_SquareMatrix(Test_Matrix):
                         self.assertEqual(Vector[ElemIdx], 0)
         #known cases
         Converging = (
-            [[1, 0, 0], [0, 2, 0], [0, 0, 3]],
-            [[1, 0, 0], [0, 2, 0], [0, 0, 1]],
-            [[1, 1], [2, 3]],
-            [[2, 1], [1, 2]],
-            [[2, 0, 0], [0, 3, 4], [0, 4, 9]],
-            [[1, 0, 0], [1, 2, 0], [2, 3, 3]]
+            [[1, 0, 0], [0, 2, 0], [0, 0, 3]], #1:1, 2:1, 3:1
+            [[1, 0, 0], [0, 2, 0], [0, 0, 1]], #1:2, 1:1
+            [[1, 1], [2, 3]], #not integer, but 2 single
+            [[2, 1], [1, 2]], #3:1, 1:1
+            [[2, 0, 0], [0, 3, 4], [0, 4, 9]], #2:1, 11:1, 1:1
+            [[1, 0, 0], [1, 2, 0], [2, 3, 3]], #3:1, 2:1, 1:1
+            [[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]],
+            #2:3, 1:1
+            [[2.5, 0, 0, 0], [0, 2.5, 0, 0], [0, 0, 2.5, 0], [0, 0, 0, 2.5]]
+            #2.5:4
         )
         for Sample in Converging:
             objTest = self.TestClass(Sample)
@@ -4195,6 +4199,7 @@ class Test_SquareMatrix(Test_Matrix):
             for Key, Values in Test.items():
                 self.assertIsInstance(Key, (int, float))
                 self.assertGreater(abs(Key), 0)
+                #checks the eigen value - det(A - lambda*I) = 0
                 NewSample = [[Sample[RowIdx][ColIdx] - Key if RowIdx == ColIdx
                                                     else Sample[RowIdx][ColIdx]
                                                 for ColIdx in range(Size)]
@@ -4208,15 +4213,20 @@ class Test_SquareMatrix(Test_Matrix):
                 for Idx, Vector in enumerate(Values):
                     self.assertIsInstance(Vector, testmodule.Column)
                     self.assertEqual(Vector.Size, Size)
+                    #check orthogonality if more than 1 eigenvector
                     for SecondIdx in range(Idx + 1, len(Values)):
                         Second = Values[SecondIdx]
                         DotProd = sum(Vector[PosId] * Second[PosId]
                                                     for PosId in range(Size))
                         self.assertAlmostEqual(DotProd, 0)
+                    #check that it is an eigenvector indeed
                     ControlVector = objTest * Vector
                     for PosId in range(Size):
                         self.assertAlmostEqual(ControlVector[PosId],
                                                             Vector[PosId] * Key)
+                    #check that it is normalized to unity
+                    self.assertAlmostEqual(sum(Element*Element
+                                                for Element in Vector.Data), 1)
                     del ControlVector
             TotalNumber = sum(len(Item) for Item in Test.values())
             self.assertEqual(TotalNumber, Size)
@@ -4240,6 +4250,101 @@ class Test_SquareMatrix(Test_Matrix):
             Test = objTest.getEigenVectors()
             self.assertIsNone(Test)
             del objTest
+    
+    def test_getEigenVectors_TypeError(self):
+        """
+        Checks that TypeError compatible exception is raised if the passed
+        argument is of a wrong data type.
+        
+        Test ID: TEST-T-343
+        
+        Covers requirements: REQ-AWM-343
+        """
+        objTest = self.TestClass.generateIdentity(2)
+        for Value in ['1', True, [1], (1, ), {1:1}, int, float]:
+            with self.assertRaises(TypeError):
+                objTest.getEigenVectors(Value)
+        del objTest
+    
+    def test_getEigenVectors_Argument(self):
+        """
+        Checks the performance of the eigenvectors calculating method for a
+        single eigenvalue (presumably) passed by a user.
+        """
+        Matrix = [[1, 0, 0], [0, 1.0, 0], [0, 0, 1]]
+        objTest = self.TestClass(Matrix)
+        Test = objTest.getEigenVectors(1.1) #should be None
+        self.assertIsNone(Test)
+        Test = objTest.getEigenVectors(2) #should be None
+        self.assertIsNone(Test)
+        Test = objTest.getEigenVectors(1)
+        self.assertIsInstance(Test, dict)
+        self.assertEqual(len(Test), 1)
+        self.assertListEqual(list(Test.keys()), [1])
+        self.assertIsInstance(Test[1], tuple)
+        self.assertEqual(len(Test[1]), 3)
+        for Idx, Vector in enumerate(Test[1]):
+            Control = objTest * Vector
+            for Index, Element in enumerate(Control.Data):
+                self.assertAlmostEqual(Element, Vector[Index])
+            del Control
+            for Second in Test[1][:Idx]:
+                self.assertAlmostEqual(Second.transpose() * Vector, 0)
+        del objTest
+        Matrix = [[1, 0, 0], [0, 2.0, 0], [0, 0, 2]]
+        objTest = self.TestClass(Matrix)
+        Test = objTest.getEigenVectors(1)
+        self.assertIsInstance(Test, dict)
+        self.assertEqual(len(Test), 1)
+        self.assertListEqual(list(Test.keys()), [1])
+        self.assertIsInstance(Test[1], tuple)
+        self.assertEqual(len(Test[1]), 1)
+        self.assertListEqual(Test[1][0].Data, [1, 0, 0])
+        Test = objTest.getEigenVectors(2)
+        self.assertIsInstance(Test, dict)
+        self.assertEqual(len(Test), 1)
+        self.assertListEqual(list(Test.keys()), [2])
+        self.assertIsInstance(Test[2], tuple)
+        self.assertEqual(len(Test[2]), 2)
+        for Idx, Vector in enumerate(Test[2]):
+            Control = objTest * Vector
+            for Index, Element in enumerate(Control.Data):
+                self.assertAlmostEqual(Element, 2* Vector[Index])
+            del Control
+        self.assertAlmostEqual(Test[2][0].transpose() * Test[2][1], 0)
+        del objTest
+        Matrix = [[1, 0, 1], [0, 2.0, 1], [0, 0, 2]] #shear + scale
+        objTest = self.TestClass(Matrix)
+        Test = objTest.getEigenVectors(1)
+        self.assertIsInstance(Test, dict)
+        self.assertEqual(len(Test), 1)
+        self.assertListEqual(list(Test.keys()), [1])
+        self.assertIsInstance(Test[1], tuple)
+        self.assertEqual(len(Test[1]), 1)
+        self.assertListEqual(Test[1][0].Data, [1, 0, 0])
+        Test = objTest.getEigenVectors(2)
+        self.assertIsInstance(Test, dict)
+        self.assertEqual(len(Test), 1)
+        self.assertListEqual(list(Test.keys()), [2])
+        self.assertIsInstance(Test[2], tuple)
+        self.assertEqual(len(Test[2]), 1)
+        self.assertListEqual(Test[2][0].Data, [0, 1, 0])
+        del objTest
+        Matrix = [[1, 0, 1], [0, 1.0, 1], [0, 0, 2]] #shear
+        objTest = self.TestClass(Matrix)
+        Test = objTest.getEigenVectors(1)
+        self.assertIsInstance(Test, dict)
+        self.assertEqual(len(Test), 1)
+        self.assertListEqual(list(Test.keys()), [1])
+        self.assertIsInstance(Test[1], tuple)
+        self.assertEqual(len(Test[1]), 2)
+        for Idx, Vector in enumerate(Test[1]):
+            Control = objTest * Vector
+            for Index, Element in enumerate(Control.Data):
+                self.assertAlmostEqual(Element, Vector[Index])
+            del Control
+        self.assertAlmostEqual(Test[1][0].transpose() * Test[1][1], 0)
+        del objTest
 
 #+ test suites
 

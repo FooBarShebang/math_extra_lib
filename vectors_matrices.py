@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '01-06-2023'
+__date__ = '07-09-2023'
 __status__ = 'Production'
 
 #imports
@@ -1942,7 +1942,8 @@ class SquareMatrix(Matrix):
         getEigenValues():
             None -> tuple(int OR float) OR None
         getEigenVectors():
-            None -> dict(int OR float -> tuple(Column)) OR None
+            /int OR float/ -> dict(int OR float -> tuple(Column) OR None)
+                OR None
     
     Version 1.0.0.0
     """
@@ -2341,7 +2342,7 @@ class SquareMatrix(Matrix):
         main diagonal) and the permutation matrices. Uses Gauss-Jordan
         elimination algorithm with full pivoting to calculate the
         LUP-decomposition first, then decomposes the upper- traingular matrix
-        into a diagonal and upper-triangualr with onses at the main diagonal
+        into a diagonal and upper-triangular with onses at the main diagonal
         using Gauss elimination algorithm.
         
         Note that the rows pivoting occurs only if a row becomes all zeroes in
@@ -2519,7 +2520,8 @@ class SquareMatrix(Matrix):
         Francis QR-algorithm with Gram-Schmidt orthogonalization method.
         
         Signature:
-            /int OR float/ -> dict(int OR float -> tuple(Column)) OR None
+            /int OR float/ -> dict(int OR float -> tuple(Column) OR None)
+                OR None
         
         Args:
             Eigenvalue: (optional) int OR float; an a priori known eigenvalue
@@ -2528,9 +2530,12 @@ class SquareMatrix(Matrix):
                 all eigenvalues first.
         
         Returns:
-            dict(int OR float -> tuple(Column)): dictionary mapping all unique
-                real number valued eigenvalues to the respective orthonormal
-                set of eigenvectors as a tuple of column vector class instances
+            dict(int OR float -> tuple(Column) OR None): dictionary mapping all
+                unique real number valued eigenvalues to the respective
+                orthonormal set of eigenvectors as a tuple of column vector
+                class instances, if it is not possible to calculate, at least,
+                one eigenvector for a given eigenvalue (due to rounding errors)
+                the value of the corresponding key is set to None
             None: no real number valued eigenvalues are found, OR the passed
                 value is not an eigenvalue of the matrix
         
@@ -2540,11 +2545,12 @@ class SquareMatrix(Matrix):
         Version 1.0.0.0
         """
         if Eigenvalue is None:
-            Values = self.getEigenValues()
-        elif not isinstance(Eigenvalue, (int, float)):
+            Values = self.getEigenValues() #find all real eigenvalue by QR
+        elif (not isinstance(Eigenvalue, (int, float))
+                                            or isinstance(Eigenvalue, bool)):
             raise UT_TypeError(Eigenvalue, (int, float), SkipFrames = 1)
         else:
-            Values = [Eigenvalue]
+            Values = [Eigenvalue] #use passed value as a single found one
         Size = len(self._Elements)
         if not (Values is None):
             Result = {EigenValue : tuple() for EigenValue in Values}
@@ -2566,10 +2572,14 @@ class SquareMatrix(Matrix):
                 Diag = [Data[Idx][Idx]
                         if abs(Data[Idx][Idx]) > Size * Size * ALMOST_ZERO
                                                 else 0 for Idx in range(Size-1)]
-                if abs(Data[Size - 1][Size - 1]) > Size * Size * ALMOST_ZERO:
-                    #all diagonal elements are not 0 (wrong value passed)
-                    Result = None
-                    break
+                if abs(Data[Size - 1][Size - 1]) > Size*Size*Size*ALMOST_ZERO:
+                    #all diagonal elements are not 0 (wrong value passed or
+                    #+ too much of the rounding error
+                    if len(Values) == 1:
+                        Result = None
+                    else:
+                        Result[EigenValue] = None
+                    continue
                 elif not any(Diag): #all diagonal elements are zero
                     #it can happen only if there is only one eigenvalue
                     EigenVectors = tuple(Column.generateOrthogonal(Size, Idx)
@@ -2609,8 +2619,8 @@ class SquareMatrix(Matrix):
                     EigenVectors = _GetOrthonormal(EigenVectors)
                     Result[EigenValue] = tuple(Column(*Value)
                                                     for Value in EigenVectors)
-        else:
-            Result = Values
+        else: #no real eigenvalues are found by QR algorithm
+            Result = None #+ or passed by user value is not an eigenvalue
         return Result
 
 #Dynamic patching of the Column class, instance method __mul__()
