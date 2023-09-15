@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "07-09-2023"
+__date__ = "15-09-2023"
 __status__ = "Testing"
 
 #imports
@@ -1806,6 +1806,57 @@ class Test_Array2D(unittest.TestCase):
                 with self.assertRaises(TypeError):
                     self.TestObject[Col, Row] = 5
                 self.assertListEqual(self.TestObject.Data, Data)
+    
+    def test_copy(self):
+        """
+        Testing the shallow copy of a matrix.
+        """
+        New = copy.copy(self.TestObject)
+        self.assertIs(New.__class__, self.TestClass)
+        self.assertIsNot(New, self.TestObject)
+        self.assertEqual(New.Width, self.TestObject.Width)
+        self.assertEqual(New.Height, self.TestObject.Height)
+        self.assertListEqual(New.Data, self.TestObject.Data)
+        del New
+    
+    def test_pos(self):
+        """
+        Checks the implementation of the unitary plus operation.
+        
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        Data = list(self.TestObject.Data)
+        New = +self.TestObject
+        self.assertIs(New.__class__, self.TestClass)
+        self.assertIsNot(New, self.TestObject)
+        self.assertEqual(New.Width, self.TestObject.Width)
+        self.assertEqual(New.Height, self.TestObject.Height)
+        self.assertListEqual(New.Data, Data)
+        self.assertListEqual(self.TestObject.Data, Data)
+        del New
+    
+    def test_neg(self):
+        """
+        Checks the implementation of the unitary negation operation.
+        
+        Test ID: TEST-T-30B
+
+        Covers requirements: REQ-FUN-306
+        """
+        Data = list(self.TestObject.Data)
+        New = -self.TestObject
+        self.assertIs(New.__class__, self.TestClass)
+        self.assertIsNot(New, self.TestObject)
+        self.assertEqual(New.Width, self.TestObject.Width)
+        self.assertEqual(New.Height, self.TestObject.Height)
+        self.assertListEqual(self.TestObject.Data, Data)
+        for Column in range(self.TestObject.Width):
+            for Row in range(self.TestObject.Height):
+                self.assertEqual(New[Column, Row],
+                                                -self.TestObject[Column, Row])
+        del New
     
 class Test_Matrix(Test_Array2D):
     """

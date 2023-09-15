@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '07-09-2023'
+__date__ = '15-09-2023'
 __status__ = 'Production'
 
 #imports
@@ -591,6 +591,52 @@ class Array2D:
             raise UT_ValueError(Column, f'in range [{-Height}, {Height - 1}]',
                                                                 SkipFrames = 1)
         return self._Elements[Row][Column]
+    
+    def __copy__(self) -> TArray:
+        """
+        Magic method to hook the shallow copying.
+        
+        Signature:
+            None -> 'Array2D
+        
+        Returns:
+            'Array2D: another instance of the same class with the identical
+                elements
+        
+        Version 1.0.0.0
+        """
+        return self.__class__(self._Elements)
+    
+    def __pos__(self) -> TArray:
+        """
+        Magic method to hook the unitary plus operation.
+        
+        Signature:
+            None -> 'Array2D
+        
+        Returns:
+            'Array2D: another instance of the same class with the identical
+                elements
+        
+        Version 1.0.0.0
+        """
+        return self.__class__(self._Elements)
+    
+    def __neg__(self) -> TArray:
+        """
+        Magic method to hook the unitary plus operation.
+        
+        Signature:
+            None -> 'Array2D
+        
+        Returns:
+            'Array2D: another instance of the same class with the identical
+                elements
+        
+        Version 1.0.0.0
+        """
+        return self.__class__([[-Value for Value in Item]
+                                                    for Item in self._Elements])
     
     #public properties
     

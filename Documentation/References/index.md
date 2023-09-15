@@ -2,3 +2,4 @@
 
 * Module [polynomial](./UD001_polynomial_reference.md)
 * Module [special_functions](./UD002_special_functions.md)
+* Module [vectors_matrices](./UD003_vectors_matrices_reference.md)

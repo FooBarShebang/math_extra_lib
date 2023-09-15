@@ -19,4 +19,7 @@ class Array2D {
     # __str__(): None -> str
     # __repr__(): None -> str
     # __getitem__(Indexes): tuple(int, int) -> int OR float
+    # __copy__(): None -> 'Array2D
+    # __pos__(): None -> 'Array2D
+    # __neg__(): None -> 'Array2D
     }

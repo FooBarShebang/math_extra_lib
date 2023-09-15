@@ -1,4 +1,4 @@
-# Module math_extra_lib Reference
+# Module math_extra_lib.polynomial Reference
 
 ## Scope
 
@@ -106,7 +106,7 @@ An instance of this class supports index access to the individual coefficients (
 
 An instance is also callable returning the value of the polynomial at the passed value of the argument.
 
-__*Instantiation*__:
+***Instantiation***:
 
 \_\_**init**\_\_(*args)
 
@@ -127,11 +127,11 @@ __*Instantiation*__:
 
 Stores the passed coefficients in an internal state. All passed arguments must be real numbers, which are treated as the polynomial coefficients sorted in the ascending order of the power. The last positional argument must be non-zero.
 
-__*Attributes*__:
+***Attributes***:
 
 *Degree*: read-only property, **int** >= 1 - the degree of the polynomial
 
-__*Class methods*__:
+***Class methods***:
 
 **fromRoots**(*args)
 
@@ -152,9 +152,9 @@ __*Class methods*__:
 
 Creates a polynomial from its roots, i.e. performs the inverse of the factorization: (x-x_1)\*...\*(x-x_N) -> a_0 + a_1 \* x + a_2 \* x^2 + ... + a_N * x^N.
 
-__*Methods*__:
+***Methods***:
 
-**getCoefficients()**
+**getCoefficients**()
 
 *Signature*:
 
@@ -226,7 +226,7 @@ Implementation of a rational function, i.e. a ratio of two polynomials. This cla
 
 An instance is also callable returning the value of the function at the passed value of the argument.
 
-__*Instantiation*__:
+***Instantiation***:
 
 \_\_**init**\_\_(Divident, Divisor)
 
@@ -248,7 +248,7 @@ __*Instantiation*__:
 
 Creates the internally stored instances of the **Polynomial** class to store the respective polynomials.
 
-__*Methods*__:
+***Methods***:
 
 **getCoefficients**()
 
