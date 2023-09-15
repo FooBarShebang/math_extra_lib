@@ -1,0 +1,17 @@
+!$COLUMN = "v2"
+
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
+!endif
+
+class Column {
+    __
+    ..special methods..
+    # __str__(): None -> str
+    # __mul__(Other): int OR float OR Row -> Column OR Matrix
+    # __rmul__(Other): int OR float -> Column
+    ..instance methods..
+    + transpose(): None -> Row
+    __
+    **Note**: parent's method __matmul__() in not supported
+    }

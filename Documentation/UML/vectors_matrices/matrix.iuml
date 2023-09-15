@@ -1,0 +1,20 @@
+!$MATRIX = "v2"
+
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
+!endif
+
+class Matrix {
+    __
+    ..special methods..
+    # __str__(): None -> str
+    # __add__(Other): 'Matrix -> 'Matrix
+    # __sub__(Other): 'Matrix -> 'Matrix
+    # __mul__(Other): 'Matrix OR int OR float OR Column -> 'Matrix OR Column
+    # __rmul__(Other): int OR float OR Row -> 'Matrix OR Row
+    # __truediv__(Other): int OR float -> 'Matrix
+    ..instance methods..
+    + transpose(): None -> 'Matrix
+    + getColumn(Index): int -> Column
+    + getRow(Index): int -> Row
+    }

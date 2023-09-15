@@ -1,0 +1,30 @@
+!$SQUAREMATRIX = "v2"
+
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
+!endif
+
+class SquareMatrix {
+    ..properties..
+    # Size: int >= 2
+    __
+    ..special methods..
+    # __init__(seqValues, *, Size, isColumnsFirst):
+    seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None, bool/ -> None
+    # __repr__(): None -> str
+    ..class methods..
+    + generateIdentity(Size): int >= 2 -> SquareMatrix
+    + generatePermutation(Permutation): seq(int >= 0) -> SquareMatrix
+    + generateDiagonal(Elements): seq(int OR float) -> SquareMatrix
+    ..instance methods..
+    + getTrace(): None -> int OR float
+    + getLUPdecomposition():
+    None -> SquareMatrix, SquareMatrix, tuple(int >= 0), tuple(int >= 0), int
+    + getFullDecomposition(): None -> SquareMatrix, SquareMatrix,
+    tuple(int OR float), tuple(int >= 0), tuple(int >= 0), int
+    + getDeterminant(): None -> int OR float
+    + getInverse(): None -> SquareMatrix OR None
+    + getEigenValues(): None -> tuple(int OR float) OR None
+    + getEigenVectors(Eigenvalue = None):
+    int OR float OR None -> -> dict(int OR float -> tuple(Column) OR None) OR None
+    }

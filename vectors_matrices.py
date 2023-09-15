@@ -1942,8 +1942,8 @@ class SquareMatrix(Matrix):
         getEigenValues():
             None -> tuple(int OR float) OR None
         getEigenVectors():
-            /int OR float/ -> dict(int OR float -> tuple(Column) OR None)
-                OR None
+            /int OR float OR None/
+                -> dict(int OR float -> tuple(Column) OR None) OR None
     
     Version 1.0.0.0
     """
@@ -2332,7 +2332,8 @@ class SquareMatrix(Matrix):
         return LowerMatrix, UpperMatrix, ColsPerm, RowsPerm, Sign
     
     def getFullDecomposition(self) -> Tuple[TSquareMatrix, TSquareMatrix,
-                                    Tuple[TReal, ...], Tuple[int, ...], int]:
+                                    Tuple[TReal, ...], Tuple[int, ...],
+                                    Tuple[int, ...], int]:
         """
         Calculates the decomposion of a matrix into a product of five matrices:
         the rows permutation matrix (which is identity unless some rows are not
@@ -2362,7 +2363,7 @@ class SquareMatrix(Matrix):
         
         Signature:
             None -> SquareMatrix, SquareMatrix, tuple(int OR float),
-                tuple(int), int
+                tuple(int), tuple(int), int
         
         Returns:
             SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int),
@@ -2520,8 +2521,8 @@ class SquareMatrix(Matrix):
         Francis QR-algorithm with Gram-Schmidt orthogonalization method.
         
         Signature:
-            /int OR float/ -> dict(int OR float -> tuple(Column) OR None)
-                OR None
+            /int OR float OR None/
+                -> dict(int OR float -> tuple(Column) OR None) OR None
         
         Args:
             Eigenvalue: (optional) int OR float; an a priori known eigenvalue

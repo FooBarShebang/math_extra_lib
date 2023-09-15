@@ -1,0 +1,29 @@
+!$VECTORS_MATRICES_COMPONENTS = "v2"
+
+!if %not(%variable_exists("$COMPONENTS"))
+    !include ../Templates/Components2.cuml
+!endif
+
+$module(vectors_matrices) {
+    $class(Array2D)
+    
+    $class(Matrix)
+    
+    Array2D <|- Matrix
+    
+    $class(SquareMatrix)
+    
+    Matrix <|- SquareMatrix
+    
+    $class(Row)
+    
+    Array2D -[hidden]- Row
+    
+    $class(Vector)
+    
+    Row -|> Vector
+    
+    $class(Column)
+    
+    Vector <|- Column
+}

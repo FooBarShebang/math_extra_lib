@@ -7,6 +7,10 @@
 title Components diagram of the library math_extra_lib. $generated()
 
 $library(math_extra_lib) {
+    !if $is_not_defined("$VECTORS_MATRICES_COMPONENTS")
+        !include ./vectors_matrices/vectors_matrices_components.iuml
+    !endif
+    
     !if $is_not_defined("$POLYNOMIAL_COMPONENTS")
         !include ./polynomial/polynomial_components.iuml
     !endif
@@ -15,6 +19,6 @@ $library(math_extra_lib) {
         !include ./special_functions/special_functions_components.iuml
     !endif
     
-    polynomial ---> special_functions
+    polynomial <--- special_functions
 }
 @enduml
