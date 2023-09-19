@@ -24,7 +24,7 @@ The direct consequences of these requirements are:
 * $a * \mathbf{0} = \mathbf{0} \; \forall \; a \in F$
 * $-\mathbf{v} = (-\mathit{1}) * \mathbf{v}$
 
-Considering the field of *real number* the *per element* definitions of the vector addition and scalar multiplication as given below apparently satisfy these requirements:
+Considering the field of *real numbers*, the *per element* definitions of the vector addition and scalar multiplication as given below apparently satisfy these requirements:
 
 * $\mathbf{v} + \mathbf{u} = (v_1, v_2, \dots, v_N) + (u_1, u_2, \dots, u_N) = (v_1 + u_1, v_2 + u_2, \dots, v_N + u_N)$
 * $a * \mathbf{v} = a * (v_1, v_2, \dots, v_N) = (a * v_1, a * v_2, \dots, a * v_N)$
@@ -145,7 +145,23 @@ a_{1,K} & a_{2,K} & \dots & a_{N,K} \\
 \end{bmatrix} = \begin{bmatrix} \mathbf{a}_{1,\cdot}^T & \mathbf{a}_{2,\cdot}^T & \dots \mathbf{a}_{N,\cdot}^T \end{bmatrix}
 $$
 
-However, unlike simle tables, matrices can be manipulated as single entities in arithmetic operations.
+*Transposition* of a matrix swaps the order of the elements, such each column becomes a row and vice versa.
+
+$$
+\mathbf{A}^T = \begin{bmatrix}
+a_{1,1} & a_{2,1} & \dots & a_{N,1} \\
+a_{1,2} & a_{2,2} & \dots & a_{N,2} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{1,K} & a_{2,K} & \dots & a_{N,K} \\
+\end{bmatrix}^T = \begin{bmatrix}
+a_{1,1} & a_{1,2} & \dots & a_{1,K} \\
+a_{2,1} & a_{2,2} & \dots & a_{2,K} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{N,1} & a_{N,2} & \dots & a_{N,K} \\
+\end{bmatrix}
+$$
+
+However, unlike simple tables, matrices can be manipulated as single entities in arithmetic operations.
 
 Scalar multiplication
 
@@ -249,3 +265,13 @@ The additional properties of the square matrices are:
 * The *trace* of a square matrix is the sum of all its *main diagonal* elements $\mathtt{Tr}(\mathbf{A}) = \sum_{i}{a_{i,i}}$
 * The *determinant* of a square matrix $\mathtt{det}(\mathbf{A})$ is a sum of all possible products constructed from unique column index selection of elements from each row weighted by the factor +1 or -1, which is the sign of the {1, ..., N} permutation formed by the respective column indexes, see [this link](https://en.wikipedia.org/wiki/Determinant)
 * If the determinant of a square matrix is not zero, then this matrix is *invertible*, i.e. it has the *multiplicative inverse*: $\forall \; \mathbf{A} \; : \mathtt{det}(\mathbf{A}) \neq 0 \; \exists \; \mathbf{A}^{-1} \; : \; \mathbf{A}^{-1} * \mathbf{A} = \mathbf{A} * \mathbf{A}^{-1} = \mathbf{I}$, where $\mathbf{I}$ is *multiplicative identity*, i.e. $\mathbf{I} * \mathbf{A} = \mathbf{A} * \mathbf{I} = \mathbf{A} \; \forall \; \mathbf{A}$, which has 1s on the main diagonal and 0s for other elements, i.e. $i_{i,i} = 1$ and $i_{i,j \neq i} = 0$
+* Transposition of a matrix does not change the value of the determinant $\mathtt{det}(\mathbf{A}^T) = \mathtt{det}(\mathbf{A})$.
+* Determinant of a *diagonal* matrix (all elements not on the main diagonal are zeroes), *upper triangular* (all elements below the main diagonal are zeroes) or *lower triangular* (all elements above the main diagonal are zeroes) is a product of all elements on the main diagonal.
+* Swapping (pivoting) of two columns or two rows of a matrix doesn't change the absolute value of its determinate, but changes its sign.
+* If, at least, one row or one column of a matrix contains only zeroes, the determinant is zero.
+* If, at least, one row of a matrix is a *linear combination* of other rows the determinant is zero; same is valid for the columns.
+* Determinant is *multilinear*: $\forall \; \mathbf{A}=[\mathbf{a}_1, \dots, \mathbf{a}_{i-1}, \sum_j{\alpha_j * \mathbf{v}_j}, \mathbf{a}_{i+1}, \dots, \mathbf{a}_N]^T \; \Rightarrow \; \mathtt{det}(\mathbf{A}) = \sum_j{\alpha_j*\mathtt{det}([\mathbf{a}_1, \; \dots \; \mathbf{a}_{i-1}, \mathbf{v}_j, \mathbf{a}_{i+1}, \dots, \mathbf{a}_N]^T)}$ - i.e. if any i-th row of a matrix can be expressed as a linear combination of some row vectors, the determinant of the matrix is a linear combination with the same coefficients of the determinants of the matrices with the same rows expect the i-th and the i-th row being a single 'basis' vector. The same is valid for the columns.
+* The combination of the previous two properties means that the *Gauss-Jordan* elimination process (i-th row is subtracted from the i+1 to N-th rows with scalar coefficients to zero all elements in the i-th column below the main diagonal) does not change the value of the determinant.
+* Using combination of rows and / or columns pivoting (swapping) and Gauss-Jordan elimination process and square matrix can be transformed into an upper triangular or, at least, *row echelon* from (one or more rows at the bottom are all-zero elements, for the rows above all elements on the main diagonal are non-zero and all non-zero elements are at or above the main diagonal). Note that the rows / columns pivoting may be required if a zero element appears on the main diagonal in the process, or can be applied simply for the computational stability. Thus, any square matrix can be decomposed into a product of column permutation matrix, lower diagonal matrix with all elements on the main diagonal being equal 1 (elimination), upper triangular or row echelon matrix (result) and rows permutation matrix $\mathbf{A} = \mathbf{P}_c^{-1} * \mathbf{L}^{-1} * \mathbf{U} * \mathbf{P}^{-1}$, with the permutation matrices being, basically, an identity matrix **I** with two or more rows / columns swapped.
+* Such decomposition can be used to solve a linear system of equations using back-substitution method and calculation of the determinant of the original matrix. Further on, the resulting upper triangular / row echelon form matrix **U** can be transformed (decomposed) into a diagonal matrix (or defect diagonal form with not all elements on the main diagonal being strictrly non-zero) $\hat{\mathbf{U}} * \mathbf{U} = \mathbf{D} \; \Rightarrow \; \mathbf{U} = {\hat{\mathbf{U}}}^{-1} * \mathbf{D}$, and can be used for the computation of the multiplicative inverse of the original matrix as $\mathbf{A}^{-1} = \mathbf{P} * \mathbf{D}^{-1} * \hat{\mathbf{U}} * \mathbf{L} * \mathbf{P}_c$. Note, that for the permutation matices the inverse matrix is simply a transposition, for a diagonal - it is also diagonal with the multiplicative inverse of all main diagonal elements, and for the matrices describing the elimination process - inversion of the sign of all non-diagonal non-zero elements.
+* A square matrix has an *eigenvalue* $\lambda$ if $\exist \; \mathbf{v} \; : \; \mathbf{A} * \mathbf{v} = \lambda * \mathbf{v}$. All eigenvalues can be found as the solutions of the polynomial equation generated by the determinant $\mathtt{det}(\mathbf{A} - \lambda * \mathbf{I}) = 0$, although in the practice numerical methods are used such as [power iteration](https://en.wikipedia.org/wiki/Power_iteration) or [QR-algorithm](https://en.wikipedia.org/wiki/QR_algorithm) are typically emplyed. For each found eigenvalue an eigen vector or a set of independent eigenvectors (for geometrical multiplicity of the eigenvalue > 1) can found by solving the linear equations system $(\mathbf{A} - \lambda * \mathbf{I}) * \mathbf{v} = \mathbf{0}$. Note that there is infinite number of solutions of such system, so the *eigenvectors* can be chosen arbitrary as long as they satisfy the condition $\mathbf{A} * \mathbf{v} = \lambda * \mathbf{v}$ and form complete and linear independent basis of this *eigenspace*. Any other vector in this eigenspace can then be represented as a linear combination of these basis eigenvectors.
