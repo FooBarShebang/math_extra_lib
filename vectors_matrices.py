@@ -2802,6 +2802,7 @@ def _Matrix__mul__(self: Matrix,
 TempDoc = Column.__mul__.__doc__
 setattr(Column, "__mul__", _Column__mul__)
 Column.__mul__.__doc__ = TempDoc
+
 TempDoc = Column.transpose.__doc__
 setattr(Column, "transpose", _Column_transpose)
 Column.transpose.__doc__ = TempDoc
