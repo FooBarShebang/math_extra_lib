@@ -117,9 +117,9 @@ Row2 = Row1 * Matrix1 # result is a row of size 3
 Martrix2 = Square1 * Matrix1 #result is a matrix of size 3(W) x 2(H)
 ```
 
-Matrix classes are designed to be *immutable* and *atomic* objects, and not a specialized sequence. Therefore, neither *iteration* (as `for element in vector`) nor *contains check* (as `if element in vector`) are supported; also the values of the elements can not be changed after instantiation. However, the value if any stored element can be read-out (accessed) using the double index notation (starting from index 0), as `Matrix1[1, 1]` in the example above results in the value of 4. Slice notation is not supported, nor the standard single index notation; instead the classes provide methods to access a single row or column as instances of the respective vector classes. Also, all stored elements can be read-accessed at once via the read-only property *Data*, which returns a list of lists containg the copies of the matrix' elements values, and always in the column-first order.
+Matrix classes are designed to be *immutable* and *atomic* objects, and not a specialized sequence. Therefore, neither *iteration* (as `for element in matrix`) nor *contains check* (as `if element in matrix`) are supported; also the values of the elements can not be changed after instantiation. However, the value if any stored element can be read-out (accessed) using the double index notation (starting from index 0), as `Matrix1[1, 1]` in the example above results in the value of 4. Slice notation is not supported, nor the standard single index notation; instead the classes provide methods to access a single row or column as instances of the respective vector classes. Also, all stored elements can be read-accessed at once via the read-only property *Data*, which returns a list of lists containg the copies of the matrix' elements values, and always in the column-first order.
 
-The both matrix classes support transposition method, which returns a new instance of the same class.
+The both matrix classes support transposition method, which returns a new instance of the same class. Basically, this method simply wraps the class instantiation method into which the stored data content (elements) of the current instance is passed, which is stored internally always in the column-first order, with the explicit switch (keyword argument) *isColumnFirst* = **False**. Thus, an N x M matrix transposed is an M x N matrix, with all columns becoming rows and vice versa, whilst preserving the oder, i.e. $\mathbf{A} \; \rightarrow \; \mathbf{B} = \mathbf{A}^T\; : b_{j,i} = a_{i,j} \; \forall \; 1 \leq i \leq N, \; 1 \leq j \leq M$. In the case of a square matrix the transposition can be visialized as a rotation (flipping) along the main diagonal.
 
 The **SquareMatrix** class also implements a number of additional methods:
 
@@ -133,6 +133,53 @@ The **SquareMatrix** class also implements a number of additional methods:
 * method *getInverse*(), which calculates the multiplicative reciprocal (inverse) matrix for a non-singular matrix
 * method *getEigenValues*(), which calculates all eigenvalues of a *diagonalizable* matrix
 * method *getEigenVectors*(), which can calculate all eigenvalues and associated orthonormal base eigenvectors for a diagonalizable matrix; or just the orthonormal base eigenvectors for a given eigenvalue, which works also for the *defective* (not diagonalizable) matrices
+
+A *diagonal* square matrix **D** has non-zero elements only on the main diagonal (i.e. elements with the equal values of the column and the row indexes $d_{i,i}$), whereas all elements not on the main diagonal are strictly zeroes $d_{i, j \neq i}=0$. Thus, to define such a matrix (N x N) one needs only a flat sequence of N values. The *determinant* of any diagonal matrix is the product of all its main diagonal elements $\mathtt{det}(\mathbf{D}) = \prod_{i=1}^N{d_{i,i}}$.
+
+The *identity* matrix **I** is a special case of a diagonal matrix with all main diagonal elements being 1, i.e. $i_{j,j} = 1, \; i_{j, k \neq j} = 0 \; \forall 1 \leq j \leq N$, which has a special property $\mathbf{I} * \mathbf{A} = \mathbf{A} * \mathbf{I} = \mathbf{A}$ for any square matrix **A** of the same size *N*. Such a matrix is fully defined by the size only. Obviously, $\mathtt{det}(\mathbf{I}) = 1$.
+
+An *inverse* of a (square) matrix **A** is a (square) matrix $\mathbf{A}^{-1}$, such that $\mathbf{A}^{-1} * \mathbf{A} = \mathbf{A} * \mathbf{A}^{-1} = \mathbf{I}$. Note, that not all square matrices have an inverse, but only those with the non-zero determinant.
+
+A *permutation* of a set (collection of unique items) is a set of the same size produced by reordering of its elements, i.e. a set \{ 2, 1, 3\} is a permutation of the set \{ 1, 2, 3 \} (a.k.a. 1 .. 3 set). A *permutation matrix* **P** of a size *N* is defined by a permutation of 1..*N* set as follows: the value $1 \leq j \leq N$ at the position $1 \leq i \leq N$ in the set permutation means that the *i*-th column of the matrix **P** has non-zero (actually 1) value only at the intersection with the *j*-th row, whereas all other elements of this column are zeroes. Thus, a set permutation \{ 2, 1, 3\} defines the permutation matrix
+
+$$
+\begin{bmatrix}
+0 & 1 & 0 \\
+1 & 0 & 0 \\
+0 & 0 & 1 \\
+\end{bmatrix}
+$$
+
+In a permutation matrix each column and each row has only one element with the value of 1 and all other elements are of the value 0. A permutation matrix is *orthogonal*, i.e. $\mathbf{P}^{-1} = \mathbf{P}^T$, and $\mathtt{det}(\mathbf{P}) = \pm 1$. Basically, a permutation matrix is an identity matrix with two to more columns (or rows) being swapped (pivoted). The left multiplication of a matrix **A** by a permutation matrix (**P \* A**) swaps the columns of the matrix **A**, whereas the right multiplication (**A \* P**) swaps the rows of the matrix **A**.
+
+A *lower-triangular* matrix **L** has all strictly zero elements above the main diagonal, i.e. $l_{i,j>i} = 0$. An *upper-triangular* matrix **U** has all strictly zero elements below the main diagonal, i.e. $u_{i,j<i} = 0$. In the both cases the determinant is the product of all main diagonal elements, i.e. $\mathtt{det}(\mathbf{L}) = \prod_{i=1}^N{l_{i,i}}$ and $\mathtt{det}(\mathbf{U}) = \prod_{i=1}^N{u_{i,i}}$. The *LU-decomposition* of a matrix **A** is a process of finding a lower-triangular matrix **L** and an upper-triangular matrix **U** such that **A** = **L** \* **U**. In practice, considering the numerical stability and singular matrices (det(**A**) =0), the columns and rows pivoting is applied, i.e. $\mathbf{A} \; \rightarrow \; \mathbf{B} = \mathbf{P}_c * \mathbf{A} * \mathbf{P} \; : \; \mathbf{B} = \mathbf{L} * \mathbf{U}$, hence a matrix **A** can be decomposed into a product of permutation matrices, lower- and upper-triangular matrices, which generalized decomposition process is named *LUP-decomposition*. If the process results in all unity main diagonal elements of the lower-diagonal matrix $l_{i,i}=1 \; \forall \; i$, the determinant of the matrix **A** is $\mathtt{det}(\mathbf{A}) = \pm \mathtt{det}(\mathbf{U}) = \pm \prod_{i=1}^N{u_{i,i}}$, with the sign defined by the product of the determinants of the both permutation matrices, which is the product of the signs of the both column and row permutations. Thus, LUP-decomposition is a powerful technique for calculation of the determinant and solution of a system of linear equations (using back-substitution method).
+
+The produced in the process upper-triangular matrix **U** can be decomposed further into a product of a diagonal matrix **D** and another upper-triangular matrix $\hat{\mathbf{U}} \; : \; \hat{u}_{i,i} = 1$ with all main diagonal elements being equal to 1, i.e. $\mathbf{U} = \hat{\mathbf{U}} * \mathbf{D}$. Thus, the *full decomposition* of a matrix **A** is its representation as a product of ermutation matrices, lower- and upper-triangular matrices with all 1s at the main diagonal, and a diagonal matrix.
+
+An *eigenvalue* $\lambda \neq 0$ and the corresponding *eigenvector* **v** of a matrix **A** satisfy the matrix equation $\mathbf{A} * \mathbf{v} = \lambda * \mathbf{v}$. All eigenvalues of a matrix of the size *N* are defined by the polynomial equation $\mathtt{det}(\mathbf{A} - \lambda * \mathbf{I}) = \prod_{i=1}^{1 \leq K \leq N}{(\lambda - \lambda_i)^{\gamma_i}} = 0 \; : \; \sum_{i=1}^K{\gamma_i}=N$, where $\gamma_i$ is the *aritmetic multiplicity* of the eigenvalue $\lambda_i$. For each eigenvaue $\lambda_i$ all eigenvalues bound to this value can be found by solving the *under-defined* system of equations $(\mathbf{A} - \lambda_i * \mathbf{I}) * \mathbf{v}= \mathbf{0}$. The eigenvalue $\lambda_i$ has the *geometric multiplicity* $\mu_i$ if each bound eigenvector can be expressed as a linear combination of $\mu_i$ linearly independent *base* eigenvectors, i.e. it spawns a $\mu_i$-dimensional *eigenspace* within the *N*-dimensional vector space. Obviously, $1 \leq \mu_i \leq \gamma_i \leq N$. For example, any identity matrix **I** of the size *N* has a single eigenvalue $\lambda = 1$ with the arithmetic and geometric multiplicity of *N*.
+
+On the other hand, the matrix
+
+$$
+\begin{bmatrix}
+1 & 0 & 0 \\
+0 & 2 & 0 \\
+0 & 0 & 1 \\
+\end{bmatrix}
+$$
+
+has two eigenvalues: $\lambda_1 = 1$ with $\gamma_1 = \mu_1 = 2$ and $\lambda_2 = 2$ with $\gamma_2 = \mu_2 = 1$. Thereas the 2D-shear matrix
+
+$$
+\begin{bmatrix}
+1 & 1 \\
+0 & 1\\
+\end{bmatrix}
+$$
+
+has only a single eigenvalue $\lambda = 1$ with the arithmetic multiplicity $\gamma = 2$ bu the geometric multilicity $\mu = 1$. In other words, this matrix is *defect* (*non-diagonalizable*).
+
+In general, even for the all real numbers elements matrices the eigenvalues can be *complex* numbers, thus the eigenvectors can contain *complex numbers* elements. However, this module concerns only the real matrices, vectors and eigenvalues.
 
 ## Design and Implementation
 
@@ -154,7 +201,77 @@ The special methods implementing the arithmetical operations (like *\_\_add\_\_*
 
 The last functionality is achieved by exploiting the Python method resolution model. Basically, the statement `A+B` is resolved into the method call `A.__add__(B)`; however if the **NotImplemented** value is returned, another method call is made `B.__radd__(A)`. For example, the left and the right multiplication of a column / row vector by a scalar is implemented already in the parent **Vector** class' methods *\_\_mul\_\_*() and *\_\_rmul\_\_*(), but it is re-defined (implemented) separately in the classes **Column** and **Row** because of the different set of the allowed second operand types. Yet, the row x matrix and matrix x column multiplication is not implemented in these classes, but delegated to the **Matrix** class using the described **NotImplemented** fallback behaviour.
 
-The second exploit is the 'class patching'. For instance, column x row vectors product results in a matrix, which is defined later in the source code, thus it cannot be used as a return data type yet. Similarly, the matrix x matrix product's result should be converted into a square matrix object when possible, yet the square matrix class is not yet defined. The solution is to implement the functionality in a two-parameters function after definition of all involved classes, then convert this function into a *method* and assign to the respective class attribute, previously declared as a special method.
+The second exploit is the 'class patching'. For instance, column x row vectors product results in a matrix, which is defined later in the source code, thus it cannot be used as a return data type yet. Similarly, the matrix x matrix product's result should be converted into a square matrix object when possible, yet the square matrix class is not yet defined. The solution is to implement the functionality in a two-parameters function after definition of all involved classes, then convert this function into a *method* and assign to the respective class attribute, previously declared as a special method. In practice, it is achieved using the standard function *setattr*() applied to the class.
+
+The LUP-decomposition is implemented as the *Gauss-Jordan* elimination with the columns and (optionally) rows pivoting. Consider a matrix **A** with the main diagonal element $a_{i,i}$ at the intersection of the *i*-th column and *i*-th row. If one subtracts the *i*-th row from all the rows below with the scalling coefficients $a_{i,j>i} / a_{i,i}$ all elements in the *i*-th column below the main diagonal become 0, thereas the determinant of the matrix is not changed due to the multi-linearity property of the determinant. This process is equvalent to the matrix multiplication $\mathbf{A} \; \rightarrow \mathbf{L}_i * \mathbf{A} \; :$
+
+$$
+\mathbf{L}_i = \begin{bmatrix}
+1 & 0 & \dots & 0 & 0 & 0 & \dots & 0 & 0\\
+0 & 1 & \dots & 0 & 0 & 0 & \dots & 0 & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \dots & 1 & 0 & 0 & \dots & 0 & 0\\
+0 & 0 & \dots & 0 & 1 & 0 & \dots & 0 & 0\\
+0 & 0 & \dots & 0 & -\frac{a_{i, i+1}}{a_{i,i}} & 1 & \dots & 0 & 0\\
+0 & 0 & \dots & 0 & -\frac{a_{i, i+2}}{a_{i,i}} & 0 & \dots & 0 & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \dots & 0 & -\frac{a_{i, N-1}}{a_{i,i}} & 0 & \dots & 1 & 0\\
+0 & 0 & \dots & 0 & -\frac{a_{i, N}}{a_{i,i}} & 0 & \dots & 0 & 1\\
+\end{bmatrix}
+$$
+
+whereas the *inverse* transformation (left multiplication) being
+
+$$
+\mathbf{L}_i^{-1} = \begin{bmatrix}
+1 & 0 & \dots & 0 & 0 & 0 & \dots & 0 & 0\\
+0 & 1 & \dots & 0 & 0 & 0 & \dots & 0 & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \dots & 1 & 0 & 0 & \dots & 0 & 0\\
+0 & 0 & \dots & 0 & 1 & 0 & \dots & 0 & 0\\
+0 & 0 & \dots & 0 & \frac{a_{i, i+1}}{a_{i,i}} & 1 & \dots & 0 & 0\\
+0 & 0 & \dots & 0 & \frac{a_{i, i+2}}{a_{i,i}} & 0 & \dots & 0 & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \dots & 0 & \frac{a_{i, N-1}}{a_{i,i}} & 0 & \dots & 1 & 0\\
+0 & 0 & \dots & 0 & \frac{a_{i, N}}{a_{i,i}} & 0 & \dots & 0 & 1\\
+\end{bmatrix}
+$$
+
+In the Gauss-Jordan elimination process one starts from the top-left corner and moves along the main diagonal, such that at each step $1 \leq k \leq N -1$ the matrix is transformed as $\mathbf{A}^{(k-1)} \rightarrow \mathbf{A}^{(k)} = \mathbf{L}_k * \mathbf{A}^{(k-1)} = \mathbf{L}_k * \mathbf{L}_{k-1} * \dots * \mathbf{L}_2 * \mathbf{L}_1 * \mathbf{A}^{(0)} \; : \; \mathbf{A}^{(0)} \equiv \mathbf{A}$. Thus, after *N*-1 steps the matrix **A** is transformed into an upper-triangular matrix **U**, i.e. $\mathbf{A}^{(N-1)} = \mathbf{U} = (\mathbf{L}_{N-1}* \dots *\mathbf{L}_1) * \mathbf{A} = \mathbf{L} * \mathbf{A}$, where the matrix **L** is lower-triangular and invertible, therefore $\mathbf{A} = \mathbf{L}^{-1} * \mathbf{U}$, where the inverse matrix 
+
+$$
+\mathbf{L}^{-1} = \mathbf{L}_1^{-1} * \dots * \mathbf{L}_{N-1}^{-1}= \begin{bmatrix}
+1 & 0 & \dots & 0 & 0 & 0 & \dots & 0 & 0\\
+\frac{a_{1, 2}^{(0)}}{a_{1,1}^{(0)}} & 1 & \dots & 0 & 0 & 0 & \dots & 0 & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+\frac{a_{1, i-1}^{(0)}}{a_{1,1}^{(0)}} & \frac{a_{1, i-1}^{(1)}}{a_{2,2}^{(1)}} & \dots & 1 & 0 & 0 & \dots & 0 & 0\\
+\frac{a_{1, i}^{(0)}}{a_{1,1}^{(0)}} & \frac{a_{1, i}^{(1)}}{a_{2,2}^{(1)}} & \dots & \frac{a_{i-1, i}^{(i-2)}}{a_{i-1,i-1}^{(i-2)}} & 1 & 0 & \dots & 0 & 0\\
+\frac{a_{1, i+1}^{(0)}}{a_{1,1}^{(0)}} & \frac{a_{1, i+1}^{(1)}}{a_{2,2}^{(1)}} & \dots & \frac{a_{i-1, i+1}^{(i-2)}}{a_{i-1,i-1}^{(i-2)}} & \frac{a_{i, i+1}^{(i-1)}}{a_{i,i}^{(i-1)}} & 1 & \dots & 0 & 0\\
+\frac{a_{1, i+2}^{(0)}}{a_{1,1}^{(0)}} & \frac{a_{1, i+2}^{(1)}}{a_{2,2}^{(1)}} & \dots & \frac{a_{i-1, i+2}^{(i-2)}}{a_{i-1,i-1}^{(i-2)}} & \frac{a_{i, i+2}^{(i-1)}}{a_{i,i}^{(i-1)}} & \frac{a_{i+1, i+2}^{(i)}}{a_{i+1,i+1}^{(i)}} & \dots & 0 & 0\\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+\frac{a_{1, N-1}^{(0)}}{a_{1,1}^{(0)}} & \frac{a_{2, N-1}^{(1)}}{a_{2,2}^{(1)}} & \dots & \frac{a_{i-1, N-1}^{(i-2)}}{a_{i-1,i-1}^{(i-2)}} & \frac{a_{i, N-1}^{(i-1)}}{a_{i,i}^{(i-1)}} & \frac{a_{i+1, N-1}^{(i)}}{a_{i+1,i+1}^{(i)}} & \dots & 1 & 0\\
+\frac{a_{1, N}^{(0)}}{a_{1,1}^{(0)}} & \frac{a_{2, N}^{(1)}}{a_{2,2}^{(1)}} & \dots & \frac{a_{i-1, N}^{(i-2)}}{a_{i-1,i-1}^{(i-2)}} & \frac{a_{i, N}^{(i-1)}}{a_{i,i}^{(i-1)}} & \frac{a_{i+1, N}^{(i)}}{a_{i+1,i+1}^{(i)}} & \dots & \frac{a_{N-1, N}^{(N-1)}}{a_{N-1,N-1}^{(N-1)}} & 1\\
+\end{bmatrix}
+$$
+
+where $a_{i,j}^{(k)}$ is the value of the element at the intersection of the *i*-th column and *j*-th row after *k* transformation steps. The prooof is outside the scope of this document. In the practical implementation it means that at each *k*-th step the *k*-th column of the inverse matrix $\mathbf{L}^{-1}$ can be calculated directly from the current state of the matrix, and then the matrix is transformed as:
+
+* $a_{k, j>k}^{(k-1)} \rightarrow a_{k, j>k}^{(k)} = 0$ - all elements in the *k*-th column below the main diagonal are set to zero
+* $a_{i>k, j>k}^{(k-1)} \rightarrow a_{i>k, j>k}^{(k)} = a_{i>k, j>k}^{(k-1)} - a_{i>k, k}^{(k-1)} * \frac{a_{k, j>k}^{(k-1)}}{a_{k,k}^{(k-1)}}$ - rows subtraction ignoring the already zeroed columns
+
+Obviously, $\mathtt{det}(\mathbf{L}^{-1})=1 \; \Rightarrow \; \mathtt{det}(\mathbf{A}) = \mathtt{det}(\mathbf{U})=\mathtt{det}(\mathbf{A}^{(N-1)}) = \prod_{i=1}^N{a_{i,i}^{(N-1)}}$, i.e. the determinant of a matrix can be calculated as the product of all main diagonal elements in the upper-triangular matrix produced by the Gauss-Jordan elimination process.
+
+However, it is possible to produce the zero value at the main diagonal after some *k*-1 steps $a_{k,k}^{(k-1)} = 0$ even if the matrix **A** is not *singular* (i.e. $\mathtt{det}(\mathbf{A}) \neq 0$, or all rows of the matrix are linearly independent). If the matrix is not singular, there must be, at least, one element in the *k*-th row, which is not yet zeroed, i.e., $\exists \; i>k \; : \; a_{i,k}^{(k-1)} \neq 0$. Hence, one can swap the *k*-th and *i*-th columns (columns pivoting process) to get a non-zero value at the main diagonal. Such pivoting is described by the matrix multiplication $\mathbf{P}_k * \mathbf{A}^{(k-1)}$, with the permutation matrix $\mathbf{P}_k$ being generated by the $\{1, 2, \dots, k-1, i, k+1, \dots, i-1, k, i+1, \dots, N-1, N \}$ permutation of the 1..*N* set. Because of the strict relation $i > k$ this process does not affect the already calculated values of the $\mathbf{L}^{-1}$ matrix, thus it can be applied to the original matrix even before the first step of the elimination process, i.e., $\mathbf{A}^{(k-1)} \rightarrow \mathbf{A}^{(k)} = \mathbf{L}_k * (\mathbf{P}_k * \mathbf{A}^{(k-1)}) = \mathbf{L}_k * (\mathbf{P}_k * (\mathbf{L}_{k-1} * \dots * \mathbf{L}_2 * \mathbf{L}_1 * \mathbf{A}^{(0)})) = \mathbf{L}_k * \mathbf{L}_{k-1} * \dots * \mathbf{L}_2 * \mathbf{L}_1 * (\mathbf{P}_k * \mathbf{A}^{(0)})$. Basically, all required columns pivotings can be applied to the matrix beforehand and defined as a single permutation matrix: $\mathbf{A} \rightarrow \mathbf{B} = \mathbf{P}_c * \mathbf{A} = \mathbf{L}^{-1} * \mathbf{U} \; \Rightarrow \; \mathbf{A} = \mathbf{P}_c^{-1} * \mathbf{L}^{-1} * \mathbf{U}$, where $\mathbf{P}_c^{-1} = \mathbf{P}_c^T$.
+
+Note, that $\mathtt{det}(\mathbf{P}_c^{-1}) = \pm 1$, with each columns pivoting inverting the sign of the determinant of the resulting matrix **U**.
+
+In the numerical implementation of the method the columns pivoting can be applied at each step, even if the value of the diagonal elements is not zero. Basically, at each step the column is selected with the highest *absolute* value of an element at the intersection with the current *k*-th row, and the current *k*-th column is swapped with the selected column. This approach is beneficial for the numerical stability, since at each step tha maximum possible absolute value of the divider in the scaling coefficient is chosen. In practice, there is no need to physically swap elements of a matrix. Instead, the columns pivoting can be traced using *N*-sized vector / array, instantiated with 1 .. *N* set values, and the current *k*-th and *i*-th elements being swapped when *k*-*i* columns pivoting has to be applied. This vector / array is used as a *look-up* table for the column index resolution. Also, there is no practical reason to generate and return the corresponding matrix. thus the generated columns permutation array is returned instead. Also, the permutation sign is traced, starting with +1, and the sign is flipped (+1 to -1 and vice versa) with each pivoting applied (unless the current diagonal element is the maximum absolute value in the row, in which case the pivoting is not applied).
+
+In a case of a singular matrix a *k*-th row becomes all-zeroes at the *k*-th step. Unless it is the last row, and there, at least, one row below, which contains, at least, one non-zero element, the rows pivoting must be applied, i.e. swap of two rows - the current and one below it. As with the columns pivoting, the rows pivoting is implemented via cloumns permutation vector / array look-up table. However, physical swapping of the already calculated elements of the $\mathbf{L}^{-1}$ matrix must be applied concerning the respective *k*-th and *i*-th rows (*i* > *k*), but only the elements at the intersection with the columns from the 1-st to the (*k*-1)-th. Also, the produced matrix **U** is not strictly upper-triangular matrix (with all non-zero elements on the main diagonal), but is in the *row echelon* form, with the non-zero elements only at or above the main diagonal, but with one or more rows at the bottom containing only zeroes.
+
+Thus, in the general case, both the columns and rows pivoting is applied, i.e. $\mathbf{A} \rightarrow \mathbf{B} = \mathbf{P}_c * \mathbf{A} * \mathbf{P}_r= \mathbf{L}^{-1} * \mathbf{U} \; \Rightarrow \; \mathbf{A} = \mathbf{P}_c^{-1} * \mathbf{L}^{-1} * \mathbf{U} * \mathbf{P}_r^{-1}$, which is the implemented LUP-decomposition method. **Note**, that for a non-singular (invertible) matrix the rows pivoting is not applied, hence $\mathbf{P}_r = \mathbf{P}_r^{-1} = \mathbf{I}$, unless det(**A**) = 0.
+
+For a non-singular matrix **A** the produced upper-triangular matrix **U** can be decomposed further into a product of an upper-triangular matrix with all 1s at the main diagonal and a diagonal matrix **D** as $\mathbf{U} = \hat{\mathbf{U}}^{-1} * \mathbf{D}$, i.e. $\mathbf{A} = \mathbf{P}_c^{-1} * \mathbf{L}^{-1} * \hat{\mathbf{U}}^{-1} * \mathbf{D}$, where matrix $\hat{\mathbf{U}}$ describes the secondary elimination (*k*-th row is subtracted from each row above with a specific coefficient, thus zeroing all elements above the diagonal in the *k*-th column). **Note**, that in the case of a singular matrix this *full decomposition* fails to produce a diagonal matrix **D**: one or more left-most columns will (or may) contain non-zero elements above the main diagonal. However, the major application of such full decomposition is the calculation of the inverse matrix, in which case the matrix must be non-singular.
 
 ## API Reference
 
