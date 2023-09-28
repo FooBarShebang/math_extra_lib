@@ -2499,7 +2499,7 @@ class SquareMatrix(Matrix):
         Up = [list(lstRow) for lstRow in Upper._Elements]
         del Lower
         del Upper
-        Det = 1
+        Det = 1 #NB - use math.prod() with Python v3.8+ (!!!)
         for Idx in range(Size):
             Det *= Diag[Idx]
         if Det:
@@ -2518,14 +2518,13 @@ class SquareMatrix(Matrix):
                         Data[RowIdx][Idx] -= Coeff * Data[ColIdx][Idx]
             for RowIdx in range(Size):
                 for ColIdx in range(Size):
-                    Value = Data[RowIdx][ColIdx] / Diag[RowIdx]
-                    Data[RowIdx][ColIdx] = Value
-            #re-arrange the columns according the columns permutations tuple
+                    Data[RowIdx][ColIdx] /= Diag[RowIdx]
+            #re-arrange the rows according the columns permutations tuple
             #+ find the inverse permutation, equivalent to the matrix transpose
             PermIndexes = [Pos[0] for Pos in sorted([(Idx, Item)
                                             for Idx, Item in enumerate(Perm)],
                                                 key = lambda Value: Value[1])]
-            #+ re-arrange the columns
+            #+ re-arrange the rows
             Data = [Data[PermIndexes[Idx]] for Idx in range(Size)]
             Result = self.__class__(Data)
         else:
