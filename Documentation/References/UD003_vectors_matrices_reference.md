@@ -265,7 +265,7 @@ $$
 \end{bmatrix}
 $$
 
-In the Gauss-Jordan elimination process one starts from the top-left corner and moves along the main diagonal, such that at each step $1 \leq k \leq N -1$ the matrix is transformed as $\mathbf{A}^{(k-1)} \rightarrow \mathbf{A}^{(k)} = \mathbf{L}_k * \mathbf{A}^{(k-1)} = \mathbf{L}_k * \mathbf{L}_{k-1} * \dots * \mathbf{L}_2 * \mathbf{L}_1 * \mathbf{A}^{(0)} \; : \; \mathbf{A}^{(0)} \equiv \mathbf{A}$. Thus, after *N*-1 steps the matrix **A** is transformed into an upper-triangular matrix **U**, i.e. $\mathbf{A}^{(N-1)} = \mathbf{U} = (\mathbf{L}_{N-1}* \dots *\mathbf{L}_1) * \mathbf{A} = \mathbf{L} * \mathbf{A}$, where the matrix **L** is lower-triangular and invertible, therefore $\mathbf{A} = \mathbf{L}^{-1} * \mathbf{U}$, where the inverse matrix 
+In the Gauss-Jordan elimination process one starts from the top-left corner and moves along the main diagonal, such that at each step $1 \leq k \leq N -1$ the matrix is transformed as $\mathbf{A}^{(k-1)} \rightarrow \mathbf{A}^{(k)} = \mathbf{L}_k * \mathbf{A}^{(k-1)} = \mathbf{L}_k * \mathbf{L}_{k-1} * \dots * \mathbf{L}_2 * \mathbf{L}_1 * \mathbf{A}^{(0)} \; : \; \mathbf{A}^{(0)} \equiv \mathbf{A}$. Thus, after *N*-1 steps the matrix **A** is transformed into an upper-triangular matrix **U**, i.e. $\mathbf{A}^{(N-1)} = \mathbf{U} = (\mathbf{L}_{N-1}* \dots *\mathbf{L}_1) * \mathbf{A} = \mathbf{L} * \mathbf{A}$, where the matrix **L** is lower-triangular and invertible, therefore $\mathbf{A} = \mathbf{L}^{-1} * \mathbf{U}$, where the inverse matrix
 
 $$
 \mathbf{L}^{-1} = \mathbf{L}_1^{-1} * \dots * \mathbf{L}_{N-1}^{-1}= \begin{bmatrix}
@@ -348,7 +348,7 @@ This algorithm does not converge in the case of a defective matrix, thus the max
 
 Each found eigenvalue is rounded to the nearest integer number, if the absolute difference with this integer is less than $N^3 * \varepsilon$, where *N* is the matrix size. An eigenvalue $\lambda_2$ is considered different from a previously found eigenvalue $\lambda_1$ if $\mathtt{abs}\left( \frac{\lambda_2 - \lambda_1}{\lambda_1} \right) > \varepsilon$. Otherwise, the two eigenvalues are considered to be the same (multiplicity > 1), and the $\lambda_2$ values is not added to the result.
 
-Also, for a given eigenvalue the method *getEigenVectors*() determines its geometric multiplicty by the number of zero values in the main diagonal of the matrix **U** in the LUP-decomposition. Because of the rows and columns pivoting used in the LUP-decomposition algorithm such zero-valued diagonal elements can occur only in the lowest rows, which must be all-zeroes. However, due to accumulation of the numerical error (floating point operations) the algorithm may fail to zero one or more elements in the linearly dependent rows. Therefore, the value of the last diagonal element is compared to zero using $N^3 * \varepsilon$ proximity threshold. For the rest of the diagonal elements a more stricted proximity threshold of $N^2 * \varepsilon$ is used due to the forced columns pivoting used in the LUP-decomposition algorithm.
+Also, for a given eigenvalue the method *getEigenVectors*() determines its geometric multiplicty by the number of zero values in the main diagonal of the matrix **U** in the LUP-decomposition. Because of the rows and columns pivoting used in the LUP-decomposition algorithm such zero-valued diagonal elements can occur only in the lowest rows, which must be all-zeroes. However, due to accumulation of the numerical error (floating point operations) the algorithm may fail to zero one or more elements in the linearly dependent rows. Therefore, the value of the last diagonal element is compared to zero using $N^3 * \varepsilon$ proximity threshold. For the rest of the diagonal elements a more stricted proximity threshold of $N^2 * \varepsilon$ is used due to the forced columns pivoting and explicit zeroing of the elements below the diagonal used in the LUP-decomposition algorithm.
 
 These measures improve the numerical stability and precision of the eigenvalues and eigenvectors calculation, especially in the case of the integer values matrices. However, the same measures may backfire and produce wrong results in the case of large matrices with large dynamic range of the absolute values of the elements, especially floating point values.
 
@@ -356,12 +356,644 @@ These measures improve the numerical stability and precision of the eigenvalues 
 
 ### Class Array2D
 
+A prototype class for the generic and square matrices, implementing the data storage and read-access in the form of a 2-D array.
+
+The data is stored and returned (property Data) as a sequence of the nested equal length sub-sequences of real numbers, each sub-sequence representing a single row of the array, i.e. in the rows-first order.
+
+The instances of this class are immutable objects, and are not considered to be sequences, thus not supporting iteration and 'contains' check. But the entire stored data can be copied into a mutable Python sequence (list) using the property *Data*. Individual element can be read-only accessed using double indexing as *obj*[col_index, row_index]. Slice notation is not supported.
+
+Can be instantiated either from a flat sequence of real number, when either width or height or both must be specified; or from a nested sequence, in which case the width and height arguments are ignored even if provided. The default parsing order is rows-first, which can be switched to columns-first using a boolean keyword argument *isColumnsFirst*, which defaults to **False**.
+
+Thus, the supported instantiation call signatures are:
+
+* **Array2D**(list(int OR float), *Width* = int >= 2)
+* **Array2D**(list(int OR float), *Height* = int >= 2)
+* **Array2D**(list(int OR float), *Width* = int >= 2, *Height* = int >= 2)
+* **Array2D**(list(int OR float), *Width* = int >= 2, *isColumnsFirst* = True)
+* **Array2D**(list(int OR float), *Height* = int >= 2, *isColumnsFirst* = True)
+* **Array2D**(list(int OR float), *Width* = int >= 2, *Height* = int >= 2, *isColumnsFirst* = True)
+* **Array2D**(list(list(int OR float)))
+* **Array2D**(list(list(int OR float)), *isColumnsFirst* = True)
+
+***Properties***:
+
+* *Width*: (read-only) **int** >= 2
+* *Height*: (read-only) **int** >= 2
+* *Data*: (read-only) **list**(**list**(**int** OR **float**))
+
+***Instantiation***:
+
+\_\_**int**\_\_(seqValues, *, Width = None, Height = None, isColumnsFirst = False)
+
+*Signature*:
+
+seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None, int >= 2 OR None, bool/ -> None
+
+*Args*:
+
+* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than 2 * *Width* if only width is specified, or 2 * *Height* if only height is specified, or *Width* \* *Height* if both are specified
+* *Width*: (keyword) **int** >= 2 OR **None**; required width of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required height, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
+* *Height*: (keyword) **int** >= 2 OR **None**; required height of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required width, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
+* *isColumnsFirst*: (keyword) **bool**; flag if the passed data to parsed in the columns-first order, defaults to False, i.e. rows-first order when each consequitive slice of a flat sequence or sub-sequence element of a nested sequence is treated as the representation of a single row of the array or matrix
+
+*Raises*:
+
+* **UT_TypeError**: mandatory argument is neither a flat sequence of real numbers nor a nested sequence of sequences of real numbers, OR optional keyword argument *isColumnsFirst* is not boolean, OR optional keyword arguments *Width* or *Height* are neither **None** nor integer numbers
+* **UT_ValueError**: either *Width* or *Height* argument is an integer < 2, OR the both arguments are **None** when the mandatory argument is a flat sequence of real numbers, OR the length of a flat sequence as the mandatory argument is too short for the given values of *Width* and / or *Height*, OR a nested sequence as the mandatory argument has less than 2 elements, OR the length of an sub-sequence element is less than 2, OR the sub-sequence elements differ in length.
+
+*Description*:
+
+Parses the passed data sequence and packs it into the internally stored nested tuple structure representing a 2D array or a matrix, with each tuple element representing a single row of that array or matrix.
+
 ### Class Vector
+
+Implementation of a generic, abstract vector. Must be instantiated with 2 or more real number typed arguments, with the number of the arguments defining the size / dimensions of the vector. Individual elements can be read-only accessed using integer indexing as *obj*\[index\], slicing is not supported.
+
+The instances of this class are immutable objects, and are not considered to be sequences, thus not supporting iteration and 'contains' check. But the entire stored data can be copied into a mutable Python sequence (list) using the property *Data*.
+
+Supports the following artihmetics:
+
+* Addition and subtraction of two generic vectors of equal length
+* Left and right mutliplication by a real number
+* Division by non-zero real number
+* Inner (dot) product of two equal length generic vectors -> real number
+* Outer product of two generic vectors -> **Array2D**
+
+Additionally, supports generation of orthogonal unity vectors of the specified dimensions and a normalized (unity geometric length) vector parallel to the one represented by the current instance.
+
+***Properties***:
+
+* *Size*: (read-only) **int** >= 2
+* *Data*: (read-only) **list**(**int** OR **float**)
+
+***Instantiation***:
+
+\_\_**init**\_\_(*args)
+
+*Signature*:
+
+*seq(int OR float) -> None
+
+*Args*:
+
+*\*args*: **\*seq**(**int** OR **float**); any number of integer or floating point arguments as the elements of the vector
+
+*Raises*:
+
+* **UT_TypeError**: any of the arguments is neither integer nor floating point number
+* **UT_ValueError**: number of arguments is less than 2
+
+*Description*:
+
+The passed numerical arguments are taken as the elements of a vector to be created.
+
+***Class methods***:
+
+**generateOrthogonal**(Length, Index)
+
+*Signature*:
+
+int >= 2, int >= 0 -> Vector
+
+*Args*:
+
+* *Length*: **int** >= 2;
+* *Index*: **int** >= 2;
+
+*Returns*:
+
+**Vector**: an instance of the same class
+
+*Raises*:
+
+* **UT_TypeError**: either of the arguments in not an integer number
+* **UT_ValueError**: the first argument is less than 2, OR the second argument is negative or equal to or greater than the first one
+
+*Description*:
+
+Class method to generate a vector from the unity orthogonal set such, that only a single element is 1, thereas all other elements are 0 - i.e. one of the *standard basis* vectors.
+
+***Methods***:
+
+**normalize**()
+
+*Signature*:
+
+None -> Vector
+
+*Returns*:
+
+**Vector*: a new instance of the same class - the normalized vector
+
+*Raises*:
+
+**UT_ValueError**: all elements of the original vector are zeroes
+
+*Description*:
+
+Generates a new instance of the same class of the same length, but with all elements being scaled (divided by) a square root of the sum of all elements of the original vector squared.
 
 ### Class Column
 
+Implementation of a column vector. Must be instantiated with 2 or more real number typed arguments, with the number of the arguments defining the size / dimensions of the vector. Individual elements can be read-only accessed using integer indexing as *obj*\[index\], slicing is not supported.
+
+The instances of this class are immutable objects, and are not considered to be sequences, thus not supporting iteration and 'contains' check. But the entire stored data can be copied into a mutable Python sequence (list) using the property *Data*.
+
+Supports the following artihmetics:
+
+* Addition and subtraction of two column vectors of equal length
+* Left and right mutliplication by a real number
+* Division by non-zero real number
+* Right multiplication by a row vector -> **Matrix**
+* Left multiplication by a row vector of the same size -> real number
+
+Outer product is not supported. Multiplication with a matrix is delegated to the Matrix class.
+
+Additionally, supports generation of orthogonal unity vectors of the specified dimensions and a normalized (unity geometric length) vector parallel to the one represented by the current instance. Also implements transposition **Column** -> **Row**.
+
+Sub-classes **Vector**.
+
+***Properties***:
+
+* *Size*: (read-only) **int** >= 2
+* *Data*: (read-only) **list**(**int** OR **float**)
+
+***Instantiation***:
+
+\_\_**init**\_\_(*args)
+
+*Signature*:
+
+*seq(int OR float) -> None
+
+*Args*:
+
+*\*args*: **\*seq**(**int** OR **float**); any number of integer or floating point arguments as the elements of the vector
+
+*Raises*:
+
+* **UT_TypeError**: any of the arguments is neither integer nor floating point number
+* **UT_ValueError**: number of arguments is less than 2
+
+*Description*:
+
+The passed numerical arguments are taken as the elements of a vector to be created.
+
+***Class methods***:
+
+**generateOrthogonal**(Length, Index)
+
+int >= 2, int >= 0 -> Column
+
+Inherited from the class **Vector**.
+
+***Methods***:
+
+**normalize**()
+
+None -> Column
+
+Inherited from the class **Vector**.
+
+**transpose**()
+
+*Signature*:
+
+None -> Row
+
+*Description*:
+
+Transposes the current column vector into a row vector (**Row** class instance) preserving the elements.
+
 ### Class Row
+
+Implementation of a row vector. Must be instantiated with 2 or more real number typed arguments, with the number of the arguments defining the size / dimensions of the vector. Individual elements can be read-only accessed using integer indexing as *obj*\[index\], slicing is not supported.
+
+The instances of this class are immutable objects, and are not considered to be sequences, thus not supporting iteration and 'contains' check. But the entire stored data can be copied into a mutable Python sequence (list) using the property Data.
+
+Supports the following artihmetics:
+
+* Addition and subtraction of two row vectors of equal length
+* Left and right mutliplication by a real number
+* Division by non-zero real number
+* Left multiplication by a column vector -> **Matrix**
+* Right multiplication by a same size column vector -> real number
+
+Outer product is not supported. Multiplication with a matrix is delegated to the **Matrix** class.
+
+Additionally, supports generation of orthogonal unity vectors of the specified dimensions and a normalized (unity geometric length) vector parallel to the one represented by the current instance. Also implements transposition **Row** -> **Column**.
+
+Sub-classes **Vector**.
+
+***Properties***:
+
+* *Size*: (read-only) **int** >= 2
+* *Data*: (read-only) **list**(**int** OR **float**)
+
+***Instantiation***:
+
+\_\_**init**\_\_(*args)
+
+*Signature*:
+
+*seq(int OR float) -> None
+
+*Args*:
+
+*\*args*: **\*seq**(**int** OR **float**); any number of integer or floating point arguments as the elements of the vector
+
+*Raises*:
+
+* **UT_TypeError**: any of the arguments is neither integer nor floating point number
+* **UT_ValueError**: number of arguments is less than 2
+
+*Description*:
+
+The passed numerical arguments are taken as the elements of a vector to be created.
+
+***Class methods***:
+
+**generateOrthogonal**(Length, Index)
+
+int >= 2, int >= 0 -> Row
+
+Inherited from the class **Vector**.
+
+***Methods***:
+
+**normalize**()
+
+None -> Row
+
+Inherited from the class **Vector**
+
+**transpose**()
+
+*Signature*:
+
+None -> Column
+
+*Description*:
+
+Transposes the current row vector into a column vector (**Column** class instance) preserving the elements.
 
 ### Class Matrix
 
+Implementation of a generic matrix.
+
+The data is stored and returned (property *Data*) as a sequence of the nested equal length sub-sequences of real numbers, each sub-sequence representing a single row of the matrix, i.e. in the rows-first order.
+
+The instances of this class are immutable objects, and are not considered to be sequences, thus not supporting iteration and 'contains' check. But the entire stored data can be copied into a mutable Python sequence (list) using the property *Data*. Individual element can be read-only accessed using double indexing as *obj*\[col_index, row_index\].
+
+Can be instantiated either from a flat sequence of real number, when either width or height or both must be specified; or from a nested sequence, in which case the width and height arguments are ignored even if provided. The default parsing order is rows-first, which can be switched to columns-first using a boolean keyword argument *isColumnsFirst*, which defaults to **False**.
+
+Thus, the supported instantiation call signatures are:
+
+* **Matrix**(list(int OR float), *Width* = int >= 2)
+* **Matrix**(list(int OR float), *Height* = int >= 2)
+* **Matrix**(list(int OR float), *Width* = int >= 2, *Height* = int >= 2)
+* **Matrix**(list(int OR float), *Width* = int >= 2, *isColumnsFirst* = True)
+* **Matrix**(list(int OR float), *Height* = int >= 2, *isColumnsFirst* = True)
+* **Matrix**(list(int OR float), *Width* = int >= 2, *Height* = int >= 2, *isColumnsFirst* = True)
+* **Matrix**(list(list(int OR float)))
+* **Matrix**(list(list(int OR float)), *isColumnsFirst* = True)
+
+Sub-classes **Array2D** and adds support for arithmetics between a matrices, column and row vectors, and scalars. Also adds transposition, columns and rows access methods.
+
+***Properties***:
+
+* *Width*: (read-only) **int** >= 2
+* *Height*: (read-only) **int** >= 2
+* *Data*: (read-only) **list**(**list**(**int** OR **float**))
+
+***Instantiation***:
+
+\_\_**int**\_\_(seqValues, *, Width = None, Height = None, isColumnsFirst = False)
+
+*Signature*:
+
+seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None, int >= 2 OR None, bool/ -> None
+
+*Args*:
+
+* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than 2 * *Width* if only width is specified, or 2 * *Height* if only height is specified, or *Width* \* *Height* if both are specified
+* *Width*: (keyword) **int** >= 2 OR **None**; required width of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required height, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
+* *Height*: (keyword) **int** >= 2 OR **None**; required height of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required width, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
+* *isColumnsFirst*: (keyword) **bool**; flag if the passed data to parsed in the columns-first order, defaults to False, i.e. rows-first order when each consequitive slice of a flat sequence or sub-sequence element of a nested sequence is treated as the representation of a single row of the array or matrix
+
+*Raises*:
+
+* **UT_TypeError**: mandatory argument is neither a flat sequence of real numbers nor a nested sequence of sequences of real numbers, OR optional keyword argument *isColumnsFirst* is not boolean, OR optional keyword arguments *Width* or *Height* are neither **None** nor integer numbers
+* **UT_ValueError**: either *Width* or *Height* argument is an integer < 2, OR the both arguments are **None** when the mandatory argument is a flat sequence of real numbers, OR the length of a flat sequence as the mandatory argument is too short for the given values of *Width* and / or *Height*, OR a nested sequence as the mandatory argument has less than 2 elements, OR the length of an sub-sequence element is less than 2, OR the sub-sequence elements differ in length.
+
+*Description*:
+
+Creates an instance of the class and fills the values of its elements using the passed data.
+
+***Methods***:
+
+**transpose**()
+
+*Signature*:
+
+None -> Matrix
+
+*Description*:
+
+Method to generate a transposition of the current matrix (new instance of the same class). Each row becomes a column and vice versa preserving the rows / columns order.
+
+**getColumn**(Index)
+
+*Signature*:
+
+int -> Column
+
+*Args*:
+
+*Index*: **int**; the required column index
+
+*Raises*:
+
+* **UT_TypeError**: argument is not an integer number
+* **UT_ValueError**: argument value is not in the inclusive range [-*Width*, *Width* - 1]
+
+*Description*:
+
+Method to access a specific column of a matrix in the form of a column vector.
+
+**getRow**(Index)
+
+*Signature*:
+
+int -> Row
+
+*Args*:
+
+*Index*: **int**; the required row index
+
+*Raises*:
+
+* **UT_TypeError**: argument is not an integer number
+* **UT_ValueError**: argument value is not in the inclusive range [-*Height*, *Height* - 1]
+
+*Description*:
+
+Method to access a specific row of a matrix in the form of a row vector.
+
 ### Class SquareMatrix
+
+Implementation of a square matrix, for which width equals height, and is referred to as simply size.
+
+The data is stored and returned (property *Data*) as a sequence of the nested equal length sub-sequences of real numbers, each sub-sequence representing a single row of the matrix, i.e. in the rows-first order.
+
+The instances of this class are immutable objects, and are not considered to be sequences, thus not supporting iteration and 'contains' check. But the entire stored data can be copied into a mutable Python sequence (list) using the property *Data*. Individual element can be read-only accessed using double indexing as *obj*[col_index, row_index].
+
+Can be instantiated either from a flat sequence of real number, when the required size may be specified via a keyword argument, or it may auto-deducted; or from a nested sequence, in which case the size arguments is ignored even if provided. The default parsing order is rows-first, which can be switched to columns-first using a boolean keyword argument *isColumnsFirst*, which defaults to False.
+
+Thus, the supported instantiation call signatures are:
+
+* **SquareMatrix**(list(int OR float))
+* **SquareMatrix**(list(int OR float), *isColumnsFirst* = True)
+* **SquareMatrix**(list(int OR float), *Size* = int >= 2)
+* **SquareMatrix**(list(int OR float), *Size* = int >= 2, *isColumnsFirst* = True)
+* **SquareMatrix**(list(list(int OR float)))
+* **SquareMatrix**(list(list(int OR float)), *isColumnsFirst* = True)
+
+Sub-classes **Matrix** and supports for arithmetics between a matrices, column and row vectors, and scalars as well as transposition, columns and rows access methods. Also adds adds a number of class and instance methods specific for the square matrices:
+
+* calculation of the trace and determinant
+* LUP and LUDP (full) decomposition
+* Generation of the multuplicative inverse matrix
+* Calculation of eigenvalues and eigenvectors
+
+***Properties***:
+
+* *Width*: (read-only) **int** >= 2
+* *Height*: (read-only) **int** >= 2
+* *Size*: (read-only) **int** >= 2
+* *Data*: (read-only) **list**(**list**(**int** OR **float**))
+
+***Instantiation***:
+
+\_\_**init**\_\_(seqValues, *, Size = None, isColumnsFirst = False)
+
+*Signature*:
+
+seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None, bool/ -> None
+
+*Args*:
+
+* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than *Size* \* *Size* if it is specified, or > 4 if *Size* is not specified or **None**, in the nested form the length of each element must be equal to their count
+* *Size*: (keyword) **int** >= 2 OR **None**; required size = width = height of the matrix, defaults to **None** meaning automatic definition based on the length of the flat sequence argument
+* *isColumnsFirst*: (keyword) **bool**; flag if the passed data to parsed in the columns-first order, defaults to **False**, i.e. rows-first order when each consequitive slice of a flat sequence or sub-sequence element of a nested sequence is treated as the representation of a single row of the array or matrix
+
+*Raises*:
+
+* **UT_TypeError**: mandatory argument is neither a flat sequence of real numbers nor a nested sequence of sequences of real numbers, OR optional keyword argument *isColumnsFirst* is not boolean, OR optional keyword arguments *Size* is neither None nor an integer number
+* **UT_ValueError**: *Size* argument is an integer < 2, OR the length of a flat sequence as the mandatory argument is too short for the given values of *Size*, OR a nested sequence as the mandatory argument has less than 2 elements, OR the length of an sub-sequence element is less than 2, OR the sub-sequence elements differ in length, OR length of the sub-sequence element is not equal to their number
+
+*Description*:
+
+Parses the passed data sequence and packs it into the internally stored nested tuple structure representing a matrix, with each tuple element representing a single row of that matrix.
+
+***Class methods***:
+
+**generateIdentity**(Size)
+
+*Signature*:
+
+int >= 2 -> SquareMatrix
+
+*Args*:
+
+*Size*: **int** > 1; the requested size of the identity matrix
+
+*Returns*:
+
+* **SquareMatrix**: a new instance of the class
+
+*Raises*:
+
+* **UT_TypeError**: the passed argument is not an integer number
+* **UT_ValueError**: the passed argument is an integer, but less than 2
+
+*Description*:
+
+Creates a new instance of a square matrix with all elements on the main diagonal being equal to 1, and all other elements being zeroes.
+
+**generatePermutation**(Permutation)
+
+*Signature*:
+
+seq(int >= 0) -> SquareMatrix
+
+*Args*:
+
+*Permutation*: **seq**(**int** >= 0);  proper 0..N-1 permutation sequence
+
+*Returns*:
+
+**SquareMatrix**: a new instance of the class
+
+*Raises*:
+
+* **UT_TypeError**: the passed argument is not a sequence of integer numbers
+* **UT_ValueError**: the sequence is shorter that 2 elements, OR any of the elements is negative OR equal to or greater than the sequence length, OR any of the elements is not unique.
+
+*Description*:
+
+Generates a permutation matrix of the size N from the passed 0..N-1 numbers permutation sequence. Basically, the identity matrix with some columns (or rows) shufled. The value j at the index i of the passed sequence encodes 1 at the intersection of i-th row and j-th column.
+
+**generateDiagonal**(Elements)
+
+*Signature*:
+
+seq(int OR float) -> SquareMatrix
+
+*Args*:
+
+*Elements*: **seq**(**int** OR **float**); the main diagonal elements
+
+*Returns*:
+
+**SquareMatrix**: a new instance of the class
+
+*Raises*:
+
+* **UT_TypeError**: the passed argument is not a sequence of integer or floating point numbers
+* **UT_ValueError**: the sequence is shorter that 2 elements
+
+*Description*:
+
+Generates a square diagonal matrix with the elements on the main diagonal defined by the passed real numbers sequence argument.
+
+***Methods***:
+
+**transpose**()
+
+None -> SquareMatrix
+
+Inherited from the **Matrix** class.
+
+**getColumn**(Index)
+
+int -> Column
+
+Inherited from the **Matrix** class.
+
+**getRow**(Index)
+
+int -> Row
+
+Inherited from the **Matrix** class.
+
+**getTrace**()
+
+*Signature*:
+
+None -> int OR float
+
+*Description*:
+
+Calculates the trace of a square matrix, i.e. the sum of all main diagonal elements.
+
+**getLUPdecomposition**()
+
+*Signature*:
+
+None -> SquareMatrix, SquareMatrix, tuple(int), tuple(int), int
+
+*Returns*:
+
+**SquareMatrix**, **SquareMatrix**, **tuple**(**int**), **tuple**(**int**), **int**: unpacked tuple of two square matrices of the same size (lower- and upper triangular respectively), followed by the permutation tuple representing the swapping of the columns (the actual permutation matrix can be generated from it directly), followed by (tuple) permutation of rows, followed by +1 or -1 number as the permutation sign.
+
+*Description*:
+
+Calculates the decomposion of a matrix into a product of four matrices: the rows permutation matrix (which is identity unless some rows are not linear independent), the lower-triangular (with all main diagonal elements being 1), the upper-triangular matrix and the rows and columns permutation matrices. Uses Gauss-Jordan elimination algorithm with full pivoting.
+
+Note that the rows pivoting occurs only if a row becomes all zeroes in the elimination process, which means, that the determinant is zero and the matrix is singular. Therefore, the rows permutations can be usually ignored. The columns permutations are used for the numerical stability even if no zeroes appear on the main diagonal during elimination.
+
+Naming the initial matrix A, lower-triangular L, upper-triangular U, columns permutation Pc and rows permutation matrix Pr, for any non-singular matrix A = L * U * Pc, with Pr == I - identity matrix. Even for a singular matrix A = Pr * L * U * Pc with U being the row echelon form with all zeroes rows at the bottom.
+
+**getFullDecomposition**()
+
+*Signature*:
+
+None -> SquareMatrix, SquareMatrix, tuple(int OR float), tuple(int), tuple(int), int
+
+*Returns*:
+
+**SquareMatrix**, **SquareMatrix**, **tuple**(**int** OR **float**), **tuple**(**int**), **tuple**(**int**), **int**: unpacked tuple of two square matrices of the same size (lower- and upper-triangular respectively), followed by the tuple or real numbers representing the main diagonal elements of the diagonal matrix (can be generated directly from it), followed by the permutation tuple representing the swapping of the columns (the actual permutation matrix can be generated from it directly), followed by the rows permutation tuple, followed by +1 or -1 number as the permutation sign.
+
+*Description*:
+
+Calculates the decomposion of a matrix into a product of five matrices: the rows permutation matrix (which is identity unless some rows are not linear independent), the lower-triangular (with all main diagonal elements being 1), the upper-triangular matrix (with all main diagonal elements being 1), a diagonal matrix (all non-zero elements only on the main diagonal) and the permutation matrices. Uses Gauss-Jordan elimination algorithm with full pivoting to calculate the LUP-decomposition first, then decomposes the upper- traingular matrix into a diagonal and upper-triangular with onses at the main diagonal using Gauss elimination algorithm.
+
+Note that the rows pivoting occurs only if a row becomes all zeroes in the elimination process, which means, that the determinant is zero and the matrix is singular. Therefore, the rows permutations can be usually ignored. The columns permutations are used for the numerical stability even if no zeroes appear on the main diagonal during elimination.
+
+Naming the initial matrix A, lower-triangular L, upper-triangular U, diagonal matrix D, columns permutation Pc and rows permutation matrix Pr, for the non-singular matrix A = L * U * D * Pc, with Pr == I being the identity matrix.
+
+**Note**: for a singular matrix det(A) = 0, A != Pr * L * U * D * Pc, since the Gauss elimination method fails to eliminate all non-diagonal elements, thus D is not, actually, diagonal, but it is treated as one.
+
+**getDeterminant**()
+
+*Signature*:
+
+None -> int OR float
+
+*Description*:
+
+Calculates the determinant of a square matrix using LUP-decomposition for large (Size > 3) matrices, and the direct analytical expression for 2 x 2 and 3 x 3 matrices for speed.
+
+**getInverse**()
+
+*Signature*:
+
+None -> SquareMatrix OR None
+
+*Returns*:
+
+* **SquareMatrix**: the inverse of the current square matrix, unless the current matrix is singular (determinant is zero)
+* **None**: the matrix is singular, so the inverse does not exists
+
+*Description*:
+
+Calculates the inverse matrix if one exists using full (LUDP) decomposition.
+
+**getEigenValues**()
+
+*Signature*:
+
+None -> tuple(int OR float) OR None
+
+*Returns*:
+
+* **tuple**(**int** OR **float**): all unique real number valued eigenvalues
+* **None**: no real number valued eigenvalues are found
+
+*Description*:
+
+Calculates the real number valued eigenvalues. Based on the Francis QR-algorithm with Gram-Schmidt orthogonalization method. Works only for the diagonalizable (not defect) matrices.
+
+**getEigneVectors**(*, Eigenvalue = None)
+
+*Signature*:
+
+/int OR float OR None/ -> dict(int OR float -> tuple(Column) OR None) OR None
+
+*Args*:
+
+*Eigenvalue*: (keyword) **int** OR **float**; an a priori known eigenvalue of the matrix, for which the eigenvectors are to be found. Defaults to **None**, in which case the method attemts to calculate all eigenvalues first.
+
+*Returns*:
+
+* **dict**(**int** OR **float** -> **tuple**(**Column**) OR **None**): dictionary mapping all unique real number valued eigenvalues to the respective orthonormal set of eigenvectors as a tuple of column vector class instances, if it is not possible to calculate, at least, one eigenvector for a given eigenvalue (due to rounding errors) the value of the corresponding key is set to **None**
+* **None**: no real number valued eigenvalues are found, OR the passed value is not an eigenvalue of the matrix
+
+*Raises*:
+
+**UT_TypeError**: the passed optional value is not a real number
+
+*Description*:
+
+Calculates the real number valued eigenvalues and the respective eigen vectors, which form orthonormal basis for each eigenvalue. Based on the Francis QR-algorithm with Gram-Schmidt orthogonalization method.

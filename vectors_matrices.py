@@ -15,7 +15,7 @@ Classes:
 """
 
 __version__= '1.0.0.0'
-__date__ = '15-09-2023'
+__date__ = '02-10-2023'
 __status__ = 'Production'
 
 #imports
@@ -342,8 +342,8 @@ class Array2D:
         * Array2D(list(int OR float), Width = int >= 2)
         * Array2D(list(int OR float), Height = int >= 2)
         * Array2D(list(int OR float), Width = int >= 2, Height = int >= 2)
-        * Array2D(list(int OR float), Width = int >= 2)
-        * Array2D(list(int OR float), Height = int >= 2)
+        * Array2D(list(int OR float), Width = int >= 2, isColumnsFirst = True)
+        * Array2D(list(int OR float), Height = int >= 2, isColumnsFirst = True)
         * Array2D(list(int OR float), Width = int >= 2, Height = int >= 2,
             isColumnsFirst = True)
         * Array2D(list(list(int OR float)))
@@ -721,7 +721,7 @@ class Vector:
     
     def __init__(self, *args) -> None:
         """
-        Initialization. The passed numerical arguments a taken as the elements
+        Initialization. The passed numerical arguments are taken as the elements
         of a vector to be created.
         
         Signature:
@@ -2081,7 +2081,8 @@ class SquareMatrix(Matrix):
     def generateDiagonal(cls, Elements: Sequence[TReal]) -> TSquareMatrix:
         """
         Generates a square diagonal matrix with the elements on the main
-        diagonal defined by the passed real numbers sequence argument.
+        diagonal defined by the passed real numbers sequence argument. Class
+        method.
         
         Signature:
             seq(int OR float) -> SquareMatrix
@@ -2558,7 +2559,7 @@ class SquareMatrix(Matrix):
             print(Message)
         return Result
     
-    def getEigenVectors(self, Eigenvalue: Optional[TReal] = None
+    def getEigenVectors(self, *, Eigenvalue: Optional[TReal] = None
                         ) -> Union[Dict[TReal, Tuple[TColumn, ...]], None]:
         """
         Calculates the real number valued eigenvalues and the respective eigen
@@ -2570,7 +2571,7 @@ class SquareMatrix(Matrix):
                 -> dict(int OR float -> tuple(Column) OR None) OR None
         
         Args:
-            Eigenvalue: (optional) int OR float; an a priori known eigenvalue
+            Eigenvalue: (keyword) int OR float; an a priori known eigenvalue
                 of the matrix, for which the eigenvectors are to be found.
                 Defaults to None, in which case the method attemts to calculate
                 all eigenvalues first.
@@ -2588,7 +2589,7 @@ class SquareMatrix(Matrix):
         Raises:
             UT_TypeError: the passed optional value is not a real number
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if Eigenvalue is None:
             Values = self.getEigenValues() #find all real eigenvalue by QR

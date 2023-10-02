@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.vectors_matrices, see TE003
 """
 
 __version__ = "1.0.0.0"
-__date__ = "15-09-2023"
+__date__ = "02-10-2023"
 __status__ = "Testing"
 
 #imports
@@ -4324,11 +4324,11 @@ class Test_SquareMatrix(Test_Matrix):
         """
         Matrix = [[1, 0, 0], [0, 1.0, 0], [0, 0, 1]]
         objTest = self.TestClass(Matrix)
-        Test = objTest.getEigenVectors(1.1) #should be None
+        Test = objTest.getEigenVectors(Eigenvalue = 1.1) #should be None
         self.assertIsNone(Test)
-        Test = objTest.getEigenVectors(2) #should be None
+        Test = objTest.getEigenVectors(Eigenvalue = 2) #should be None
         self.assertIsNone(Test)
-        Test = objTest.getEigenVectors(1)
+        Test = objTest.getEigenVectors(Eigenvalue = 1)
         self.assertIsInstance(Test, dict)
         self.assertEqual(len(Test), 1)
         self.assertListEqual(list(Test.keys()), [1])
@@ -4344,14 +4344,14 @@ class Test_SquareMatrix(Test_Matrix):
         del objTest
         Matrix = [[1, 0, 0], [0, 2.0, 0], [0, 0, 2]]
         objTest = self.TestClass(Matrix)
-        Test = objTest.getEigenVectors(1)
+        Test = objTest.getEigenVectors(Eigenvalue = 1)
         self.assertIsInstance(Test, dict)
         self.assertEqual(len(Test), 1)
         self.assertListEqual(list(Test.keys()), [1])
         self.assertIsInstance(Test[1], tuple)
         self.assertEqual(len(Test[1]), 1)
         self.assertListEqual(Test[1][0].Data, [1, 0, 0])
-        Test = objTest.getEigenVectors(2)
+        Test = objTest.getEigenVectors(Eigenvalue = 2)
         self.assertIsInstance(Test, dict)
         self.assertEqual(len(Test), 1)
         self.assertListEqual(list(Test.keys()), [2])
@@ -4366,14 +4366,14 @@ class Test_SquareMatrix(Test_Matrix):
         del objTest
         Matrix = [[1, 0, 1], [0, 2.0, 1], [0, 0, 2]] #shear + scale
         objTest = self.TestClass(Matrix)
-        Test = objTest.getEigenVectors(1)
+        Test = objTest.getEigenVectors(Eigenvalue = 1)
         self.assertIsInstance(Test, dict)
         self.assertEqual(len(Test), 1)
         self.assertListEqual(list(Test.keys()), [1])
         self.assertIsInstance(Test[1], tuple)
         self.assertEqual(len(Test[1]), 1)
         self.assertListEqual(Test[1][0].Data, [1, 0, 0])
-        Test = objTest.getEigenVectors(2)
+        Test = objTest.getEigenVectors(Eigenvalue = 2)
         self.assertIsInstance(Test, dict)
         self.assertEqual(len(Test), 1)
         self.assertListEqual(list(Test.keys()), [2])
@@ -4383,7 +4383,7 @@ class Test_SquareMatrix(Test_Matrix):
         del objTest
         Matrix = [[1, 0, 1], [0, 1.0, 1], [0, 0, 2]] #shear
         objTest = self.TestClass(Matrix)
-        Test = objTest.getEigenVectors(1)
+        Test = objTest.getEigenVectors(Eigenvalue = 1)
         self.assertIsInstance(Test, dict)
         self.assertEqual(len(Test), 1)
         self.assertListEqual(list(Test.keys()), [1])
