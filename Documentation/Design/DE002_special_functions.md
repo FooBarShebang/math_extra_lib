@@ -157,7 +157,7 @@ I_z(x,y) = 1 - I_{1 -z}(y,x) \newline
 B(z; x, y) = B(x,y) - B(1-z; y, x)
 $$
 
-The regularized incomplete beta function can be calculated using the series expansion[^5]
+The regularized incomplete beta function can be calculated using the series expansion[^4]
 
 $$
 I_z(x,y) = \frac{z^x*(1-z)^y}{x * B(x,y)} \times \left( 1 + \sum_{n=0}^{\infin} {c_n * z^{n + 1}} \right) \; \mathtt{where} \newline
@@ -242,6 +242,4 @@ Thus, depending on the relation between the arguments either of the expressions 
 
 [^3]: [Wikipedia - error function](https://en.wikipedia.org/wiki/Error_function)
 
-[^4]: Numerical Recipes. pp. 173 - 175
-
-[^5]: Numerical Recipes. pp. 226 - 228
+[^4]: Numerical Recipes. pp. 226 - 228
