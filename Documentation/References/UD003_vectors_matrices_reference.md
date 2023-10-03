@@ -391,7 +391,7 @@ seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None, int >= 2 OR None
 
 *Args*:
 
-* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than 2 * *Width* if only width is specified, or 2 * *Height* if only height is specified, or *Width* \* *Height* if both are specified
+* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than 2 \* *Width* if only width is specified, or 2 \* *Height* if only height is specified, or *Width* \* *Height* if both are specified
 * *Width*: (keyword) **int** >= 2 OR **None**; required width of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required height, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
 * *Height*: (keyword) **int** >= 2 OR **None**; required height of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required width, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
 * *isColumnsFirst*: (keyword) **bool**; flag if the passed data to parsed in the columns-first order, defaults to False, i.e. rows-first order when each consequitive slice of a flat sequence or sub-sequence element of a nested sequence is treated as the representation of a single row of the array or matrix
@@ -676,7 +676,7 @@ seq(int OR float) OR seq(seq(int OR float))/, int >= 2 OR None, int >= 2 OR None
 
 *Args*:
 
-* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than 2 * *Width* if only width is specified, or 2 * *Height* if only height is specified, or *Width* \* *Height* if both are specified
+* *seqValues*: **seq**(**int** OR **float**) OR **seq**(**seq**(**int** OR **float**)); elements of the array / matrix, in the flat form the total number of elements must be equal to or greater than 2 \* *Width* if only width is specified, or 2 \* *Height* if only height is specified, or *Width* \* *Height* if both are specified
 * *Width*: (keyword) **int** >= 2 OR **None**; required width of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required height, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
 * *Height*: (keyword) **int** >= 2 OR **None**; required height of the array or matrix, defaults to None meaning automatic definition based on the number of elements and the specified required width, at least one of the dimensions (width and / or height) must be specified if the data is passed as a flat sequence, this argument is ignored if the data is passed as a nested sequence
 * *isColumnsFirst*: (keyword) **bool**; flag if the passed data to parsed in the columns-first order, defaults to False, i.e. rows-first order when each consequitive slice of a flat sequence or sub-sequence element of a nested sequence is treated as the representation of a single row of the array or matrix
@@ -913,7 +913,7 @@ Calculates the decomposion of a matrix into a product of four matrices: the rows
 
 Note that the rows pivoting occurs only if a row becomes all zeroes in the elimination process, which means, that the determinant is zero and the matrix is singular. Therefore, the rows permutations can be usually ignored. The columns permutations are used for the numerical stability even if no zeroes appear on the main diagonal during elimination.
 
-Naming the initial matrix A, lower-triangular L, upper-triangular U, columns permutation Pc and rows permutation matrix Pr, for any non-singular matrix A = L * U * Pc, with Pr == I - identity matrix. Even for a singular matrix A = Pr * L * U * Pc with U being the row echelon form with all zeroes rows at the bottom.
+Naming the initial matrix A, lower-triangular L, upper-triangular U, columns permutation Pc and rows permutation matrix Pr, for any non-singular matrix A = L \* U \* Pc, with Pr == I - identity matrix. Even for a singular matrix A = Pr \* L \* U \* Pc with U being the row echelon form with all zeroes rows at the bottom.
 
 **getFullDecomposition**()
 
@@ -931,9 +931,9 @@ Calculates the decomposion of a matrix into a product of five matrices: the rows
 
 Note that the rows pivoting occurs only if a row becomes all zeroes in the elimination process, which means, that the determinant is zero and the matrix is singular. Therefore, the rows permutations can be usually ignored. The columns permutations are used for the numerical stability even if no zeroes appear on the main diagonal during elimination.
 
-Naming the initial matrix A, lower-triangular L, upper-triangular U, diagonal matrix D, columns permutation Pc and rows permutation matrix Pr, for the non-singular matrix A = L * U * D * Pc, with Pr == I being the identity matrix.
+Naming the initial matrix A, lower-triangular L, upper-triangular U, diagonal matrix D, columns permutation Pc and rows permutation matrix Pr, for the non-singular matrix A = L \* U \* D \* Pc, with Pr == I being the identity matrix.
 
-**Note**: for a singular matrix det(A) = 0, A != Pr * L * U * D * Pc, since the Gauss elimination method fails to eliminate all non-diagonal elements, thus D is not, actually, diagonal, but it is treated as one.
+**Note**: for a singular matrix det(A) = 0, A != Pr \* L \* U \* D \* Pc, since the Gauss elimination method fails to eliminate all non-diagonal elements, thus D is not, actually, diagonal, but it is treated as one.
 
 **getDeterminant**()
 
