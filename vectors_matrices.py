@@ -466,7 +466,7 @@ class Array2D:
                                                                 SkipFrames = 1)
                 if not isinstance(Width, int):
                     Error = UT_TypeError(Width, int, SkipFrames = 1)
-                    Error.appendMessage('- Width argumen')
+                    Error.appendMessage('- Width argument')
                     raise Error
                 if Width < 2:
                     raise UT_ValueError(Width, '>= 2 - Width argument',

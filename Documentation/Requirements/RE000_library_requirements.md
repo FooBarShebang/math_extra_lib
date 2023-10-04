@@ -1,4 +1,4 @@
-# Requirements for the Library math_extra_lib
+# Requirements for the library math_extra_lib
 
 ## Conventions
 
@@ -41,6 +41,8 @@ The verification method for a requirement is given by a single letter according 
 
 **Description:** The library should provide *callable* objects capable of evaluation of the value of a number of special mathematical functions (such as beta, gamma functions and their incomplete variants, as well as inverse error function, etc.). See document [RE002](./RE002_special_functions.md).
 
+**Verification Method:** T
+
 ---
 
 **Requirement ID:** REQ-FUN-002
@@ -58,6 +60,46 @@ The verification method for a requirement is given by a single letter according 
 **Title:** Matrices
 
 **Description:** The library should implement column and row vectors, and matrices, supporting the corresponding vector-matrix and matrix-matrix arithmetics. See document [RE003](./RE003_vectors_and_matrices.md).
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-004
+
+**Title:** Square matrices
+
+**Description:** The library should implement calculation of a trace, determinant, multiplicative reciprocal (inverse), and eigenvalues and eigenvectors of a square matrix. See documents [RE003](./RE003_vectors_and_matrices.md) and [RE004](./RE004_matrix_solver.md).
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-005
+
+**Title:** System of linear equations
+
+**Description:** The library should implement solution of a system of linear equations in a matrix form. See document [RE004](./RE004_matrix_solver.md).
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-006
+
+**Title:** Polynomial interpolation
+
+**Description:** The library should implement interpolation of a real function of a single real argument by a polynomial, which can be calculated by a single (e.g. Lagrange) or multiple methods (e.g. orthogonal polynomial basis, etc.). See document [RE005](./RE005_poly_solver.md).
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-007
+
+**Title:** Roots of a polynomial
+
+**Description:** The library should implement calculation of all complex number roots of a polynomial. See document [RE005](./RE005_poly_solver.md).
 
 **Verification Method:** T
 

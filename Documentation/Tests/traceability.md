@@ -23,6 +23,10 @@
 | REQ-FUN-001        |                                                              | NO                      |
 | REQ-FUN-002        |                                                              | NO                      |
 | REQ-FUN-003        |                                                              | NO                      |
+| REQ-FUN-004        |                                                              | NO                      |
+| REQ-FUN-005        |                                                              | NO                      |
+| REQ-FUN-006        |                                                              | NO                      |
+| REQ-FUN-007        |                                                              | NO                      |
 | REQ-INT-000        |                                                              | NO                      |
 | REQ-AWM-000        |                                                              | NO                      |
 | REQ-IAR-000        |                                                              | NO                      |
@@ -83,6 +87,13 @@
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     |
 | REQ-AWM-343        | TEST-T-343                                                   | YES                     |
+| REQ-FUN-400        |                                                              | NO                      |
+| REQ-FUN-410        |                                                              | NO                      |
+| REQ-FUN-420        |                                                              | NO                      |
+| REQ-AWM-410        |                                                              | NO                      |
+| REQ-AWM-420        |                                                              | NO                      |
+| REQ-AWM-421        |                                                              | NO                      |
+| REQ-FUN-500        |                                                              | NO                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
