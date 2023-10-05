@@ -94,6 +94,31 @@
 | REQ-AWM-420        |                                                              | NO                      |
 | REQ-AWM-421        |                                                              | NO                      |
 | REQ-FUN-500        |                                                              | NO                      |
+| REQ-FUN-510        |                                                              | NO                      |
+| REQ-FUN-520        |                                                              | NO                      |
+| REQ-FUN-530        |                                                              | NO                      |
+| REQ-FUN-540        |                                                              | NO                      |
+| REQ-FUN-541        |                                                              | NO                      |
+| REQ-FUN-550        |                                                              | NO                      |
+| REQ-FUN-560        |                                                              | NO                      |
+| REQ-FUN-561        |                                                              | NO                      |
+| REQ-FUN-570        |                                                              | NO                      |
+| REQ-FUN-580        |                                                              | NO                      |
+| REQ-FUN-581        |                                                              | NO                      |
+| REQ-FUN-590        |                                                              | NO                      |
+| REQ-AWM-500        |                                                              | NO                      |
+| REQ-AWM-501        |                                                              | NO                      |
+| REQ-AWM-502        |                                                              | NO                      |
+| REQ-AWM-503        |                                                              | NO                      |
+| REQ-AWM-504        |                                                              | NO                      |
+| REQ-AWM-505        |                                                              | NO                      |
+| REQ-AWM-510        |                                                              | NO                      |
+| REQ-AWM-520        |                                                              | NO                      |
+| REQ-AWM-521        |                                                              | NO                      |
+| REQ-AWM-580        |                                                              | NO                      |
+| REQ-AWM-581        |                                                              | NO                      |
+| REQ-AWM-590        |                                                              | NO                      |
+| REQ-AWM-591        |                                                              | NO                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
