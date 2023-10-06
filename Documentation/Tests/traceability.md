@@ -12,27 +12,27 @@
   * 32x - class **Column**
   * 33x - class **Row**
   * 34x - class **SquareMatrix**
-* module **lin_solver** - 4xy
+* module **matrix_solver** - 4xy
 * module **poly_solver** - 5xy
 
 ## Requirements vs Tests Traceability
 
 | **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
-| REQ-FUN-000        |                                                              | NO                      |
-| REQ-FUN-001        |                                                              | NO                      |
-| REQ-FUN-002        |                                                              | NO                      |
-| REQ-FUN-003        |                                                              | NO                      |
-| REQ-FUN-004        |                                                              | NO                      |
-| REQ-FUN-005        |                                                              | NO                      |
-| REQ-FUN-006        |                                                              | NO                      |
-| REQ-FUN-007        |                                                              | NO                      |
-| REQ-INT-000        |                                                              | NO                      |
-| REQ-AWM-000        |                                                              | NO                      |
-| REQ-IAR-000        |                                                              | NO                      |
-| REQ-IAR-001        |                                                              | NO                      |
-| REQ-IAR-002        |                                                              | NO                      |
-| REQ-UDR-000        |                                                              | NO                      |
+| REQ-FUN-000        | TEST-T-000                                                   | YES                     |
+| REQ-FUN-001        | TEST-T-001                                                   | YES                     |
+| REQ-FUN-002        | TEST-T-002                                                   | YES                     |
+| REQ-FUN-003        | TEST-T-002                                                   | YES                     |
+| REQ-FUN-004        | TEST-T-002                                                   | NO                      |
+| REQ-FUN-005        | TEST-T-003                                                   | NO                      |
+| REQ-FUN-006        | TEST-T-004                                                   | NO                      |
+| REQ-FUN-007        | TEST-T-005                                                   | NO                      |
+| REQ-INT-000        | TEST-I-000                                                   | YES                     |
+| REQ-AWM-000        | TEST-D-000                                                   | NO                      |
+| REQ-IAR-000        | TEST-T-006                                                   | NO                      |
+| REQ-IAR-001        | TEST-T-007                                                   | NO                      |
+| REQ-IAR-002        | TEST-T-006                                                   | NO                      |
+| REQ-UDR-000        | TEST-I-001                                                   | NO                      |
 | REQ-FUN-100        | TEST-T-100                                                   | YES                     |
 | REQ-FUN-101        | TEST-T-103                                                   | YES                     |
 | REQ-FUN-102        | TEST-T-100                                                   | YES                     |
@@ -87,13 +87,13 @@
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     |
 | REQ-AWM-343        | TEST-T-343                                                   | YES                     |
-| REQ-FUN-400        |                                                              | NO                      |
-| REQ-FUN-410        |                                                              | NO                      |
-| REQ-FUN-420        |                                                              | NO                      |
-| REQ-AWM-410        |                                                              | NO                      |
-| REQ-AWM-420        |                                                              | NO                      |
-| REQ-AWM-421        |                                                              | NO                      |
-| REQ-FUN-500        |                                                              | NO                      |
+| REQ-FUN-400        | TEST-A-400                                                   | NO                      |
+| REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | NO                      |
+| REQ-FUN-420        | TEST-T-413, TEST-T-414                                       | NO                      |
+| REQ-AWM-410        | TEST-T-412                                                   | NO                      |
+| REQ-AWM-420        | TEST-T-415                                                   | NO                      |
+| REQ-AWM-421        | TEST-T-416                                                   | NO                      |
+| REQ-FUN-500        | TEST-A-500                                                   | NO                      |
 | REQ-FUN-510        |                                                              | NO                      |
 | REQ-FUN-520        |                                                              | NO                      |
 | REQ-FUN-530        |                                                              | NO                      |
