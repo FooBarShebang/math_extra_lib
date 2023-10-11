@@ -97,7 +97,7 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
-**Test Identifier:** TEST-T-413
+**Test Identifier:** TEST-T-420
 
 **Requirement ID(s)**: REQ-FUN-420
 
@@ -113,7 +113,7 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
-**Test Identifier:** TEST-T-414
+**Test Identifier:** TEST-T-421
 
 **Requirement ID(s)**: REQ-FUN-420
 
@@ -129,7 +129,7 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
-**Test Identifier:** TEST-T-415
+**Test Identifier:** TEST-T-422
 
 **Requirement ID(s)**: REQ-AWM-420
 
@@ -148,7 +148,7 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
-**Test Identifier:** TEST-T-416
+**Test Identifier:** TEST-T-423
 
 **Requirement ID(s)**: REQ-AWM-421
 
@@ -176,10 +176,10 @@ For traceability the relation between tests and requirements is summarized in th
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
 | REQ-FUN-400        | TEST-A-400                                                   | NO                      |
 | REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | NO                      |
-| REQ-FUN-420        | TEST-T-413, TEST-T-414                                       | NO                      |
+| REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | NO                      |
 | REQ-AWM-410        | TEST-T-412                                                   | NO                      |
-| REQ-AWM-420        | TEST-T-415                                                   | NO                      |
-| REQ-AWM-421        | TEST-T-416                                                   | NO                      |
+| REQ-AWM-420        | TEST-T-422                                                   | NO                      |
+| REQ-AWM-421        | TEST-T-423                                                   | NO                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
