@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.matrix_solver, see TE004.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "02-10-2023"
+__date__ = "12-10-2023"
 __status__ = "Testing"
 
 #imports
@@ -78,7 +78,7 @@ class Test_FindEigenvalue(unittest.TestCase):
         for Arg, Eigenvalues in zip(Matrices, Values):
             TestMatrix = SquareMatrix(Arg)
             TestResult = testmodule.FindEigenvector(TestMatrix)
-            self.assertIsInstance(TestResult, (int, float))
+            self.assertIsInstance(TestResult, (int, float), msg=f"{Arg}")
             self.assertIn(TestResult, Eigenvalues)
             del TestMatrix
     
@@ -91,16 +91,18 @@ class Test_FindEigenvalue(unittest.TestCase):
         Covers requirements: REQ-FUN-410
         """
         WrongMatrices = [[[0.8, -0.6], [0.6, 0.8]], #2D rotation
-                        [[1, 2, 3], [4, 5, 6], [3, 3, 3]], #linear dependence
-                        [[1, 2, 3, 0], [2, 3, 1, 0], [3, 5, 5, 0],
-                        [9, 8, 7, 0]], #zero column
-                        [[1, 2, 3, 0, 1], [2, 3, 1, 0, 1], [3, 5, 5, 2, 1],
-                        [-1, 2, -3, 1, -1], [0, 0, 0, 0, 0]] #zero row
+                        [[0, 0, 0], [0, 0, 0], [0, 0, 0]], #all zeroes
+                        [[0, 0, 0, 2], [0, 0, 1, 0], [0, 1, 0, 0],
+                        [1, 0, 0, 0]], #non-main diagonal only
+                        [[0.8, -0.6, 0, 0, 0, 0], [0.6, 0.8, 0, 0, 0, 0],
+                        [0, 0, 0.8, -0.6, 0, 0], [0, 0, 0.6, 0.8, 0, 0],
+                        [0, 0, 0, 0, 0.8, -0.6], [0, 0, 0, 0, 0.6, 0.8]]
+                        #2D rotation repeated x3 - block-matrix
                         ]
         for Arg in WrongMatrices:
             TestMatrix = SquareMatrix(Arg)
             TestResult = testmodule.FindEigenvector(TestMatrix)
-            self.assertIsNone(TestResult)
+            self.assertIsNone(TestResult, msg=f"{Arg}")
             del TestMatrix
 
 class Test_SolveLinearSystem(unittest.TestCase):
@@ -207,7 +209,7 @@ class Test_SolveLinearSystem(unittest.TestCase):
             Result = testmodule.SolveLinearSystem(_Matrix, Free)
             self.assertIsInstance(Result, list)
             self.assertEqual(len(Result), Size)
-            Solution = Column(Result)
+            Solution = Column(*Result)
             Check = (_Matrix * Solution).Data
             for FreeCoeff, CheckValue in zip(Free, Check):
                 self.assertAlmostEqual(FreeCoeff, CheckValue)
@@ -221,7 +223,7 @@ class Test_SolveLinearSystem(unittest.TestCase):
             _Matrix = []
             for Row in Bound:
                 _Matrix.extend(Row)
-            Result = testmodule.SolveLinearSystem(_Matrix, Column(Free))
+            Result = testmodule.SolveLinearSystem(_Matrix, Column(*Free))
             self.assertIsInstance(Result, list)
             self.assertEqual(len(Result), Size)
             for SolutionElement, CheckValue in zip(Solution.Data, Result):

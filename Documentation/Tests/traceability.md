@@ -88,11 +88,11 @@
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     |
 | REQ-AWM-343        | TEST-T-343                                                   | YES                     |
 | REQ-FUN-400        | TEST-A-400                                                   | NO                      |
-| REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | NO                      |
-| REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | NO                      |
-| REQ-AWM-410        | TEST-T-412                                                   | NO                      |
-| REQ-AWM-420        | TEST-T-422                                                   | NO                      |
-| REQ-AWM-421        | TEST-T-423                                                   | NO                      |
+| REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | YES                     |
+| REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | YES                     |
+| REQ-AWM-410        | TEST-T-412                                                   | YES                     |
+| REQ-AWM-420        | TEST-T-422                                                   | YES                     |
+| REQ-AWM-421        | TEST-T-423                                                   | YES                     |
 | REQ-FUN-500        | TEST-A-500                                                   | NO                      |
 | REQ-FUN-510        |                                                              | NO                      |
 | REQ-FUN-520        |                                                              | NO                      |

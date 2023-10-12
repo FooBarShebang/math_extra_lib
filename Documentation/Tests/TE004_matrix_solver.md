@@ -61,7 +61,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Generate a number of square matrices with the size varying from 2 to 5 inclusively, for which the eigenvalues are known, including defective matrices. Pass each of the generated matrices into the function being tested. Check that the function returns a real value (**int** or **float** type), which is one of the eigenvalues of the corresponding matrix.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -77,7 +77,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Generate a number of square matrices with the size varying from 2 to 5 inclusively, which are either singular or known to have no real eigenvalues (e.g. 2D rotation matrix or 3D rotation matrix with, at least, 2-axes rotation). Pass each of the generated matrices into the function being tested. Check that the function returns **None** value, and does not raise any exceptions.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -93,7 +93,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the function being tested with the argument of any data type, except for being instance of the **SquareMatrix** class. Check that the expected exception is raised. Repeat several times with the different improper types of the argument.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -109,7 +109,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Check the correctness of the solver function on few examples with the known solutions. Generate a number random non-singular matrices of the size 2 to 5 inclusively, and random non-zero column vectors of the corresponding size. Calculate the solution for each pair, create a column vector from it, and verify that this is a solution using matrix x column multiplication. Try to pass the same matrices as 2D and 1D arrays, and check that the result is the same. Try to pass the free coefficients column vector as flat sequence - check that the result is the same.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -125,7 +125,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Generate a random square matrix of size 2 to 5 inclusively, with two equal rows, and a random column vector of the corresponding size. Pass these objects as the arguments of the function being tested. Check that no exceptions are raised, and the return value is **None**. Repeat several times.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -144,7 +144,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the function being tested with one or both argument of any data type not matching the declared signature. Check that the expected exception is raised. Repeat several times with the different improper types of the argument(s).
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -166,7 +166,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the function being tested with arguments implementing one of the described above violations. Check that the expected exception is raised. Check each of the violation cases.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ## Traceability
 
@@ -175,11 +175,11 @@ For traceability the relation between tests and requirements is summarized in th
 | **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
 | REQ-FUN-400        | TEST-A-400                                                   | NO                      |
-| REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | NO                      |
-| REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | NO                      |
-| REQ-AWM-410        | TEST-T-412                                                   | NO                      |
-| REQ-AWM-420        | TEST-T-422                                                   | NO                      |
-| REQ-AWM-421        | TEST-T-423                                                   | NO                      |
+| REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | YES                     |
+| REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | YES                     |
+| REQ-AWM-410        | TEST-T-412                                                   | YES                     |
+| REQ-AWM-420        | TEST-T-422                                                   | YES                     |
+| REQ-AWM-421        | TEST-T-423                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |

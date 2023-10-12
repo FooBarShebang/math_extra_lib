@@ -11,8 +11,8 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '11-10-2023'
-__status__ = 'Development'
+__date__ = '12-10-2023'
+__status__ = 'Testing'
 
 #imports
 
@@ -21,6 +21,7 @@ __status__ = 'Development'
 import sys
 import os
 import collections.abc as c_abc
+import random
 
 #from math import sqrt, floor
 from typing import Sequence, Union, List
@@ -49,6 +50,14 @@ TRealSequence = Sequence[TReal]
 
 TNestedSequence = Sequence[TRealSequence]
 
+#globals
+
+MAX_ITER = 1000000 #1E6, maximum number of power iteration
+
+ALMOST_ZERO = 1.0E-12 #aimed relative error level in the eigenvalue
+
+ROUND_PRECISION = 1.0E-4 #rounding to integer precision
+
 #functions
 
 def FindEigenvector(Matrix: SquareMatrix) -> Union[TReal, None]:
@@ -67,7 +76,7 @@ def FindEigenvector(Matrix: SquareMatrix) -> Union[TReal, None]:
     
     Returns:
         int OR float: the found eigenvalue
-        None: the matrix has no real number eigenvalue
+        None: the matrix has no real number non-zero eigenvalue
     
     Raises:
         UT_TypeError: the passed argument is not an instance of SquareMatrix
@@ -77,6 +86,59 @@ def FindEigenvector(Matrix: SquareMatrix) -> Union[TReal, None]:
     """
     if not isinstance(Matrix, SquareMatrix):
         raise UT_TypeError(Matrix, SquareMatrix, SkipFrames = 1)
+    Size = Matrix.Size
+    #generate random vector
+    Elements = [0.001 + random.random() for _ in range(Size)]
+    Vector = Column(*Elements)
+    Previous = Vector.normalize()
+    del Vector
+    Iteration = 1
+    PrevQuotient = 1
+    while Iteration <= MAX_ITER:
+        New = Matrix * Previous
+        if not any(New.Data): #eigenvalue == 0 - unacceptable
+            Result = None
+            del New
+            break
+        #calculate Rayleigh quotient
+        Quotient = sum(a*b for a,b in zip(New.Data, Previous.Data))
+        RelError = abs(1 - Quotient / PrevQuotient)
+        if RelError < ALMOST_ZERO:
+            if not Quotient: #eigenvalue == 0 - unacceptable
+                del New
+                Result = None
+                break
+            #edge case - rotations
+            IsParallel = True
+            for a, b in zip(New.Data, Previous.Data):
+                if a and (not b):
+                    IsParallel = False
+                    break
+                elif abs(b) > ROUND_PRECISION:
+                    Ratio = a/b
+                    if abs(1 - Ratio / Quotient) > ROUND_PRECISION:
+                        IsParallel = False
+                        break
+                elif (not a) and b:
+                    IsParallel = False
+                    break
+            if IsParallel:
+                Result = Quotient
+                if abs(Result - round(Result)) <= ROUND_PRECISION:
+                    Result = int(round(Result))
+            else:
+                Result = None
+            del New
+            break
+        del Previous
+        Previous = New.normalize()
+        del New
+        Iteration += 1
+        PrevQuotient = Quotient
+    else:
+        Result = None
+    del Previous
+    return Result
 
 def SolveLinearSystem(
         BoundCoeffs: Union[SquareMatrix, TNestedSequence, TRealSequence],
@@ -140,4 +202,36 @@ def SolveLinearSystem(
         raise UT_ValueError(len(_Column),
                             f'={_Matrix.Size} - mismatching sizes',
                                                                 SkipFrames = 1)
-    #
+    LowerMatrix, UpperMatrix, ColsPerm, _, _ = _Matrix.getLUPdecomposition()
+    #rows pivoting should not be applied unless det=0, thus ignore it, as well
+    #+ as the sign of the permutation
+    GJE = LowerMatrix.Data
+    del LowerMatrix
+    Bound = UpperMatrix.Data
+    del UpperMatrix
+    Size = _Matrix.Size
+    #check determinant
+    Det = 1 #use prod() in Python v3.10+
+    for Index in range(Size):
+        Det *= Bound[Index][Index]
+    if not Det:
+        Result = None
+    else:
+        #transform free coefficents
+        for ColIndex in range(Size - 1):
+            for RowIndex in range(ColIndex + 1, Size):
+                _Column[RowIndex] -= _Column[ColIndex] * GJE[RowIndex][ColIndex]
+        #back-substitution
+        Solution = list()
+        for ColIndex in range(Size - 1, - 1, -1):
+            Free = _Column[ColIndex]
+            Resolved = Bound[ColIndex][ColIndex + 1 : Size]
+            NewValue = (Free - sum(Coeff * Value for Coeff, Value
+                        in zip(Resolved, Solution))) / Bound[ColIndex][ColIndex]
+            Solution.insert(0, NewValue)
+        #apply reverse columns permuation
+        Result = list(Solution)
+        for Index, Value in enumerate(Solution):
+            Result[ColsPerm[Index]] = Value
+    del _Matrix
+    return Result
