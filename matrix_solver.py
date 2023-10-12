@@ -12,7 +12,7 @@ Functions:
 
 __version__= '1.0.0.0'
 __date__ = '12-10-2023'
-__status__ = 'Testing'
+__status__ = 'Production'
 
 #imports
 
@@ -180,11 +180,11 @@ def SolveLinearSystem(
             _Matrix = SquareMatrix(BoundCoeffs)
         except UT_TypeError as err:
             Error = UT_TypeError(BoundCoeffs, SquareMatrix, SkipFrames = 1)
-            Error.setMessage(err.getMessage)
+            Error.setMessage(err.getMessage())
             raise Error from None
         except UT_ValueError as err1:
             Error = UT_ValueError(BoundCoeffs, 'whatever', SkipFrames = 1)
-            Error.setMessage(err1.getMessage)
+            Error.setMessage(err1.getMessage())
             raise Error from None
     else:
         _Matrix = BoundCoeffs
@@ -193,7 +193,7 @@ def SolveLinearSystem(
             _CheckIfRealSequence(FreeCoeffs)
         except UT_TypeError as err:
             Error = UT_TypeError(FreeCoeffs, Column, SkipFrames = 1)
-            Error.setMessage(err.getMessage)
+            Error.setMessage(err.getMessage())
             raise Error from None
         _Column = list(FreeCoeffs)
     else:

@@ -87,7 +87,7 @@
 | REQ-AWM-341        | TEST-T-341                                                   | YES                     |
 | REQ-AWM-342        | TEST-T-342                                                   | YES                     |
 | REQ-AWM-343        | TEST-T-343                                                   | YES                     |
-| REQ-FUN-400        | TEST-A-400                                                   | NO                      |
+| REQ-FUN-400        | TEST-A-400                                                   | YES                     |
 | REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | YES                     |
 | REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | YES                     |
 | REQ-AWM-410        | TEST-T-412                                                   | YES                     |

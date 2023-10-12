@@ -45,7 +45,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Analyze the source code of the module [matrix_solver](../../matrix_solver.py) as well as of the unit-test module [/Tests/UT004_matrix_solver](../../Tests/UT004_matrix_solver.py). Execute the mentioned unit-test module. Also execute the demonstration test [/Tests/DE004_matrix_solver](../../Tests/DT004_matrix_solver.py).
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Tests definition (Test)
 
@@ -174,7 +174,7 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
-| REQ-FUN-400        | TEST-A-400                                                   | NO                      |
+| REQ-FUN-400        | TEST-A-400                                                   | YES                     |
 | REQ-FUN-410        | TEST-T-410, TEST-T-411                                       | YES                     |
 | REQ-FUN-420        | TEST-T-420, TEST-T-421                                       | YES                     |
 | REQ-AWM-410        | TEST-T-412                                                   | YES                     |
@@ -183,4 +183,4 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
-| NO                                           | Under development    |
+| YES                                          | All tests are passed |
