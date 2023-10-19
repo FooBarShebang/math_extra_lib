@@ -13,6 +13,8 @@
   * 33x - class **Row**
   * 34x - class **SquareMatrix**
 * module **matrix_solver** - 4xy
+  * 41x - function *FindEigenvector*()
+  * 42x - function *SolveLinearSystem*()
 * module **poly_solver** - 5xy
 
 ## Requirements vs Tests Traceability
@@ -23,8 +25,8 @@
 | REQ-FUN-001        | TEST-T-001                                                   | YES                     |
 | REQ-FUN-002        | TEST-T-002                                                   | YES                     |
 | REQ-FUN-003        | TEST-T-002                                                   | YES                     |
-| REQ-FUN-004        | TEST-T-002                                                   | NO                      |
-| REQ-FUN-005        | TEST-T-003                                                   | NO                      |
+| REQ-FUN-004        | TEST-T-002                                                   | YES                     |
+| REQ-FUN-005        | TEST-T-003                                                   | YES                     |
 | REQ-FUN-006        | TEST-T-004                                                   | NO                      |
 | REQ-FUN-007        | TEST-T-005                                                   | NO                      |
 | REQ-INT-000        | TEST-I-000                                                   | YES                     |

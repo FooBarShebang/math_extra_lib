@@ -6,8 +6,11 @@ Imlements power iteration method for finding an eigenvector of a matrix, and
 solution of a determined system of linear equations.
 
 Functions:
-    FindEigenvector
-    SolveLinearSystem
+    FindEigenvector(Matrix)
+        SquareMatrix -> int OR float OR None
+    SolveLinearSystem(BoundCoeffs, FreeCoeffs)
+        SquareMatrix OR seq(seq(int OR float)) OR seq(int OR float),
+            Column OR seq(int OR float) -> list(int OR float) OR None
 """
 
 __version__= '1.0.0.0'
@@ -63,7 +66,7 @@ ROUND_PRECISION = 1.0E-4 #rounding to integer precision
 def FindEigenvector(Matrix: SquareMatrix) -> Union[TReal, None]:
     """
     Finds a real number eigenvalue of a square matrix using the power iteration
-    method. The found eigenvalue, if found, is most likely the highest absolute
+    method. The found eigenvalue, if exists, is most likely the highest absolute
     value one. It is possible (but highly unlikely) that the initial guess
     vector is in the eigenspace of a non-dominant eigenvalue, in which case the
     found eigenvalue is not the largest by the amplitude.

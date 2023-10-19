@@ -109,7 +109,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Perfrom all unit and demonstration tests defined in [TE003](./TE003_vectors_matrices.md) document, and implemented as [UT003](../../Tests/UT003_vectors_matrices.py) and [DT003](../../Tests/DT003_vectors_matrices.py) test modules. Additionally, perform the tests defined for the eigenvalue functionality in the document [TE004](./TE004_matrix_solver.md), and implemented in the test modules [DT004](../../Tests/DT004_matrix_solver.py) and [UT004](../../Tests/UT004_matrix_solver.py).
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -125,7 +125,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Perform the corresponding unit and demonstration tests defined in the [TE004](./TE004_matrix_solver.md) document, and implemented in the test modules [DT004](../../Tests/DT004_matrix_solver.py) and [UT004](../../Tests/UT004_matrix_solver.py).
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ---
 
@@ -217,8 +217,8 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-001        | TEST-T-001                                                   | YES                     |
 | REQ-FUN-002        | TEST-T-002                                                   | YES                     |
 | REQ-FUN-003        | TEST-T-002                                                   | YES                     |
-| REQ-FUN-004        | TEST-T-002                                                   | NO                      |
-| REQ-FUN-005        | TEST-T-003                                                   | NO                      |
+| REQ-FUN-004        | TEST-T-002                                                   | YES                     |
+| REQ-FUN-005        | TEST-T-003                                                   | YES                     |
 | REQ-FUN-006        | TEST-T-004                                                   | NO                      |
 | REQ-FUN-007        | TEST-T-005                                                   | NO                      |
 | REQ-INT-000        | TEST-I-000                                                   | YES                     |

@@ -20,5 +20,11 @@ $library(math_extra_lib) {
     !endif
     
     polynomial <--- special_functions
+    
+    !if $is_not_defined("$MATRIX_SOLVER")
+        !include ./matrix_solver/matrix_solver_components.iuml
+    !endif
+    
+    matrix_solver ----> vectors_matrices
 }
 @enduml
