@@ -6,7 +6,7 @@ This document provides details on the implementation of the special functions, s
 
 The concerned special functions can be implemented as polynomial or rational functions approximations or constructed from other special functions, implemented in this library or in the Standard Python Library.
 
-The proposed implementation is either inspired by or translated into Python from [Ref 1][^Ref1], further on referred to as *Numerical Recipes*.
+The proposed implementation is either inspired by or translated into Python from [Ref 1][^1], further on referred to as *Numerical Recipes*.
 
 ## Background - combinatorics functions
 
@@ -37,7 +37,7 @@ A_n^k \equiv {}_n P_k \equiv P(n,k) = n * (n-1) * (n-2) * ... * (n-k+1) = \frac{
 A_n^k = \frac{n}{n-k} A_{n-1}^k = n A_{n-1}^{k-1} = (n-k+1) A_n^{k-1}
 $$
 
-This function is implemented as *math.perm*(n, k) in the Standard Python Library (version >= 3.8). In the case of an older Python interpreter is should be impemented as looped multiplication form (n-k+1) towards n instead of ratio of factorials in order to achieve beter accuracy in favour of the $\mathtt{exp}[\mathtt{ln}(\Gamma(n+1)) - \mathtt{ln}(\Gamma(k+1))]$ approach[^1], because Python supports an arbitrary length integer arithmetics.
+This function is implemented as *math.perm*(n, k) in the Standard Python Library (version >= 3.8). In the case of an older Python interpreter is should be impemented as looped multiplication form (n-k+1) towards n instead of ratio of factorials in order to achieve beter accuracy in favour of the $\mathtt{exp}[\mathtt{ln}(\Gamma(n+1)) - \mathtt{ln}(\Gamma(k+1))]$ approach[^2], because Python supports an arbitrary length integer arithmetics.
 
 The last relevant function is *combinations*, which says how many unique sub-sets of k elements can be formed from a set of *n* unique elements, i.e. selection with the order being unimportant (i.e. {1, 2, 3} and {2, 1, 3} are the same sub-set). Basically, there are $A_n^k$ in total ways to select k elements from a set of n elements, whereas within a selected sub-set of k elements there are k! ways to re-arrange the elements. Therefore, the number of combinations is (note the different notations often used):
 
@@ -51,7 +51,7 @@ This function is implemented as *math.comb*(n, k) in the Standard Python Library
 * If k > (n-k) - calculate $A_n^{n-k}$ and (n-k)!, then $C_n^k = \frac{A_n^{n-k}}{(n - k)!}$
 * Otherwise -  calculate $A_n^k$ and k!, then $C_n^k = \frac{A_n^k}{k!}$
 
-This approach is preferable to $\mathtt{exp}[\mathtt{ln}(\Gamma(n+1)) - \mathtt{ln}(\Gamma(k+1)) - \mathtt{ln}(\Gamma(n-k+1))]$ approach[^2], because Python supports an arbitrary length integer arithmetics.
+This approach is preferable to $\mathtt{exp}[\mathtt{ln}(\Gamma(n+1)) - \mathtt{ln}(\Gamma(k+1)) - \mathtt{ln}(\Gamma(n-k+1))]$ approach[^3], because Python supports an arbitrary length integer arithmetics.
 
 ## Inverse error function
 
@@ -73,7 +73,7 @@ $$
 
 This function is defined on the range (-1, 1); it is monotonically growing, and it yields values in the range $(- \infin, + \infin)$.
 
-Even though the inverse error function cannot be represented in terms of simple analytical functions, it can be represented as an infinite power series[^3]
+Even though the inverse error function cannot be represented in terms of simple analytical functions, it can be represented as an infinite power series[^4]
 
 $$
 \mathtt{erf}^{-1}(x) = \sum_{k=0}^{\infin}{\frac{c_k}{2k+1} \left( \frac{\sqrt{\pi}}{2} x \right)^{2k+1}} = \newline
@@ -86,7 +86,7 @@ $$
 R_{n,m}(x) = \frac{P_n(x)}{Q_m(x)} = \frac{p_0 + p_1 * x + p_2 * x^2 + ... + p_n * x^n}{q_0 + q_1 * x + q_2 * x^2 + ... + q_m * x^m}
 $$
 
-Specifically concerning the inverse error function algorithm AS241[^Ref2] can be used, wich defines 3 distict rational functions of 7th-7th power for each of the regions: central / core $\mathtt{abs}(x) \leq 0.85$, tails $0.85 < \mathtt{abs}(x) \leq 1 - 2.77759 \times {10}^{-11}$ and far tails $1 - 2.77759 \times {10}^{-11} < \mathtt{abs}(x) < 1$. This algorithm was proposed in 1988 for the double precision floating point calculations.
+Specifically concerning the inverse error function algorithm AS241[^5] can be used, wich defines 3 distict rational functions of 7th-7th power for each of the regions: central / core $\mathtt{abs}(x) \leq 0.85$, tails $0.85 < \mathtt{abs}(x) \leq 1 - 2.77759 \times {10}^{-11}$ and far tails $1 - 2.77759 \times {10}^{-11} < \mathtt{abs}(x) < 1$. This algorithm was proposed in 1988 for the double precision floating point calculations.
 
 ## Beta function
 
@@ -157,7 +157,7 @@ I_z(x,y) = 1 - I_{1 -z}(y,x) \newline
 B(z; x, y) = B(x,y) - B(1-z; y, x)
 $$
 
-The regularized incomplete beta function can be calculated using the series expansion[^4]
+The regularized incomplete beta function can be calculated using the series expansion[^6]
 
 $$
 I_z(x,y) = \frac{z^x*(1-z)^y}{x * B(x,y)} \times \left( 1 + \sum_{n=0}^{\infin} {c_n * z^{n + 1}} \right) \; \mathtt{where} \newline
@@ -231,15 +231,14 @@ Thus, depending on the relation between the arguments either of the expressions 
 
 ## References
 
-[^Ref1]: \[Ref 1\]: William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery. **Numerical Recipes in C: The Art of Scientific Computing**. 2nd Ed. Cambridge University Press (1992). ISBN: 0-521-43108-5
+[^1]: William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery. **Numerical Recipes in C: The Art of Scientific Computing**. 2nd Ed. Cambridge University Press (1992). ISBN: 0-521-43108-5
 
-[^Ref2]: \[Ref 2\]: Michael J. Wichura. *Algorithm AS241: The Percentage Points of the Normal Distribution*. Journal of Royal Statistical Society. Series C (Applied
-    Statistics), Vol. 37, No. 3 (**1988**), pp. 477-484
+[^2]: Numerical Recipes. p 214.
 
-[^1]: Numerical Recipes. p 214.
+[^3]: Numerical Recipes. p 215.
 
-[^2]: Numerical Recipes. p 215.
+[^4]: [Wikipedia - error function](https://en.wikipedia.org/wiki/Error_function)
 
-[^3]: [Wikipedia - error function](https://en.wikipedia.org/wiki/Error_function)
+[^5]: Michael J. Wichura. *Algorithm AS241: The Percentage Points of the Normal Distribution*. Journal of Royal Statistical Society. Series C (Applied Statistics), Vol. 37, No. 3 (**1988**), pp. 477-484
 
-[^4]: Numerical Recipes. pp. 226 - 228
+[^6]: Numerical Recipes. pp. 226 - 228
