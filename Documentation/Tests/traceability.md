@@ -119,8 +119,7 @@
 | REQ-AWM-521        |                                                              | NO                      |
 | REQ-AWM-580        |                                                              | NO                      |
 | REQ-AWM-581        |                                                              | NO                      |
-| REQ-AWM-590        |                                                              | NO                      |
-| REQ-AWM-591        |                                                              | NO                      |
+|
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
