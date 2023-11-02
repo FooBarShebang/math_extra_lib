@@ -44,7 +44,7 @@ This algorithm has the numerical complexity of $O(N)$ as well, and it minimizes 
 Instead of solving the sytem above directly, the interpolating polynomial can be found using the *Lagrange polynomial basis*[^1] as $P(x) = \sum_{i=1}^{N}{y_i*l_i(x)}$, where $l_i(x_j) = \delta_{i,j}$, where $\delta_{i,j}$ is *Kronecker delta*, i.e. $l_i(x_j) = 0 \; \forall \; i \neq j$ and $l_i(x_i) = 1$. Basically, each $x_j \neq x_i$ is a *root* of the polynomial $l_i(x)$, whereas at $x_i$ the polynomial $l_i(x)$ evaluates to 1. Thus, each base polynomial is of the degree *N-1* exactly, and their sum is of the degree $0 \leq K \leq N-1$. These base polynomials are defined as
 
 $$
-l_i(x) = \prod_{1 \leq j \leq N, \; j \neq i}{\frac{x - x_j}{x_i - x_j}} = \frac{x - x_1}{x_i - x_1} * \dots * \frac{(x - x_{i-1})*(x - x_{i+1})}{(x_i - x_{i-1})*(x_i - x_{i+1})} * \dots * \frac{x - x_N}{x_i - x_N} 
+l_i(x) = \prod_{1 \leq j \leq N, \; j \neq i}{\frac{x - x_j}{x_i - x_j}} = \frac{x - x_1}{x_i - x_1} * \dots * \frac{(x - x_{i-1})*(x - x_{i+1})}{(x_i - x_{i-1})*(x_i - x_{i+1})} * \dots * \frac{x - x_N}{x_i - x_N}
 $$
 
 For the *hand computations* this algorithm is much simpler than the direct calculations using the solution of a linear equations system (see above).
@@ -173,9 +173,12 @@ $$
 \frac{d}{dx}P^{(N)}(x) = \gamma_k (x-z_k)^{\gamma_k-1} * P^{(N-\gamma_k)}(x) + (x-z_k)^{\gamma_k}*\frac{d}{dx}P^{(N-\gamma_k)}(x) \Rightarrow \frac{d}{dx}P^{(N)}(z_k) = 0
 $$
 
-However, in this situation the original polynomial $P(x)$ must be divisible by $(x-z_k)$
- and even $(x-z_k)^{\gamma_k}$. Thus, the solution is apply the transformation $P(x) \rightarrow P(x) / (x-z_k)$ iteratively as long as the reduced polynomial evaluates to 0 at $z_k$. Doing so the multiplicity of the $z_k$ root is defined. The remaining roots of the original polynomial $P^{(N)}(x)$ are the roots of the reduced polynomial $P^{(N-\gamma_k)}(x)$, which can be found using recursive call of the same function. This approach also eliminates the possible devision by zero problem concerning the $\frac{1}{z_k - z_i}$ terms.
- 
+However, in this situation the original polynomial $P(x)$ must be divisible by $(x-z_k)$ and even by $(x-z_k)^{\gamma_k}$. Thus, the solution is to apply the transformation $P(x) \rightarrow P(x) / (x-z_k)$ iteratively as long as the reduced polynomial evaluates to 0 at $z_k$. Doing so the multiplicity of the $z_k$ root is defined. The remaining roots of the original polynomial $P^{(N)}(x)$ are the roots of the reduced polynomial $P^{(N-\gamma_k)}(x)$, which can be found using recursive call of the same function. This approach also eliminates the possible devision by zero problem concerning the $\frac{1}{z_k - z_i}$ terms.
+
+Note, that the $\frac{1}{z_k - z_i}$ terms introduce 'repulsion' between the attractors of the algorithm (roots of the polynomial), which reduces the convergence speed of the algorithm in the case of presence of root(s) with multiplicity > 1 but also prevents the situation described above, unless the initial guess was 'lucky' to hit the multiple root.
+
+Also for the large degrees ($N \geq 5$) and presence of the complex conjugated pair of roots ($a+b*i$ and $a-b*i$), i.e. factorization of the polynomial on the real numbers contains term $x^2 \pm 2ax + a^2 + b^2$, the algorithm results in significantly higher uncertainty / error of the estimation for this conjugated roots pair than for the other roots.
+
 ## References
 
 [^1]: [Wikipedia: Lagrange polynomials](https://en.wikipedia.org/wiki/Lagrange_polynomial)

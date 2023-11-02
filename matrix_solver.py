@@ -2,7 +2,7 @@
 """
 Module math_extra_lib.matrix_solver.
 
-Imlements power iteration method for finding an eigenvector of a matrix, and
+Implements power iteration method for finding an eigenvector of a matrix, and
 solution of a determined system of linear equations.
 
 Functions:
@@ -23,10 +23,8 @@ __status__ = 'Production'
 
 import sys
 import os
-import collections.abc as c_abc
 import random
 
-#from math import sqrt, floor
 from typing import Sequence, Union, List
 
 #+ custom modules
