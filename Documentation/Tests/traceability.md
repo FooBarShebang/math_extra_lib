@@ -16,6 +16,7 @@
   * 41x - function *FindEigenvector*()
   * 42x - function *SolveLinearSystem*()
 * module **poly_solver** - 5xy
+  * 51x - function *FindRoots*()
 
 ## Requirements vs Tests Traceability
 
@@ -96,7 +97,7 @@
 | REQ-AWM-420        | TEST-T-422                                                   | YES                     |
 | REQ-AWM-421        | TEST-T-423                                                   | YES                     |
 | REQ-FUN-500        | TEST-A-500                                                   | NO                      |
-| REQ-FUN-510        |                                                              | NO                      |
+| REQ-FUN-510        | TEST-T-510                                                   | YES                     |
 | REQ-FUN-520        |                                                              | NO                      |
 | REQ-FUN-530        |                                                              | NO                      |
 | REQ-FUN-540        |                                                              | NO                      |
@@ -114,7 +115,7 @@
 | REQ-AWM-503        |                                                              | NO                      |
 | REQ-AWM-504        |                                                              | NO                      |
 | REQ-AWM-505        |                                                              | NO                      |
-| REQ-AWM-510        |                                                              | NO                      |
+| REQ-AWM-510        | TEST-T-511                                                   | YES                     |
 | REQ-AWM-520        |                                                              | NO                      |
 | REQ-AWM-521        |                                                              | NO                      |
 | REQ-AWM-580        |                                                              | NO                      |

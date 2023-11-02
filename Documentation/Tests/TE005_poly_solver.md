@@ -49,6 +49,36 @@ The verification method for a requirement is given by a single letter according 
 
 ## Tests definition (Test)
 
+**Test Identifier:** TEST-T-510
+
+**Requirement ID(s)**: REQ-FUN-510
+
+**Verification method:** T
+
+**Test goal:** Roots of an arbitrary polynomial are calculated properly.
+
+**Expected result:** For a polynomial of degree N >= 1 (passed as an instance of Polynomial class) the returned value is a list of exactly N real or complex numbers. The polynomial evaluates to zero (within the acceptable error margin) at each value in the list. For the polynomials with the known solutions this list contains all of them, with the roots with multiplicity K > 1 being included into the list exactly K times.
+
+**Test steps:** Pass several polynomials with known real and / or complex roots (including multiple and single roots) into the function being tested. Check that the returned list contains all expected roots counted with their multiplexity. Generate and pass into the function a number of random polynomials; check that the number of the returned roots matches the degree of the passed polynomial, and each value in the list is a close approximation of a root, i.e. the polynomial evaluates to almost zero at this value.
+
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-51
+
+**Requirement ID(s)**: REQ-AWM-510
+
+**Verification method:** T
+
+**Test goal:** Treatment of the improper input by the roots finding function.
+
+**Expected result:** An exception compatible with TypeError is raised if the argument is of any data type except being an instance of the class Polynomial.
+
+**Test steps:** Try to call the function with an argument of any data type except for the instance of Polynomial class. Check that the expected exception is raised. Repeat several time with the different data types.
+
+**Test result:** PASS
+
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
@@ -56,7 +86,7 @@ For traceability the relation between tests and requirements is summarized in th
 | **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
 | REQ-FUN-500        | TEST-A-500                                                   | NO                      |
-| REQ-FUN-510        |                                                              | NO                      |
+| REQ-FUN-510        | TEST-T-510                                                   | YES                     |
 | REQ-FUN-520        |                                                              | NO                      |
 | REQ-FUN-530        |                                                              | NO                      |
 | REQ-FUN-540        |                                                              | NO                      |
@@ -74,7 +104,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-503        |                                                              | NO                      |
 | REQ-AWM-504        |                                                              | NO                      |
 | REQ-AWM-505        |                                                              | NO                      |
-| REQ-AWM-510        |                                                              | NO                      |
+| REQ-AWM-510        | TEST-T-511                                                   | YES                     |
 | REQ-AWM-520        |                                                              | NO                      |
 | REQ-AWM-521        |                                                              | NO                      |
 | REQ-AWM-580        |                                                              | NO                      |

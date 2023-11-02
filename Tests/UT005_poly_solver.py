@@ -295,12 +295,133 @@ class Test_HelperFunctions(unittest.TestCase):
                                 abs(testmodule._EvaluatePolynomial(Poly, Root)),
                                 0, msg=f'{Poly}, {Test}, {Root}', delta = 0.001)
 
+class Test_FindRoots(unittest.TestCase):
+    """
+    Unit tests for the function FindRoots().
+    
+    Test IDs: TEST-T-510 and TEST-T-511
+    
+    Covers requirements: REQ-FUN-510 and REQ-AWM-510
+    
+    Version 1.0.0.0
+    """
+    
+    def test_TypeError(self):
+        """
+        Test ID: TEST-T-511
+        
+        Requirements: REQ-AWM-510
+        """
+        for Item in [1, 1.0, int, float, True, bool, list, tuple, [1, 1.0],
+                                (1, 2), dict, {1: 1}, {1, 2, 3}, Polynomial]:
+            with self.assertRaises(TypeError):
+                Roots = testmodule.FindRoots(Item)
+    
+    def test_Calculation(self):
+        """
+        Test ID: TEST-T-511
+        
+        Requirements: REQ-AWM-510
+        """
+        #1st degree
+        for _ in range(10):
+            FreeCoefficient = random.randint(-5, 5) + random.random()
+            Test = testmodule.FindRoots(Polynomial(FreeCoefficient, 1))
+            self.assertIsInstance(Test, list)
+            self.assertListEqual(Test, [-FreeCoefficient])
+        #2nd degree
+        #+ x^2 + 2x + 1
+        Test = testmodule.FindRoots(Polynomial(1, 2, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [-1, -1])
+        #+ x^2 - 2x + 1
+        Test = testmodule.FindRoots(Polynomial(1, -2, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [1, 1])
+        #+ x^2 - 1
+        Test = testmodule.FindRoots(Polynomial(-1, 0, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [1, -1])
+        #+ x^2 + 1
+        Test = testmodule.FindRoots(Polynomial(1, 0, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [complex(0, 1), complex(0, -1)])
+        #+ x^2
+        Test = testmodule.FindRoots(Polynomial(0, 0, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [0, 0])
+        #3rd degree
+        #x^3 - 3x^2 + 3x - 1
+        Test = testmodule.FindRoots(Polynomial(-1, 3, -3, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [1, 1, 1])
+        #x^3 + 3x^2 + 3x + 1
+        Test = testmodule.FindRoots(Polynomial(1, 3, 3, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [-1, -1, -1])
+        #x^3
+        Test = testmodule.FindRoots(Polynomial(0, 0, 0, 1))
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [0, 0, 0])
+        #x^3 + 6x^2 + 11x + 6 = (x + 1) * (x + 2) * (x + 3)
+        Test = testmodule.FindRoots(Polynomial(6, 11, 6, 1))
+        self.assertIsInstance(Test, list)
+        self.assertEqual(len(Test), 3)
+        for Root in [-1, -2, -3]:
+            self.assertIn(Root, Test)
+        #x^3 + x^2 - x - 1 = (x+1)^2 * (x-1)
+        Test = testmodule.FindRoots(Polynomial(-1, -1, 1, 1))
+        self.assertIsInstance(Test, list)
+        self.assertEqual(len(Test), 3)
+        self.assertCountEqual(Test, [-1, -1, 1])
+        #x^3 - 1
+        Test = testmodule.FindRoots(Polynomial(-1, 0, 0, 1))
+        self.assertIsInstance(Test, list)
+        self.assertEqual(len(Test), 3)
+        self.assertEqual(len(set(Test)), 3) #all roots are unique
+        for Root in Test:
+            if isinstance(Root, complex):
+                self.assertAlmostEqual(Root.real, -0.5)
+                self.assertAlmostEqual(abs(Root.imag), 0.5*sqrt(3))
+            else:
+                self.assertEqual(Root, 1)
+        #x^3 + 1
+        Test = testmodule.FindRoots(Polynomial(1, 0, 0, 1))
+        self.assertIsInstance(Test, list)
+        self.assertEqual(len(Test), 3)
+        self.assertEqual(len(set(Test)), 3) #all roots are unique
+        for Root in Test:
+            if isinstance(Root, complex):
+                self.assertAlmostEqual(Root.real, 0.5)
+                self.assertAlmostEqual(abs(Root.imag), 0.5*sqrt(3))
+            else:
+                self.assertEqual(Root, -1)
+        for _ in range(100):
+            Degree = random.randint(2, 7)
+            Poly= [random.randint(-3, 3)+random.random() for _ in range(Degree)]
+            Poly.append(1)
+            Check = testmodule._FindAllRoots(Poly)
+            Coefficent = random.randint(-3, 3)+random.random()
+            if not Coefficent:
+                Coefficent = 1
+            Poly = [Item * Coefficent for Item in Poly]
+            Test = testmodule.FindRoots(Polynomial(*Poly))
+            self.assertEqual(len(Check), len(Test))
+            for CheckValue in Check:
+                self.assertTrue(any(map(
+                            lambda x: abs(x - CheckValue) < 0.000001, Test)))
+            for CheckValue in Test:
+                self.assertTrue(any(map(
+                            lambda x: abs(x - CheckValue) < 0.000001, Check)))
+
 #+ test suites
 
 TestSuite1 = unittest.TestLoader().loadTestsFromTestCase(Test_HelperFunctions)
 
+TestSuite2 = unittest.TestLoader().loadTestsFromTestCase(Test_FindRoots)
+
 TestSuite = unittest.TestSuite()
-TestSuite.addTests([TestSuite1])
+TestSuite.addTests([TestSuite1, TestSuite2])
 
 if __name__ == "__main__":
     sys.stdout.write("Conducting math_extra_lib.poly_solver module tests...\n")

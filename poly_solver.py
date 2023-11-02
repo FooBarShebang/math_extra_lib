@@ -5,6 +5,9 @@ Module math_extra_lib.poly_solver.
 Implements Aberth method for finding all roots of a polynomial and polynomial
 interpolation using Lagrange, Legende, Chebyshev and Bernstein basis.
 
+Functions:
+    FindRoots(Poly)
+        Polynomial -> list(int OR floar OR complex)
 """
 
 __version__= '1.0.0.0'
@@ -242,7 +245,7 @@ def _FindAllRoots(Coefficients: List[TNumber]) -> List[TNumber]:
     roots are returned as a list of complex or real numbers.
     
     Signature:
-        list(int OR floar OR complex) -> int OR floar OR complex
+        list(int OR floar OR complex) -> list(int OR floar OR complex)
     
     Raises:
         UT_TypeError: the passed argument is not a list of real or complex
@@ -333,3 +336,29 @@ def _FindAllRoots(Coefficients: List[TNumber]) -> List[TNumber]:
         Roots = [_RoundAndConvert(Guess, Precision = ROOTS_PRECISION)
                                                         for Guess in Guesses]
     return Roots
+
+#+ public functions
+
+def FindRoots(Poly: Polynomial) -> List[TNumber]:
+    """
+    Calculates all roots of a polynomial passed as an instance of Polynomial
+    class using Alberth method, and returns them as a list of real or complex
+    numbers. Each root with multiplicity K is included exactly K time; thus for
+    a polynomial of the degree N the length of the list is exactly N.
+    
+    Signature:
+        Polynomial -> list(int OR floar OR complex)
+    
+    Raises:
+        UT_TypeError: argument is not an instance of Polynomial class
+    
+    Version 1.0.0.0
+    """
+    if not isinstance(Poly, Polynomial):
+        raise UT_TypeError(Poly, Polynomial, SkipFrames = 1)
+    Coefficients = Poly.getCoefficients()
+    HighestOrder = Coefficients[-1]
+    Coefficients = [Item / HighestOrder for Item in Coefficients]
+    Coefficients[-1] = 1
+    Result = _FindAllRoots(Coefficients)
+    return Result

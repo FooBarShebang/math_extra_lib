@@ -63,7 +63,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Lagrange base polynomials
 
-**Description:** The function genrating Lagrange base polynomials should
+**Description:** The function generating Lagrange base polynomials should
 
 * Accept only a single argument - a flat sequence of unique real number values of the length N > 1 as the x-coordinates grid $\{x_i\}$
 * Calculate N polynomials of the degree N-1 such, that each i-th polynomial $l_i(x_i) = 1$ and $l_i(x_j) = 0 \; \forall \; j \neq i$
