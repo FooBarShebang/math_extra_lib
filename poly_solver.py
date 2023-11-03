@@ -8,10 +8,34 @@ interpolation using Lagrange, Legende, Chebyshev and Bernstein basis.
 Functions:
     FindRoots(Poly)
         Polynomial -> list(int OR floar OR complex)
+    GetLagrangePolynomial(Node, Roots)
+        int OR float, seq(int OR float) -> Polynomial
+    GetLagrangeBasis(XGrid)
+        seq(int OR float) -> list(Polynomial)
+    InterpolateLagrange(XYGrid)
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    GetLegendrePolynomial(Degree)
+        int >= 0 -> Polynomial OR int
+    GetLegendreBasis(Degree)
+        int >= 0 -> list(Polynomial OR int)
+    InterpolateLegendre(XYGrid)
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    GetChebyshevPolynomial(Degree)
+        int >= 0 -> Polynomial OR int
+    GetChebyshevBasis(Degree)
+        int >= 0 -> list(Polynomial OR int)
+    InterpolateChebyshev(XYGrid)
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    GetBernsteinPolynomial(Degree, Index)
+        int >= 0, int >= 0 -> Polynomial OR int
+    GetBernsteinBasis(Degree)
+        int >= 0 -> list(Polynomial) OR list(int)
+    InterpolateBernstein(XYGrid)
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
 """
 
 __version__= '1.0.0.0'
-__date__ = '02-11-2023'
+__date__ = '03-11-2023'
 __status__ = 'Development'
 
 #imports
@@ -21,7 +45,7 @@ __status__ = 'Development'
 import sys
 import os
 
-from typing import List, Union
+from typing import List, Union, Sequence, Tuple
 
 from math import sqrt, pi
 from cmath import rect
@@ -45,7 +69,13 @@ from math_extra_lib.matrix_solver import SolveLinearSystem
 
 #types
 
+TReal = Union[int, float]
+
 TNumber = Union[int, float, complex]
+
+TCoordinates = Tuple[TReal, TReal]
+
+TGrid = Sequence[TCoordinates]
 
 #globals
 
@@ -66,7 +96,13 @@ def _RoundAndConvert(Value: TNumber, *,
     possible.
     
     Signature:
-        int OR floar OR complex -> int OR floar OR complex
+        int OR float OR complex /, float/ -> int OR floar OR complex
+    
+    Args:
+        Value: int OR float OR complex; the value to be rounded and converted if
+            needed
+        Precision: (keyword) float; the desired precision of float -> int
+            rounding, defaults to ALMOST_ZERO constant
     
     Version 1.0.0.0
     """
@@ -362,3 +398,88 @@ def FindRoots(Poly: Polynomial) -> List[TNumber]:
     Coefficients[-1] = 1
     Result = _FindAllRoots(Coefficients)
     return Result
+
+def GetLagrangePolynomial(Node: TReal, Roots: Sequence[TReal]) -> Polynomial:
+    """
+    Signature:
+        int OR float, seq(int OR float) -> Polynomial
+    """
+    pass
+
+def GetLagrangeBasis(XGrid: Sequence[TReal]) -> List[Polynomial]:
+    """
+    Signature:
+        seq(int OR float) -> list(Polynomial)
+    """
+    pass
+
+def InterpolateLagrange(XYGrid: TGrid) -> Union[Polynomial, TReal]:
+    """
+    Signature:
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    """
+    pass
+
+def GetLegendrePolynomial(Degree: int) -> Union[Polynomial, int]:
+    """
+    Signature:
+        int >= 0 -> Polynomial OR int
+    """
+    pass
+
+def GetLegendreBasis(Degree: int) -> List[Union[Polynomial, int]]:
+    """
+    Signature:
+        int >= 0 -> list(Polynomial OR int)
+    """
+    pass
+
+def InterpolateLegendre(XYGrid: TGrid) -> Union[Polynomial, TReal]:
+    """
+    Signature:
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    """
+    pass
+
+def GetChebyshevPolynomial(Degree: int) -> Union[Polynomial, int]:
+    """
+    Signature:
+        int >= 0 -> Polynomial OR int
+    """
+    pass
+
+def GetChebyshevBasis(Degree: int) -> List[Union[Polynomial, int]]:
+    """
+    Signature:
+        int >= 0 -> list(Polynomial OR int)
+    """
+    pass
+
+def InterpolateChebyshev(XYGrid: TGrid) -> Union[Polynomial, TReal]:
+    """
+    Signature:
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    """
+    pass
+
+
+def GetBernsteinPolynomial(Degree: int, Index: int) -> Union[Polynomial, int]:
+    """
+    Signature:
+        int >= 0, int >= 0 -> Polynomial OR int
+    """
+    pass
+
+def GetBernsteinBasis(Degree: int) -> Union[List[Polynomial], List[int]]:
+    """
+    Signature:
+        int >= 0 -> list(Polynomial) OR list(int)
+    """
+    pass
+
+def InterpolateBernstein(XYGrid: TGrid) -> Union[Polynomial, TReal]:
+    """
+    Signature:
+        seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    """
+    pass

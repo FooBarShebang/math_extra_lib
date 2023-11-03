@@ -98,29 +98,28 @@
 | REQ-AWM-421        | TEST-T-423                                                   | YES                     |
 | REQ-FUN-500        | TEST-A-500                                                   | NO                      |
 | REQ-FUN-510        | TEST-T-510                                                   | YES                     |
-| REQ-FUN-520        |                                                              | NO                      |
-| REQ-FUN-530        |                                                              | NO                      |
-| REQ-FUN-540        |                                                              | NO                      |
-| REQ-FUN-541        |                                                              | NO                      |
-| REQ-FUN-550        |                                                              | NO                      |
-| REQ-FUN-560        |                                                              | NO                      |
-| REQ-FUN-561        |                                                              | NO                      |
-| REQ-FUN-570        |                                                              | NO                      |
-| REQ-FUN-580        |                                                              | NO                      |
-| REQ-FUN-581        |                                                              | NO                      |
-| REQ-FUN-590        |                                                              | NO                      |
-| REQ-AWM-500        |                                                              | NO                      |
-| REQ-AWM-501        |                                                              | NO                      |
-| REQ-AWM-502        |                                                              | NO                      |
-| REQ-AWM-503        |                                                              | NO                      |
-| REQ-AWM-504        |                                                              | NO                      |
-| REQ-AWM-505        |                                                              | NO                      |
+| REQ-FUN-520        | TEST-T-520                                                   | NO                      |
+| REQ-FUN-530        | TEST-T-530                                                   | NO                      |
+| REQ-FUN-540        | TEST-T-540                                                   | NO                      |
+| REQ-FUN-541        | TEST-T-541                                                   | NO                      |
+| REQ-FUN-550        | TEST-T-550                                                   | NO                      |
+| REQ-FUN-560        | TEST-T-560                                                   | NO                      |
+| REQ-FUN-561        | TEST-T-561                                                   | NO                      |
+| REQ-FUN-570        | TEST-T-570                                                   | NO                      |
+| REQ-FUN-580        | TEST-T-580                                                   | NO                      |
+| REQ-FUN-581        | TEST-T-581                                                   | NO                      |
+| REQ-FUN-590        | TEST-T-590                                                   | NO                      |
+| REQ-AWM-500        | TEST-T-500                                                   | NO                      |
+| REQ-AWM-501        | TEST-T-501                                                   | NO                      |
+| REQ-AWM-502        | TEST-T-502                                                   | NO                      |
+| REQ-AWM-503        | TEST-T-503                                                   | NO                      |
+| REQ-AWM-504        | TEST-T-504                                                   | NO                      |
+| REQ-AWM-505        | TEST-T-505                                                   | NO                      |
 | REQ-AWM-510        | TEST-T-511                                                   | YES                     |
-| REQ-AWM-520        |                                                              | NO                      |
-| REQ-AWM-521        |                                                              | NO                      |
-| REQ-AWM-580        |                                                              | NO                      |
-| REQ-AWM-581        |                                                              | NO                      |
-|
+| REQ-AWM-520        | TEST-T-521                                                   | NO                      |
+| REQ-AWM-521        | TEST-T-523                                                   | NO                      |
+| REQ-AWM-580        | TEST-T-582                                                   | NO                      |
+| REQ-AWM-581        | TEST-T-583                                                   | NO                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

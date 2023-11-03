@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.poly_solver, see TE005.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "02-11-2023"
+__date__ = "03-11-2023"
 __status__ = "Testing"
 
 #imports
@@ -414,14 +414,496 @@ class Test_FindRoots(unittest.TestCase):
                 self.assertTrue(any(map(
                             lambda x: abs(x - CheckValue) < 0.000001, Check)))
 
+class Test_GetLagrangePolynomial(unittest.TestCase):
+    """
+    Unit tests for the function GetLagrangePolynomial().
+    
+    Test IDs: ???
+    
+    Covers requirements: REQ-FUN-520, REQ-AWM-520 and REQ-AWM-521
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetLagrangePolynomial)
+    
+    def test_TypeError(self):
+        """
+        Test ID:
+        
+        Requirement ID: REQ-AWM-520
+        """
+        pass
+    
+    def test_ValueError(self):
+        """
+        Test ID:
+        
+        Requirement ID: REQ-AWM-521
+        """
+        pass
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID: REQ-FUN-520
+        """
+        pass
+
+class Test_GetLagrangeBasis(unittest.TestCase):
+    """
+    Unit tests for the function GetLagrangeBasis().
+    
+    Test IDs: ???
+    
+    Covers requirements: REQ-FUN-520, REQ-AWM-520 and REQ-AWM-521
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetLagrangeBasis)
+    
+    def test_TypeError(self):
+        """
+        Test ID:
+        
+        Requirement ID: REQ-AWM-520
+        """
+        pass
+    
+    def test_ValueError(self):
+        """
+        Test ID:
+        
+        Requirement ID: REQ-AWM-521
+        """
+        pass
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID: REQ-FUN-520
+        """
+        pass
+
+class Test_InterpolateLagrange(unittest.TestCase):
+    """
+    Unit tests for the function InterpolateLagrange().
+    
+    Test IDs: TEST-T-504 and TEST-T-505
+    
+    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.InterpolateLagrange)
+        cls.XGrid = [Index + 0.25 * random.random() for Index in range(6)]
+    
+    def test_TypeError(self):
+        """
+        Test ID: TEST-T-504
+        
+        Requirement ID: REQ-AWM-504
+        """
+        pass
+    
+    def test_ValueError(self):
+        """
+        Test ID: TEST-T-505
+        
+        Requirement ID: REQ-AWM-505
+        """
+        pass
+    
+    def test_Constant(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_Linear(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_Quadratic(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_Cubic(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_FourthDegree(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_FifthDegree(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_Sine(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+    
+    def test_Sqrt(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_GetLegendrePolynomial(unittest.TestCase):
+    """
+    Unit tests for the function GetLegendrePolynomial().
+    
+    Test IDs: TEST-T-502 and TEST-T-503
+    
+    Covers requirements: REQ-AWM-502 and REQ-AWM-503
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetLegendrePolynomial)
+    
+    def test_TypeError(self):
+        """
+        Test ID: TEST-T-502
+        
+        Requirement ID: REQ-AWM-502
+        """
+        pass
+    
+    def test_ValueError(self):
+        """
+        Test ID: TEST-T-503
+        
+        Requirement ID: REQ-AWM-503
+        """
+        pass
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_GetLegendreBasis(unittest.TestCase):
+    """
+    Unit tests for the function GetLegendrePolynomial().
+    
+    Test IDs: TEST-T-500 and TEST-T-501
+    
+    Covers requirements: REQ-AWM-500 and REQ-AWM-501
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetLegendreBasis)
+    
+    def test_TypeError(self):
+        """
+        Test ID: TEST-T-500
+        
+        Requirement ID: REQ-AWM-500
+        """
+        pass
+    
+    def test_ValueError(self):
+        """
+        Test ID: TEST-T-501
+        
+        Requirement ID: REQ-AWM-501
+        """
+        pass
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_InterpolateLegendre(Test_InterpolateLagrange):
+    """
+    Unit tests for the function InterpolateLegendre().
+    
+    Test IDs: TEST-T-504 and TEST-T-505
+    
+    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.InterpolateLegendre)
+        cls.XGrid = [Index + 0.25 * random.random() for Index in range(6)]
+
+class Test_GetChebyshevPolynomial(Test_GetLegendrePolynomial):
+    """
+    Unit tests for the function GetChebyshevPolynomial().
+    
+    Test IDs: TEST-T-502 and TEST-T-503
+    
+    Covers requirements: REQ-AWM-502 and REQ-AWM-503
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetChebyshevPolynomial)
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_GetChebyshevBasis(Test_GetLegendreBasis):
+    """
+    Unit tests for the function GetChebyshevBasis().
+    
+    Test IDs: TEST-T-500 and TEST-T-501
+    
+    Covers requirements: REQ-AWM-500 and REQ-AWM-501
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetChebyshevBasis)
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_InterpolateChebyshev(Test_InterpolateLagrange):
+    """
+    Unit tests for the function InterpolateChebyshev().
+    
+    Test IDs: TEST-T-504 and TEST-T-505
+    
+    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.InterpolateChebyshev)
+        cls.XGrid = [Index + 0.25 * random.random() for Index in range(6)]
+
+class Test_GetBernsteinPolynomial(unittest.TestCase):
+    """
+    Unit tests for the function GetBernsteinPolynomial().
+    
+    Test IDs: 
+    
+    Covers requirements: REQ-AWM-580 and REQ-AWM-581
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetBernsteinPolynomial)
+    
+    def test_TypeError(self):
+        """
+        Test ID:
+        
+        Requirement ID: REQ-AWM-580
+        """
+        pass
+    
+    def test_ValueError(self):
+        """
+        Test ID:
+        
+        Requirement ID: REQ-AWM-581
+        """
+        pass
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_GetBernsteinBasis(Test_GetLegendreBasis):
+    """
+    Unit tests for the function GetBernsteinBasis().
+    
+    Test IDs: TEST-T-500 and TEST-T-501
+    
+    Covers requirements: REQ-AWM-500 and REQ-AWM-501
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.GetBernsteinBasis)
+    
+    def test_Performance(self):
+        """
+        Test ID: 
+        
+        Requirement ID:
+        """
+        pass
+
+class Test_InterpolateBernstein(Test_InterpolateLagrange):
+    """
+    Unit tests for the function InterpolateBernstein().
+    
+    Test IDs: TEST-T-504 and TEST-T-505
+    
+    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    
+    Version 1.0.0.0
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """
+        Preparations. Called only once.
+        """
+        cls.TestFunc = staticmethod(testmodule.InterpolateBernstein)
+        cls.XGrid = [Index + 0.25 * random.random() for Index in range(6)]
+
 #+ test suites
 
 TestSuite1 = unittest.TestLoader().loadTestsFromTestCase(Test_HelperFunctions)
 
 TestSuite2 = unittest.TestLoader().loadTestsFromTestCase(Test_FindRoots)
 
+TestSuite3 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetLagrangePolynomial)
+
+TestSuite4 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetLagrangeBasis)
+
+TestSuite5 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_InterpolateLagrange)
+
+TestSuite6 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetLegendrePolynomial)
+
+TestSuite7 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetLegendreBasis)
+
+TestSuite8 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_InterpolateLegendre)
+
+TestSuite9 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetChebyshevPolynomial)
+
+TestSuite10 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetChebyshevBasis)
+
+TestSuite11 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_InterpolateChebyshev)
+
+TestSuite12 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetBernsteinPolynomial)
+
+TestSuite13 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_GetBernsteinBasis)
+
+TestSuite14 = unittest.TestLoader().loadTestsFromTestCase(
+                                                    Test_InterpolateBernstein)
+
 TestSuite = unittest.TestSuite()
-TestSuite.addTests([TestSuite1, TestSuite2])
+TestSuite.addTests([TestSuite1, TestSuite2, TestSuite3, TestSuite4, TestSuite5,
+                    TestSuite6, TestSuite7, TestSuite8, TestSuite9, TestSuite10,
+                    TestSuite11, TestSuite12, TestSuite13, TestSuite14])
 
 if __name__ == "__main__":
     sys.stdout.write("Conducting math_extra_lib.poly_solver module tests...\n")

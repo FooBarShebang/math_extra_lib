@@ -95,8 +95,8 @@ The verification method for a requirement is given by a single letter according 
 
 * Accept only a single non-negative integer argument $N \geq 0$
 * Calculate N + 1 polynomials of the increasing degree from 0 (constant) to N such, that each i-th polynomial $P_i(x)$ is the i-th degree Legendre polynomial ($0 \leq i \leq N$)
-* Return calculated polynomials as a list of instances on the **Polynomial** class, preserving the order
-* Calculation of each individual K-th power polynomial shold be delegated to a separate function
+* Return calculated polynomials as a list of instances on the **Polynomial** class, except the first element, which is an integer value of 1, preserving the order
+* Calculation of each individual K-th power polynomial may be delegated to a separate function
 
 **Verification Method:** T
 
@@ -110,7 +110,7 @@ The verification method for a requirement is given by a single letter according 
 
 * Accept only a single non-negative integer argument $N \geq 0$
 * Calculate a single Legendre polynomial of the the requested degree *N*
-* Return calculated polynomial as an instance on the **Polynomial** class, except for the 0-th degree, in which case it is **int** type
+* Return calculated polynomial as an instance on the **Polynomial** class, except for the 0-th degree, which is an integer value of 1
 
 **Verification Method:** T
 
@@ -138,8 +138,8 @@ The verification method for a requirement is given by a single letter according 
 
 * Accept only a single non-negative integer argument $N \geq 0$
 * Calculate N + 1 polynomials of the increasing degree from 0 (constant) to N such, that each i-th polynomial $T_i(x)$ is the i-th degree Chebyshev polynomial of the first kind ($0 \leq i \leq N$)
-* Return calculated polynomials as a list of instances on the **Polynomial** class, preserving the order
-* Calculation of each individual K-th power polynomial shold be delegated to a separate function
+* Return calculated polynomials as a list of instances on the **Polynomial** class, except the first element, which is an integer value of 1, preserving the order
+* Calculation of each individual K-th power polynomial may be delegated to a separate function
 
 **Verification Method:** T
 
@@ -153,7 +153,7 @@ The verification method for a requirement is given by a single letter according 
 
 * Accept only a single non-negative integer argument $N \geq 0$
 * Calculate a single Chebyshev polynomial of the first kind of the the requested degree *N*
-* Return calculated polynomial as an instance on the **Polynomial** class, except for the 0-th degree, in which case it is **int** type
+* Return calculated polynomial as an instance on the **Polynomial** class, except for the 0-th degree, which is an integer value of 1
 
 **Verification Method:** T
 
@@ -181,8 +181,8 @@ The verification method for a requirement is given by a single letter according 
 
 * Accept only a single non-negative integer argument $N \geq 0$
 * Calculate N + 1 polynomials of the N-th degree $b_{i,N}(x)$ is the N-th degree Berstein polynomial ($0 \leq i \leq N$)
-* Return calculated polynomials as a list of instances on the **Polynomial** class, preserving the order
-* Calculation of each individual K-th power polynomial shold be delegated to a separate function
+* Return calculated polynomials as a list of instances on the **Polynomial** class, preserving the order; except for the 0-th degree, which is a list of a single element being equal to 1
+* Calculation of each individual K-th power polynomial may be delegated to a separate function
 
 **Verification Method:** T
 
@@ -196,7 +196,7 @@ The verification method for a requirement is given by a single letter according 
 
 * Accept two non-negative integer arguments $N \geq 0$ (degree) and $0 \leq i \leq N$ (index within the Berstein basis)
 * Calculate a single Berstein polynomial $b_{i,N}(x)$
-* Return calculated polynomial as an instance on the **Polynomial** class, except for the 0-th degree, in which case it is **int** type
+* Return calculated polynomial as an instance on the **Polynomial** class, except for the 0-th degree, which is an integer value of 1
 
 **Verification Method:** T
 
@@ -270,7 +270,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Interpolation polynomial - improper x-grid values
 
-**Description:** The functions generating interpolation polynomial on an arbitrary x-grid (Lagrange, Legendre, Chebyshev, Bernstein) raise an exception compatible with ValueError if there is, at least, 1 not unique value amongst the first elements of the sub-sequences (x-grid with non-unique values)
+**Description:** The functions generating interpolation polynomial on an arbitrary x-grid (Lagrange, Legendre, Chebyshev, Bernstein) raise an exception compatible with ValueError if there is, at least, 1 not unique value amongst the first elements of the sub-sequences (x-grid with non-unique values); or there are less than 2 data points
 
 **Verification Method:** T
 
@@ -313,7 +313,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Berstein polynomial generation - improper argument type
 
-**Description:** The function generating Bersteing polynomial raises an exception compatible with TypeError if:
+**Description:** The function generating Berstein polynomial raises an exception compatible with TypeError if:
 
 * the first argument (degree) is not of the **int** type
 * the second argument (index) is not of the **int** type
@@ -326,7 +326,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Berstein polynomial generation - improper argument value
 
-The function generating Bersteing polynomial raises an exception compatible with ValueError if:
+The function generating Berstein polynomial raises an exception compatible with ValueError if:
 
 * the first argument (degree) is negative
 * the second argument (index) is negative
