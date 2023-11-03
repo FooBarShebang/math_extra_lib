@@ -18,7 +18,7 @@ import os
 import unittest
 import random
 
-from math import sqrt
+from math import sqrt, sin
 
 #+ my libraries
 
@@ -502,9 +502,9 @@ class Test_InterpolateLagrange(unittest.TestCase):
     """
     Unit tests for the function InterpolateLagrange().
     
-    Test IDs: TEST-T-504 and TEST-T-505
+    Test IDs: TEST-T-530, TEST-T-504 and TEST-T-505
     
-    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    Covers requirements: REQ-FUN-530, REQ-AWM-504 and REQ-AWM-505
     
     Version 1.0.0.0
     """
@@ -535,75 +535,158 @@ class Test_InterpolateLagrange(unittest.TestCase):
     
     def test_Constant(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        Coefficient = random.randint(1, 3) + random.random()
+        YGrid = [Coefficient for _ in self.XGrid]
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        if isinstance(Test, (int, float)):
+            self.assertAlmostEqual(Test, Coefficient)
+        else:
+            self.assertIsInstance(Test, Polynomial)
+            self.assertLessEqual(Test.Degree, 5)
+            for XValue in self.XGrid:
+                Check = Test(XValue)
+                self.assertAlmostEqual(Check, Coefficient)
+            del Test
     
     def test_Linear(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        Coefficients= [random.randint(1, 3) + random.random() for _ in range(2)]
+        Generator = Polynomial(*Coefficients)
+        YGrid = [Generator(XValue) for XValue in self.XGrid]
+        del Generator
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
     
     def test_Quadratic(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        Coefficients= [random.randint(1, 3) + random.random() for _ in range(3)]
+        Generator = Polynomial(*Coefficients)
+        YGrid = [Generator(XValue) for XValue in self.XGrid]
+        del Generator
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
     
     def test_Cubic(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        Coefficients= [random.randint(1, 3) + random.random() for _ in range(4)]
+        Generator = Polynomial(*Coefficients)
+        YGrid = [Generator(XValue) for XValue in self.XGrid]
+        del Generator
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
     
     def test_FourthDegree(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        Coefficients= [random.randint(1, 3) + random.random() for _ in range(5)]
+        Generator = Polynomial(*Coefficients)
+        YGrid = [Generator(XValue) for XValue in self.XGrid]
+        del Generator
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
     
     def test_FifthDegree(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        Coefficients= [random.randint(1, 3) + random.random() for _ in range(6)]
+        Generator = Polynomial(*Coefficients)
+        YGrid = [Generator(XValue) for XValue in self.XGrid]
+        del Generator
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
     
     def test_Sine(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        YGrid = [sin(XValue) for XValue in self.XGrid]
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
     
     def test_Sqrt(self):
         """
-        Test ID: 
+        Test ID: TEST-T-530, TEST-T-550, TEST-T-570, TEST-T-590
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-530, REQ-FUN-550, REQ-FUN-570, REQ-FUN-590
         """
-        pass
+        YGrid = [sqrt(XValue) for XValue in self.XGrid]
+        XYGrid = list(zip(self.XGrid, YGrid))
+        Test = self.TestFunc(XYGrid)
+        self.assertIsInstance(Test, Polynomial)
+        self.assertLessEqual(Test.Degree, 5)
+        for XValue in self.XGrid:
+            Check = Test(XValue)
+            self.assertAlmostEqual(Check, YGrid)
+        del Test
 
 class Test_GetLegendrePolynomial(unittest.TestCase):
     """
     Unit tests for the function GetLegendrePolynomial().
     
-    Test IDs: TEST-T-502 and TEST-T-503
+    Test IDs: TEST-T-541, TEST-T-502 and TEST-T-503
     
-    Covers requirements: REQ-AWM-502 and REQ-AWM-503
+    Covers requirements: REQ_FUN-541, REQ-AWM-502 and REQ-AWM-503
     
     Version 1.0.0.0
     """
@@ -614,6 +697,19 @@ class Test_GetLegendrePolynomial(unittest.TestCase):
         Preparations. Called only once.
         """
         cls.TestFunc = staticmethod(testmodule.GetLegendrePolynomial)
+        cls.Check = {
+            1 : [0, 1],
+            2 : [-0.5, 0, 1.5],
+            3 : [0, -1.5, 0, 2.5],
+            4 : [0.375, 0, -3.75, 0, 4.375],
+            5 : [0, 1.875, 0, -8.75, 0, 7.875],
+            6 : [-0.3125, 0, 6.5625, 0, -19.6875, 0, 14.4375],
+            7 : [0, -2.1875, 0, 19.6875, 0, 43.3125, 0, 26.8125],
+            8 : [0.2734, 0, -9.8438, 0, 54.1406, 0, -93.8437, 0, 50.2734],
+            9 : [0, 2.4609, 0, -36.0937, 0, 140.7656, 0, -201.0937, 0, 94.9609],
+            10 : [-0.2461, 0, 13.5352, 0, -117.3047, 0, 351.9141, 0,
+                                                        -427.3242, 0, 180.4258]
+        }
     
     def test_TypeError(self):
         """
@@ -621,7 +717,10 @@ class Test_GetLegendrePolynomial(unittest.TestCase):
         
         Requirement ID: REQ-AWM-502
         """
-        pass
+        WrongTypes = ['1', int, float, [1], (1, 2), {1, 2}, {1:2}, True, bool]
+        for Item in WrongTypes:
+            with self.assertRaises(TypeError):
+                Test = self.TestFunc(Item)
     
     def test_ValueError(self):
         """
@@ -629,15 +728,29 @@ class Test_GetLegendrePolynomial(unittest.TestCase):
         
         Requirement ID: REQ-AWM-503
         """
-        pass
+        for _ in range(100):
+            Degree = random.randint(1, 20)
+            with self.assertRaises(ValueError):
+                Test = self.TestFunc(-Degree)
     
     def test_Performance(self):
         """
-        Test ID: 
+        Test ID: TEST-T-541
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-541
         """
-        pass
+        Test = self.TestFunc(0)
+        self.assertIsInstance(Test, int)
+        self.assertEqual(Test, 1)
+        for Degree in range(1, 11):
+            Test = self.TestFunc(Degree)
+            self.assertIsInstance(Test, Polynomial)
+            self.assertEqual(Test.Degree, Degree)
+            Coefficients = Test.getCoefficients()
+            del Test
+            self.assertEqual(len(Coefficients), Degree + 1)
+            for TestValue, CheckValue in zip(Coefficients, self.Check[Degree]):
+                self.assertAlmostEqual(TestValue, CheckValue)
 
 class Test_GetLegendreBasis(unittest.TestCase):
     """
@@ -663,7 +776,10 @@ class Test_GetLegendreBasis(unittest.TestCase):
         
         Requirement ID: REQ-AWM-500
         """
-        pass
+        WrongTypes = ['1', int, float, [1], (1, 2), {1, 2}, {1:2}, True, bool]
+        for Item in WrongTypes:
+            with self.assertRaises(TypeError):
+                Test = self.TestFunc(Item)
     
     def test_ValueError(self):
         """
@@ -671,23 +787,46 @@ class Test_GetLegendreBasis(unittest.TestCase):
         
         Requirement ID: REQ-AWM-501
         """
-        pass
+        for _ in range(100):
+            Degree = random.randint(1, 20)
+            with self.assertRaises(ValueError):
+                Test = self.TestFunc(-Degree)
     
     def test_Performance(self):
         """
-        Test ID: 
+        Test ID: TEST-T-540
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-540
         """
-        pass
+        Test = self.TestFunc(0)
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [1])
+        for Degree in range(1, 11):
+            Test = self.TestFunc(Degree)
+            self.assertIsInstance(Test, list)
+            self.assertEqual(len(Test), Degree + 1)
+            for Index, Item in enumerate(Test):
+                if not Index:
+                    self.assertIsInstance(Item, int)
+                    self.assertEqual(Item, 1)
+                else:
+                    self.assertIsInstance(Item, Polynomial)
+                    self.assertEqual(Item.Degree, Index)
+                    Check = testmodule.GetChebyshevPolynomial(Degree)
+                    CheckTuple = Check.getCoefficients()
+                    del Check
+                    TestTuple = Item.getCoefficients()
+                    self.assertEqual(len(TestTuple), len(CheckTuple))
+                    for TestValue, CheckValue in zip(TestTuple, CheckTuple):
+                        self.assertAlmostEqual(TestValue, CheckValue)
 
 class Test_InterpolateLegendre(Test_InterpolateLagrange):
     """
     Unit tests for the function InterpolateLegendre().
     
-    Test IDs: TEST-T-504 and TEST-T-505
+    Test IDs: TEST-T-550, TEST-T-504 and TEST-T-505
     
-    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    Covers requirements: REQ-FUN-550, REQ-AWM-504 and REQ-AWM-505
     
     Version 1.0.0.0
     """
@@ -704,9 +843,9 @@ class Test_GetChebyshevPolynomial(Test_GetLegendrePolynomial):
     """
     Unit tests for the function GetChebyshevPolynomial().
     
-    Test IDs: TEST-T-502 and TEST-T-503
+    Test IDs: TEST-T-561, TEST-T-502 and TEST-T-503
     
-    Covers requirements: REQ-AWM-502 and REQ-AWM-503
+    Covers requirements: REQ-FUN-561, REQ-AWM-502 and REQ-AWM-503
     
     Version 1.0.0.0
     """
@@ -717,22 +856,43 @@ class Test_GetChebyshevPolynomial(Test_GetLegendrePolynomial):
         Preparations. Called only once.
         """
         cls.TestFunc = staticmethod(testmodule.GetChebyshevPolynomial)
+        cls.Check = {
+            1 : [0, 1],
+            2 : [-1, 0, 2],
+            3 : [0, -3, 0, 4],
+            4 : [1, 0, -8, 0, 8],
+            5 : [0, 5, 0, -20, 0, 16],
+            6 : [-1, 0, 18, 0, -48, 0, 32],
+            7 : [0, -7, 0, 56, 0, -112, 0, 64],
+            8 : [1, 0, -32, 0, 160, 0, -256, 0, 128],
+            9 : [0, 9, 0, -120, 0, 432, 0 -576, 0, 256],
+            10 : [-1, 0, 50, 0, -400, 0, 1120, 0, -1280, 0, 512]
+        }
     
     def test_Performance(self):
         """
-        Test ID: 
+        Test ID: TEST-T-561
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-561
         """
-        pass
+        Test = self.TestFunc(0)
+        self.assertIsInstance(Test, int)
+        self.assertEqual(Test, 1)
+        for Degree in range(1, 11):
+            Test = self.TestFunc(Degree)
+            self.assertIsInstance(Test, Polynomial)
+            self.assertEqual(Test.Degree, Degree)
+            Coefficients = list(Test.getCoefficients())
+            del Test
+            self.assertListEqual(Coefficients, self.Check[Degree])
 
 class Test_GetChebyshevBasis(Test_GetLegendreBasis):
     """
     Unit tests for the function GetChebyshevBasis().
     
-    Test IDs: TEST-T-500 and TEST-T-501
+    Test IDs: TEST-T-560, TEST-T-500 and TEST-T-501
     
-    Covers requirements: REQ-AWM-500 and REQ-AWM-501
+    Covers requirements: REQ-FUN-560, REQ-AWM-500 and REQ-AWM-501
     
     Version 1.0.0.0
     """
@@ -746,19 +906,36 @@ class Test_GetChebyshevBasis(Test_GetLegendreBasis):
     
     def test_Performance(self):
         """
-        Test ID: 
+        Test ID: TEST-T-560
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-560
         """
-        pass
+        Test = self.TestFunc(0)
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [1])
+        for Degree in range(1, 11):
+            Test = self.TestFunc(Degree)
+            self.assertIsInstance(Test, list)
+            self.assertEqual(len(Test), Degree + 1)
+            for Index, Item in enumerate(Test):
+                if not Index:
+                    self.assertIsInstance(Item, int)
+                    self.assertEqual(Item, 1)
+                else:
+                    self.assertIsInstance(Item, Polynomial)
+                    self.assertEqual(Item.Degree, Index)
+                    Check = testmodule.GetChebyshevPolynomial(Degree)
+                    self.assertTupleEqual(Item.getCoefficients(),
+                                                        Check.getCoefficients())
+                    del Check
 
 class Test_InterpolateChebyshev(Test_InterpolateLagrange):
     """
     Unit tests for the function InterpolateChebyshev().
     
-    Test IDs: TEST-T-504 and TEST-T-505
+    Test IDs: TEST-T-570, TEST-T-504 and TEST-T-505
     
-    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    Covers requirements: REQ-FUN-570, REQ-AWM-504 and REQ-AWM-505
     
     Version 1.0.0.0
     """
@@ -775,9 +952,9 @@ class Test_GetBernsteinPolynomial(unittest.TestCase):
     """
     Unit tests for the function GetBernsteinPolynomial().
     
-    Test IDs: 
+    Test IDs: TEST-T-581, TEST-T-582 and TEST-T-583
     
-    Covers requirements: REQ-AWM-580 and REQ-AWM-581
+    Covers requirements: REQ-FUN-581, REQ-AWM-580 and REQ-AWM-581
     
     Version 1.0.0.0
     """
@@ -788,38 +965,97 @@ class Test_GetBernsteinPolynomial(unittest.TestCase):
         Preparations. Called only once.
         """
         cls.TestFunc = staticmethod(testmodule.GetBernsteinPolynomial)
+        cls.Check = {
+            1 : {
+                0: [1, -1],
+                1: [0, 1]
+            },
+            2: {
+                0: [1, -2, 1],
+                1: [0, 2, - 2],
+                2: [0, 0, 1]
+            },
+            3: {
+                0: [1, -3, 3, -1],
+                1: [0, 3, -6, 3],
+                2: [0, 0, 3, -3],
+                3: [0, 0, 0, 1]
+            },
+            4: {
+                0: [1, -4, 6, -4, 1],
+                1: [0, 4, -12, 12, -4],
+                2: [0, 0, 6, -12, 6],
+                3: [0, 0, 0, 4, -4],
+                4: [0, 0, 0, 0, 1]
+            },
+            5: {
+                0: [1, -5, 10, -10, 5, -1],
+                1: [0, 5, -20, 30, -20, 5],
+                2: [0, 0, 10, -30, 30, -10],
+                3: [0, 0, 0, 10, -20, 10],
+                4: [0, 0, 0, 0, 5, -5],
+                5: [0, 0, 0, 0, 0, 1]
+            }
+        }
     
     def test_TypeError(self):
         """
-        Test ID:
+        Test ID: TEST-T-582
         
         Requirement ID: REQ-AWM-580
         """
-        pass
+        WrongTypes = ['1', int, float, [1], (1, 2), {1, 2}, {1:2}, True, bool]
+        for Item in WrongTypes:
+            with self.assertRaises(TypeError):
+                Test = self.TestFunc(Item, 1)
+            with self.assertRaises(TypeError):
+                Test = self.TestFunc(1, Item)
+            with self.assertRaises(TypeError):
+                Test = self.TestFunc(Item, Item)
     
     def test_ValueError(self):
         """
-        Test ID:
+        Test ID: TEST-T-583
         
         Requirement ID: REQ-AWM-581
         """
-        pass
+        for _ in range(100):
+            Degree = random.randint(1, 20)
+            with self.assertRaises(ValueError):
+                Test = self.TestFunc(-Degree, 1)
+            with self.assertRaises(ValueError):
+                Test = self.TestFunc(1, -Degree)
+            with self.assertRaises(ValueError):
+                Test = self.TestFunc(-Degree, -Degree)
+            BaseDegree = random.randint(0, 20)
+            with self.assertRaises(ValueError):
+                Test = self.TestFunc(BaseDegree, BaseDegree + Degree)
     
     def test_Performance(self):
         """
-        Test ID: 
+        Test ID: TEST-T-581
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-581
         """
-        pass
+        Test = self.TestFunc(0, 0)
+        self.assertIsInstance(Test, int)
+        self.assertEqual(Test, 1)
+        for Degree in range(1, 6):
+            for Index in range(Degree + 1):
+                Test = self.TestFunc(Degree, Index)
+                self.assertIsInstance(Test, Polynomial)
+                self.assertEqual(Test.Degree, Degree)
+                Coefficients = list(Test.getCoefficients())
+                del Test
+                self.assertListEqual(Coefficients, self.Check[Degree][Index])
 
 class Test_GetBernsteinBasis(Test_GetLegendreBasis):
     """
     Unit tests for the function GetBernsteinBasis().
     
-    Test IDs: TEST-T-500 and TEST-T-501
+    Test IDs: TEST-T-580, TEST-T-500 and TEST-T-501
     
-    Covers requirements: REQ-AWM-500 and REQ-AWM-501
+    Covers requirements: REQ-FUN-580, REQ-AWM-500 and REQ-AWM-501
     
     Version 1.0.0.0
     """
@@ -833,19 +1069,32 @@ class Test_GetBernsteinBasis(Test_GetLegendreBasis):
     
     def test_Performance(self):
         """
-        Test ID: 
+        Test ID: TEST-T-580
         
-        Requirement ID:
+        Requirement ID: REQ-FUN-580
         """
-        pass
+        Test = self.TestFunc(0)
+        self.assertIsInstance(Test, list)
+        self.assertListEqual(Test, [1])
+        for Degree in range(1, 6):
+            Test = self.TestFunc(Degree)
+            self.assertIsInstance(Test, list)
+            self.assertEqual(len(Test), Degree + 1)
+            for Index, Item in enumerate(Test):
+                self.assertIsInstance(Item, Polynomial)
+                self.assertEqual(Item.Degree, Degree)
+                Check = testmodule.GetBernsteinPolynomial(Degree, Index)
+                self.assertTupleEqual(Item.getCoefficients(),
+                                                        Check.getCoefficients())
+                del Check
 
 class Test_InterpolateBernstein(Test_InterpolateLagrange):
     """
     Unit tests for the function InterpolateBernstein().
     
-    Test IDs: TEST-T-504 and TEST-T-505
+    Test IDs: TEST-T-590, TEST-T-504 and TEST-T-505
     
-    Covers requirements: REQ-AWM-504 and REQ-AWM-505
+    Covers requirements: REQ-FUN-590, REQ-AWM-504 and REQ-AWM-505
     
     Version 1.0.0.0
     """
