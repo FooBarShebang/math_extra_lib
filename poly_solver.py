@@ -35,7 +35,7 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '03-11-2023'
+__date__ = '26-01-2024'
 __status__ = 'Development'
 
 #imports
@@ -50,6 +50,8 @@ from typing import List, Union, Sequence, Tuple
 from math import sqrt, pi
 from cmath import rect
 from random import random
+
+from collections.abc import Sequence as GSequence
 
 #+ custom modules
 
@@ -84,6 +86,8 @@ MAX_ITER = 1000 #1E3, maximum number of power iteration
 ALMOST_ZERO = 1.0E-12 #rounding precision threshold for calculations
 
 ROOTS_PRECISION = 1.0E-4 #precision of the found roots rounding
+
+NOT_SEQUENCE = (str, bytes, bytearray)
 
 #functions
 
@@ -401,17 +405,107 @@ def FindRoots(Poly: Polynomial) -> List[TNumber]:
 
 def GetLagrangePolynomial(Node: TReal, Roots: Sequence[TReal]) -> Polynomial:
     """
+    Calculates a single base Lagrange polynomial, which evaluates to 1 at the
+    provided node x-value and to 0 at all passed N roots (x-values).
+    
     Signature:
         int OR float, seq(int OR float) -> Polynomial
+    
+    Args:
+        Node: int OR float; the x-value, at which the polynomial evaluates to 1
+        Roots: seq(int OR float); sequence of real numbers (x-values), at which
+            the polynomial evaluates to 0
+    
+    Returns:
+        Polynomial: instance of, a polynomial of degree N, where N is the number
+            of the roots
+    
+    Raises:
+        UT_TypeError: the first argument is not a real number, OR the second
+            argument is not a sequence of real numbers
+        UT_ValueError: roots sequence is empty, OR it contains, at least,
+            2 equal elements
+    
+    Version 1.0.0.0
     """
-    pass
+    if (not isinstance(Node, (int, float))) or isinstance(Node, bool):
+        raise UT_TypeError(Node, (int, float), SkipFrames = 1)
+    if (not isinstance(Roots, GSequence)) or isinstance(Roots, NOT_SEQUENCE):
+        raise UT_TypeError(Roots, (list, tuple), SkipFrames = 1)
+    for Index, NewRoot in enumerate(Roots):
+        if (not isinstance(NewRoot, (int, float))) or isinstance(NewRoot, bool):
+            Error = UT_TypeError(NewRoot, (int, float), SkipFrames = 1)
+            Error.appendMessage(f' at index {Index} in {Roots}')
+            raise Error
+    NumberOfRoots = len(Roots)
+    if NumberOfRoots < 1:
+        raise UT_ValueError(NumberOfRoots, '>= 1 - number of roots',
+                                                                SkipFrames = 1)
+    _Roots = list()
+    for Index, NewRoot in enumerate(Roots):
+        if NewRoot in _Roots:
+            raise UT_ValueError(NewRoot, f'unique root in {Roots}',
+                                                                SkipFrames = 1)
+        if NewRoot == Node:
+            raise UT_ValueError(NewRoot,
+                                f'root <> node at index {Index} in {Roots}',
+                                                                SkipFrames = 1)
+        _Roots.append(NewRoot)
+    Scaling = 1
+    for Root in _Roots:
+        Scaling *= Node - Root
+    Result = Polynomial.fromRoots(*_Roots) / Scaling
+    return Result
 
 def GetLagrangeBasis(XGrid: Sequence[TReal]) -> List[Polynomial]:
     """
+    Calculates N base Lagrange base polynomials of the degree N-1 for the passed
+    N unique x-values (nodes).
+    
     Signature:
         seq(int OR float) -> list(Polynomial)
+    
+    Args:
+        XGrid: seq(int OR float); sequence of unique real numbers
+    
+    Returns:
+        list(Polynomial): list of instances of Polynomial class - the base
+            Lagrange polynomials
+    
+    Raises:
+        UT_TypeError: the passed argument is not a sequence of real numbers
+        UT_ValueError: the passed sequence contains less than 2 elements, OR,
+            at least, two elements are equal
+    
+    Version 1.0.0.0
     """
-    pass
+    if (not isinstance(XGrid, GSequence)) or isinstance(XGrid, NOT_SEQUENCE):
+        raise UT_TypeError(XGrid, (list, tuple), SkipFrames = 1)
+    for Index, Value in enumerate(XGrid):
+        if (not isinstance(Value, (int, float))) or isinstance(Value, bool):
+            Error = UT_TypeError(Value, (int, float), SkipFrames = 1)
+            Error.appendMessage(f' at index {Index} in {XGrid}')
+            raise Error
+    NumberNodes = len(XGrid)
+    if NumberNodes < 2:
+        raise UT_ValueError(NumberNodes, '>= 2 - number of nodes')
+    _Roots = list()
+    for Index, NewRoot in enumerate(XGrid):
+        if NewRoot in _Roots:
+            raise UT_ValueError(NewRoot, f'unique root in {XGrid}',
+                                                                SkipFrames = 1)
+        _Roots.append(NewRoot)
+    Result = list()
+    for Index, Node in enumerate(XGrid):
+        if not Index:
+            Roots = XGrid[1 : ]
+        elif Index == NumberNodes - 1:
+            Roots = XGrid[ : -1]
+        else:
+            Roots = XGrid[ : Index]
+            Roots.extend(XGrid[Index + 1 : ])
+        Result.append(GetLagrangePolynomial(Node, Roots))
+    return Result
 
 def InterpolateLagrange(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """

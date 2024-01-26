@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.poly_solver, see TE005.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "06-11-2023"
+__date__ = "26-01-2024"
 __status__ = "Testing"
 
 #imports
@@ -418,9 +418,7 @@ class Test_GetLagrangePolynomial(unittest.TestCase):
     """
     Unit tests for the function GetLagrangePolynomial().
     
-    Test IDs: TEST-T-520, TEST-T-521 and TEST-T-522
-    
-    Covers requirements: REQ-FUN-520, REQ-AWM-520 and REQ-AWM-521
+    Not part of the test plan, but the internal quality check.
     
     Version 1.0.0.0
     """
@@ -434,14 +432,12 @@ class Test_GetLagrangePolynomial(unittest.TestCase):
     
     def test_TypeError(self):
         """
-        Test ID: TEST-T-521
-        
-        Requirement ID: REQ-AWM-520
+        Checks the response to the bad input data types.
         """
         BadMesh = [
             '1, 2, 3', 1, 2.0, int , float, list, tuple, set, dict, bool, True,
             [1, '2', 3], {1 : 1, 2 : 2}, [[1, ], [2, ], [3, ]],
-            [1, complex(1, 0)]]
+            [1, complex(1, 0)], b'121', bytearray([1, 2, 3])]
         NotRealNumber = [
             '1, 2, 3', [1, 2], int , float, list, tuple, set, dict, bool, True,
             [1, '2', 3], {1 : 1, 2 : 2}, [[1, ], [2, ], [3, ]],
@@ -455,9 +451,7 @@ class Test_GetLagrangePolynomial(unittest.TestCase):
     
     def test_ValueError(self):
         """
-        Test ID: TEST-T-522
-        
-        Requirement ID: REQ-AWM-521
+        Checks the response to the improper values of the arguments.
         """
         with self.assertRaises(ValueError):
             Test = self.TestFunc(1, []) #at least, 1 root is required!
@@ -472,14 +466,16 @@ class Test_GetLagrangePolynomial(unittest.TestCase):
         
         Requirement ID: REQ-FUN-520
         """
-        Roots = [1.0, 3, 2.0]
+        Roots = []
         Node = 1.5
-        Test = self.TestFunc(Node, Roots)
-        self.assertIsInstance(Test, Polynomial)
-        self.assertEqual(Test.Degree, 3)
-        for Value in Roots:
-            self.assertAlmostEqual(Test(Value), 0)
-        self.assertAlmostEqual(Test(Node), 1)
+        for NewRoot in [1, 2, 3.0, 0.5, -1.0]:
+            Roots.append(NewRoot)
+            Test = self.TestFunc(Node, Roots)
+            self.assertIsInstance(Test, Polynomial)
+            self.assertEqual(Test.Degree, len(Roots))
+            for Value in Roots:
+                self.assertAlmostEqual(Test(Value), 0)
+            self.assertAlmostEqual(Test(Node), 1)
 
 class Test_GetLagrangeBasis(unittest.TestCase):
     """
@@ -508,7 +504,7 @@ class Test_GetLagrangeBasis(unittest.TestCase):
         BadMesh = [
             '1, 2, 3', 1, 2.0, int , float, list, tuple, set, dict, bool, True,
             [1, '2', 3], {1 : 1, 2 : 2}, [[1, ], [2, ], [3, ]],
-            [1, complex(1, 0)]]
+            [1, complex(1, 0)], b'121', bytearray([1, 2, 3])]
         for Item in BadMesh:
             with self.assertRaises(TypeError):
                 Test = self.TestFunc(Item)
@@ -532,24 +528,26 @@ class Test_GetLagrangeBasis(unittest.TestCase):
         
         Requirement ID: REQ-FUN-520
         """
-        Roots = [1.0, 3, 2.0, 4]
-        Test = self.TestFunc(Roots)
-        self.assertIsInstance(Test, list)
-        self.assertEqual(len(Test), 4)
-        for Index, Node in Roots:
-            Check = Test[Index]
-            self.assertIsInstance(Check, Polynomial)
-            self.assertEqual(Check.Degree, 3)
-            if not Index:
-                Zeroes = Roots[1 : ]
-            elif Index == 3:
-                Zeroes = Roots[ : 3]
-            else:
-                Zeroes = Roots[ : Index]
-                Zeroes.extend(Roots[Index + 1 : ])
-            self.assertAlmostEqual(Check(Node), 1)
-            for Root in Zeroes:
-                self.assertAlmostEqual(Check(Root), 0)
+        Roots = [1.0]
+        for Degree in range(2, 7):
+            Roots.append(Roots[-1] + 0.1 + random.random())
+            Test = self.TestFunc(Roots)
+            self.assertIsInstance(Test, list)
+            self.assertEqual(len(Test), Degree)
+            for Index, Node in enumerate(Roots):
+                Check = Test[Index]
+                self.assertIsInstance(Check, Polynomial)
+                self.assertEqual(Check.Degree, Degree - 1)
+                if not Index:
+                    Zeroes = Roots[1 : ]
+                elif Index == Degree - 1:
+                    Zeroes = Roots[ : -1]
+                else:
+                    Zeroes = Roots[ : Index]
+                    Zeroes.extend(Roots[Index + 1 : ])
+                self.assertAlmostEqual(Check(Node), 1)
+                for Root in Zeroes:
+                    self.assertAlmostEqual(Check(Root), 0)
 
 class Test_InterpolateLagrange(unittest.TestCase):
     """

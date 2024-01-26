@@ -201,9 +201,9 @@ Check that the expected exception is raised each time.
 
 **Expected result:** For N unique x-values exactly N polynomials of the degree N-1 are generated. A polynomial corresponding i-th x-point evaluates to 1 at this point and to 0 at all other points.
 
-**Test steps:** Generate a random x-grid of 6 points. Generate the polynomial basis. Check that there are 6 polynomials in it, and each is of the degree 5. Check that a polynomial corresponding i-th x-point evaluates to 1 at this point and to 0 at all other points.
+**Test steps:** Generate a random x-grid of 2 to 6 points (N). Generate the polynomial basis. Check that there are N polynomials in it, and each is of the degree N-1. Check that a polynomial corresponding i-th x-point evaluates to 1 at this point and to 0 at all other points.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -217,12 +217,12 @@ Check that the expected exception is raised each time.
 
 **Expected result:** The respective function raises an exception compatible with TypeError if the passed argument is not a sequence of real numbers.
 
-**Test steps:** Try to call the concerned functions with an argument of any of the impoper data type / structure:
+**Test steps:** Try to call the concerned function with an argument of any of the impoper data type / structure:
 
 * the argument is not a sequence at all (including a string, bytestring and bytearray types)
 * at least, one element is not a a real number
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -234,7 +234,9 @@ Check that the expected exception is raised each time.
 
 **Test goal:** Proper treatment of the improper x-grid definintion by the function generating Lagrange polynomial basis.
 
-**Expected result:** Try to call the concerned functions with the following argument:
+**Expected result:** The respective function raises an exception compatible with ValueError if the passed sequence of real numbers contains less than 2 elements, or, at least, 2 elements are equal.
+
+**Test steps:** Try to call the concerned functions with the following argument:
 
 * An empty sequence
 * A sequence containing only a single real number
@@ -242,9 +244,7 @@ Check that the expected exception is raised each time.
 
 Check that the expected exception is raised each time.
 
-**Test steps:** Try to call the concerned functions with an arbitrary negative integer number value of the argument. Check that the expected exception is raised. Repeat several times.
-
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -506,7 +506,7 @@ For traceability the relation between tests and requirements is summarized in th
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
 | REQ-FUN-500        | TEST-A-500                                                   | NO                      |
 | REQ-FUN-510        | TEST-T-510                                                   | YES                     |
-| REQ-FUN-520        | TEST-T-520                                                   | NO                      |
+| REQ-FUN-520        | TEST-T-520                                                   | YES                     |
 | REQ-FUN-530        | TEST-T-530                                                   | NO                      |
 | REQ-FUN-540        | TEST-T-540                                                   | NO                      |
 | REQ-FUN-541        | TEST-T-541                                                   | NO                      |
@@ -524,8 +524,8 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-AWM-504        | TEST-T-504                                                   | NO                      |
 | REQ-AWM-505        | TEST-T-505                                                   | NO                      |
 | REQ-AWM-510        | TEST-T-511                                                   | YES                     |
-| REQ-AWM-520        | TEST-T-521                                                   | NO                      |
-| REQ-AWM-521        | TEST-T-523                                                   | NO                      |
+| REQ-AWM-520        | TEST-T-521                                                   | YES                     |
+| REQ-AWM-521        | TEST-T-523                                                   | YES                     |
 | REQ-AWM-580        | TEST-T-582                                                   | NO                      |
 | REQ-AWM-581        | TEST-T-583                                                   | NO                      |
 
