@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.poly_solver, see TE005.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "26-01-2024"
+__date__ = "20-02-2024"
 __status__ = "Testing"
 
 #imports
@@ -605,15 +605,9 @@ class Test_InterpolateLagrange(unittest.TestCase):
         YGrid = [Coefficient for _ in self.XGrid]
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
-        if isinstance(Test, (int, float)):
-            self.assertAlmostEqual(Test, Coefficient)
-        else:
-            self.assertIsInstance(Test, Polynomial)
-            self.assertLessEqual(Test.Degree, 5)
-            for XValue in self.XGrid:
-                Check = Test(XValue)
-                self.assertAlmostEqual(Check, Coefficient)
-            del Test
+        self.assertIsInstance(Test, (int, float))
+        self.assertAlmostEqual(Test, Coefficient)
+        del Test
     
     def test_Linear(self):
         """
@@ -628,10 +622,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 1)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
     
     def test_Quadratic(self):
@@ -647,10 +641,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 2)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
     
     def test_Cubic(self):
@@ -666,10 +660,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 3)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
     
     def test_FourthDegree(self):
@@ -685,10 +679,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 4)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
     
     def test_FifthDegree(self):
@@ -704,10 +698,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 5)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
     
     def test_Sine(self):
@@ -720,10 +714,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 5)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
     
     def test_Sqrt(self):
@@ -736,10 +730,10 @@ class Test_InterpolateLagrange(unittest.TestCase):
         XYGrid = list(zip(self.XGrid, YGrid))
         Test = self.TestFunc(XYGrid)
         self.assertIsInstance(Test, Polynomial)
-        self.assertLessEqual(Test.Degree, 5)
-        for XValue in self.XGrid:
+        self.assertEqual(Test.Degree, 5)
+        for XValue, YValue in zip(self.XGrid, YGrid):
             Check = Test(XValue)
-            self.assertAlmostEqual(Check, YGrid)
+            self.assertAlmostEqual(Check, YValue)
         del Test
 
 class Test_GetLegendrePolynomial(unittest.TestCase):
@@ -766,7 +760,7 @@ class Test_GetLegendrePolynomial(unittest.TestCase):
             4 : [0.375, 0, -3.75, 0, 4.375],
             5 : [0, 1.875, 0, -8.75, 0, 7.875],
             6 : [-0.3125, 0, 6.5625, 0, -19.6875, 0, 14.4375],
-            7 : [0, -2.1875, 0, 19.6875, 0, 43.3125, 0, 26.8125],
+            7 : [0, -2.1875, 0, 19.6875, 0, -43.3125, 0, 26.8125],
             8 : [0.2734, 0, -9.8438, 0, 54.1406, 0, -93.8437, 0, 50.2734],
             9 : [0, 2.4609, 0, -36.0937, 0, 140.7656, 0, -201.0937, 0, 94.9609],
             10 : [-0.2461, 0, 13.5352, 0, -117.3047, 0, 351.9141, 0,
@@ -927,26 +921,9 @@ class Test_GetChebyshevPolynomial(Test_GetLegendrePolynomial):
             6 : [-1, 0, 18, 0, -48, 0, 32],
             7 : [0, -7, 0, 56, 0, -112, 0, 64],
             8 : [1, 0, -32, 0, 160, 0, -256, 0, 128],
-            9 : [0, 9, 0, -120, 0, 432, 0 -576, 0, 256],
+            9 : [0, 9, 0, -120, 0, 432, 0, -576, 0, 256],
             10 : [-1, 0, 50, 0, -400, 0, 1120, 0, -1280, 0, 512]
         }
-    
-    def test_Performance(self):
-        """
-        Test ID: TEST-T-561
-        
-        Requirement ID: REQ-FUN-561
-        """
-        Test = self.TestFunc(0)
-        self.assertIsInstance(Test, int)
-        self.assertEqual(Test, 1)
-        for Degree in range(1, 11):
-            Test = self.TestFunc(Degree)
-            self.assertIsInstance(Test, Polynomial)
-            self.assertEqual(Test.Degree, Degree)
-            Coefficients = list(Test.getCoefficients())
-            del Test
-            self.assertListEqual(Coefficients, self.Check[Degree])
 
 class Test_GetChebyshevBasis(Test_GetLegendreBasis):
     """

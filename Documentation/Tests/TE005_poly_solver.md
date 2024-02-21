@@ -61,7 +61,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the concerned functions with an argument of any data type except for the **int** type. Check that the expected exception is raised. Repeat several times with the different data types.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -77,7 +77,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the concerned functions with an arbitrary negative integer number value of the argument. Check that the expected exception is raised. Repeat several times.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -93,7 +93,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the concerned functions with an argument of any data type except for the **int** type. Check that the expected exception is raised. Repeat several times with the different data types.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -109,7 +109,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Try to call the concerned functions with an arbitrary negative integer number value of the argument. Check that the expected exception is raised. Repeat several times.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -130,7 +130,7 @@ The verification method for a requirement is given by a single letter according 
 * at least, one element is a (sub-) sequence but not of the length 2
 * at least, one element is a (sub-) sequence of a length 2, but, at least, one of its (sub-) elements is not a real number
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -155,7 +155,7 @@ The verification method for a requirement is given by a single letter according 
 
 Check that the expected exception is raised each time.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -443,7 +443,7 @@ The values of the coefficients can be chosen arbitrary
 
 Check that the expected exception is raised each time. Repeat several times with the different improper data types.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -470,7 +470,7 @@ Check that the expected exception is raised each time. Repeat several times with
 
 Check that the expected exception is raised each time.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -517,17 +517,17 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-580        | TEST-T-580                                                   | NO                      |
 | REQ-FUN-581        | TEST-T-581                                                   | NO                      |
 | REQ-FUN-590        | TEST-T-590                                                   | NO                      |
-| REQ-AWM-500        | TEST-T-500                                                   | NO                      |
-| REQ-AWM-501        | TEST-T-501                                                   | NO                      |
-| REQ-AWM-502        | TEST-T-502                                                   | NO                      |
-| REQ-AWM-503        | TEST-T-503                                                   | NO                      |
-| REQ-AWM-504        | TEST-T-504                                                   | NO                      |
-| REQ-AWM-505        | TEST-T-505                                                   | NO                      |
+| REQ-AWM-500        | TEST-T-500                                                   | YES                     |
+| REQ-AWM-501        | TEST-T-501                                                   | YES                     |
+| REQ-AWM-502        | TEST-T-502                                                   | YES                     |
+| REQ-AWM-503        | TEST-T-503                                                   | YES                     |
+| REQ-AWM-504        | TEST-T-504                                                   | YES                     |
+| REQ-AWM-505        | TEST-T-505                                                   | YES                     |
 | REQ-AWM-510        | TEST-T-511                                                   | YES                     |
 | REQ-AWM-520        | TEST-T-521                                                   | YES                     |
 | REQ-AWM-521        | TEST-T-523                                                   | YES                     |
-| REQ-AWM-580        | TEST-T-582                                                   | NO                      |
-| REQ-AWM-581        | TEST-T-583                                                   | NO                      |
+| REQ-AWM-580        | TEST-T-582                                                   | YES                     |
+| REQ-AWM-581        | TEST-T-583                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |

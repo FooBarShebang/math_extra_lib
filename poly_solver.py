@@ -35,7 +35,7 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '26-01-2024'
+__date__ = '20-02-2024'
 __status__ = 'Development'
 
 #imports
@@ -45,7 +45,7 @@ __status__ = 'Development'
 import sys
 import os
 
-from typing import List, Union, Sequence, Tuple
+from typing import List, Union, Sequence, Tuple, Any
 
 from math import sqrt, pi
 from cmath import rect
@@ -75,7 +75,8 @@ TReal = Union[int, float]
 
 TNumber = Union[int, float, complex]
 
-TCoordinates = Tuple[TReal, TReal]
+TCoordinates = Tuple[TReal, TReal] #replace by Annotated[Sequence[TReal], 2]
+# in Python 3.9 and later
 
 TGrid = Sequence[TCoordinates]
 
@@ -377,6 +378,124 @@ def _FindAllRoots(Coefficients: List[TNumber]) -> List[TNumber]:
                                                         for Guess in Guesses]
     return Roots
 
+def _ReducePolynomialDegree(Poly: Polynomial) -> Union[Polynomial, TReal]:
+    """
+    Reduces the degree of an interpolation polynomial, which can be higher than
+    expected due to rounding error. This process reduces the oscillation effect,
+    than the fitted X-Y values series is produced by a polynomial of a lower
+    degree.
+    
+    Signature:
+        Polynomial -> Polynomial OR int OR float
+    
+    Args:
+        Poly: Polynomial; calcualted interpolation polynomial
+    
+    Returns:
+        Polynomial OR int OR float: polynomial of the same or lower degree, or
+            even a real number (0-th degree)
+    
+    Version 1.0.0.0
+    """
+    Coefficients = list(Poly.getCoefficients()) #from 0-th degree upwards
+    while len(Coefficients):
+        if abs(Coefficients[-1]) < ALMOST_ZERO:
+            Coefficients.pop()
+        else:
+            break
+    if not len(Coefficients):
+        Result = 0
+    elif len(Coefficients) == 1:
+        Result = Coefficients[0]
+    else:
+        Result = Polynomial(*Coefficients)
+    return Result
+
+def _CheckXYGrid(Value: Any, *, SkipFrames : int = 2) -> None:
+    """
+    Helper function to perform a routine check if the received argument is a
+    sequence of 2-element sub-sequences of real numbers, representing an X-Y
+    grid with unique X values.
+    
+    Signature:
+        type A/, *, int > 0/ -> None
+    
+    Args:
+        Value: type A; the parameter to be checked
+        SkipFrame: (keyword) int > 0; a number of frames to be hidden in the
+            raised exceptions, defaults to 2 as this function is supposed to
+            be called from another function or method
+    
+    Raises:
+        UT_TypeError: the passed argument is not a sequence, OR any of its
+            elements is not a sequence (nested) of real numbers (int or float),
+            OR a length of any of the sub-sequence is not 2
+        UT_ValueError: the passed argument is empty or contains only 1 element,
+            OR any of the X values is not unique (first element of the
+            sub-sequences)
+    
+    Version 1.0.0.0
+    """
+    if ((not isinstance(Value, GSequence))
+                                or isinstance(Value, (str, bytes, bytearray))):
+        raise UT_TypeError(Value, (list, tuple), SkipFrames = SkipFrames)
+    for Index, Item in enumerate(Value):
+        if ((not isinstance(Item, GSequence)) or
+                                    isinstance(Item, (str, bytes, bytearray))):
+            Error = UT_TypeError(Item, (list, tuple), SkipFrames = SkipFrames)
+            Error.appendMessage(f'item index {Index} in {Value}')
+            raise Error
+        if len(Item) != 2:
+            Error = UT_TypeError(Item, list, SkipFrames = SkipFrames)
+            Error.setMessage(' '.join([f'{Item} at index {Index} in {Value}',
+                                       'is not of the length 2']))
+            raise Error
+        for SubIndex, Coordinate in enumerate(Item):
+            if ((not isinstance(Coordinate, (int, float))) or
+                                                isinstance(Coordinate, bool)):
+                Error = UT_TypeError(Coordinate, (int, float),
+                                                        SkipFrames = SkipFrames)
+                Error.appendMessage(' '.join([f'item index {SubIndex} in',
+                                                f'sub-sequence index {Index}',
+                                                                f'in {Value}']))
+                raise Error
+    NumberPoints = len(Value)
+    if NumberPoints < 2:
+        raise UT_ValueError(NumberPoints, '== 2, number of points',
+                                                        SkipFrames = SkipFrames)
+    Nodes = []
+    for x, _ in Value:
+        if not (x in Nodes):
+            Nodes.append(x)
+        else:
+            raise UT_ValueError(x, f'unique node x-value in {Value}',
+                                                        SkipFrames = SkipFrames)
+
+def _CheckDegree(Value: Any, *, SkipFrames : int = 2) -> None:
+    """
+    Helper function to perform a routine check if the received argument is a
+    non-negative integer number (polynomial degree)
+    
+    Signature:
+        type A/, *, int > 0/ -> None
+    
+    Args:
+        Value: type A; the parameter to be checked
+        SkipFrame: (keyword) int > 0; a number of frames to be hidden in the
+            raised exceptions, defaults to 2 as this function is supposed to
+            be called from another function or method
+    
+    Raises:
+        UT_TypeError: the passed argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number
+    
+    Version 1.0.0.0
+    """
+    if (not isinstance(Value, int)) or isinstance(Value, bool):
+        raise UT_TypeError(Value, int, SkipFrames = SkipFrames)
+    if Value < 0:
+        raise UT_ValueError(Value, '>= 0', SkipFrames = SkipFrames)
+
 #+ public functions
 
 def FindRoots(Poly: Polynomial) -> List[TNumber]:
@@ -509,71 +628,311 @@ def GetLagrangeBasis(XGrid: Sequence[TReal]) -> List[Polynomial]:
 
 def InterpolateLagrange(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
+    Calculates an interpolatig polynomial of degree <= N - 1, where N is the
+    number of (X,Y) data points provided. The calculated polynomial goes
+    (almost) exactly through each of the provided data points. A constant
+    function (0-th degree polynomial) is represented by a real number, higher
+    degrees - by an instance of the math_extra_lib.polynomial.Polynomial class.
+    Lagrange polynomial basis is used in the calculations.
+    
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    
+    Returns:
+        Polynomial: instance of, interpolating polynomial of degree 1 or higher
+        int OR float: interpolating function is constant (0-th degree)
+    
+    Raises:
+        UT_TypeError: the passed argument is not a sequence, OR any of its
+            elements is not a sequence (nested) of real numbers (int or float),
+            OR a length of any of the sub-sequence is not 2
+        UT_ValueError: the passed argument is empty or contains only 1 element,
+            OR any of the X values is not unique (first element of the
+            sub-sequences)
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckXYGrid(XYGrid)
+    XGrid, YGrid = zip(*XYGrid)
+    Basis = GetLagrangeBasis(list(XGrid))
+    PolynomialSum = sum(y * BasePolynomial for y, BasePolynomial in
+                                                            zip(YGrid, Basis))
+    Result = _ReducePolynomialDegree(PolynomialSum)
+    del PolynomialSum
+    return Result
 
 def GetLegendrePolynomial(Degree: int) -> Union[Polynomial, int]:
     """
+    Calculates a single Legendre polynomial of degree N >= 0.
+    
     Signature:
         int >= 0 -> Polynomial OR int
+    
+    Args:
+        Degree: int >= 0; the requested degree of the polynomial
+    
+    Returns:
+        Polynomial: instance of, degree > 0
+        int: value = 1, degree is 0
+    
+    Raises:
+        UT_TypeError: the passed argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckDegree(Degree)
+    if not Degree:
+        Result = 1
+    elif Degree == 1:
+        Result = Polynomial(0, 1)
+    else:
+        Next2Last = [0, 1]
+        Last = [1]
+        FoundDegree = 1
+        while FoundDegree < Degree:
+            Coefficient = (2 * FoundDegree + 1) / (FoundDegree + 1)
+            Next = [Coefficient * Item for Item in Next2Last]
+            Next.insert(0, 0)
+            Coefficient = - FoundDegree / (FoundDegree + 1)
+            for Index, Item in enumerate(Last):
+                Next[Index] += Coefficient * Item
+            del Last
+            Last = Next2Last
+            Next2Last = Next
+            FoundDegree += 1
+        Result = Polynomial(*Next)
+        del Last
+        del Next2Last
+        del Next
+    return Result
 
 def GetLegendreBasis(Degree: int) -> List[Union[Polynomial, int]]:
     """
+    Calculates a complete Legendre polynomial base of degree N >= 0.
+    
     Signature:
         int >= 0 -> list(Polynomial OR int)
+    
+    Args:
+        Degree: int >= 0; the requested degree of the basis
+    
+    Returns:
+        list(Polynomial OR int): the basis, where the first element is always 1,
+            and each subsequent element is an instance of polynomial class of
+            the degree equal to the element index
+    
+    Raises:
+        UT_TypeError: the passed argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckDegree(Degree)
 
 def InterpolateLegendre(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
+    Calculates an interpolatig polynomial of degree <= N - 1, where N is the
+    number of (X,Y) data points provided. The calculated polynomial goes
+    (almost) exactly through each of the provided data points. A constant
+    function (0-th degree polynomial) is represented by a real number, higher
+    degrees - by an instance of the math_extra_lib.polynomial.Polynomial class.
+    Legendre polynomial basis is used in the calculations.
+    
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    
+    Returns:
+        Polynomial: instance of, interpolating polynomial of degree 1 or higher
+        int OR float: interpolating function is constant (0-th degree)
+    
+    Raises:
+        UT_TypeError: the passed argument is not a sequence, OR any of its
+            elements is not a sequence (nested) of real numbers (int or float),
+            OR a length of any of the sub-sequence is not 2
+        UT_ValueError: the passed argument is empty or contains only 1 element,
+            OR any of the X values is not unique (first element of the
+            sub-sequences)
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckXYGrid(XYGrid)
 
 def GetChebyshevPolynomial(Degree: int) -> Union[Polynomial, int]:
     """
+    Calculates a single Chebyshev polynomial (of the 1st kind) of degree N >= 0.
+    
     Signature:
         int >= 0 -> Polynomial OR int
+    
+    Args:
+        Degree: int >= 0; the requested degree of the polynomial
+    
+    Returns:
+        Polynomial: instance of, degree > 0
+        int: value = 1, degree is 0
+    
+    Raises:
+        UT_TypeError: the passed argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckDegree(Degree)
+    if not Degree:
+        Result = 1
+    elif Degree == 1:
+        Result = Polynomial(0, 1)
+    else:
+        Next2Last = [0, 1]
+        Last = [1]
+        FoundDegree = 1
+        while FoundDegree < Degree:
+            Next = [2 * Item for Item in Next2Last]
+            Next.insert(0, 0)
+            for Index, Item in enumerate(Last):
+                Next[Index] -= Item
+            del Last
+            Last = Next2Last
+            Next2Last = Next
+            FoundDegree += 1
+        Result = Polynomial(*Next)
+        del Last
+        del Next2Last
+        del Next
+    return Result
 
 def GetChebyshevBasis(Degree: int) -> List[Union[Polynomial, int]]:
     """
+    Calculates a complete Chebyshev polynomial base of degree N >= 0 (of the 1st
+    kind).
+    
     Signature:
         int >= 0 -> list(Polynomial OR int)
+    
+    Args:
+        Degree: int >= 0; the requested degree of the basis
+    
+    Returns:
+        list(Polynomial OR int): the basis, where the first element is always 1,
+            and each subsequent element is an instance of polynomial class of
+            the degree equal to the element index
+    
+    Raises:
+        UT_TypeError: the passed argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckDegree(Degree)
 
 def InterpolateChebyshev(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
+    Calculates an interpolatig polynomial of degree <= N - 1, where N is the
+    number of (X,Y) data points provided. The calculated polynomial goes
+    (almost) exactly through each of the provided data points. A constant
+    function (0-th degree polynomial) is represented by a real number, higher
+    degrees - by an instance of the math_extra_lib.polynomial.Polynomial class.
+    Chebyshev polynomial basis is used in the calculations.
+    
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    
+    Returns:
+        Polynomial: instance of, interpolating polynomial of degree 1 or higher
+        int OR float: interpolating function is constant (0-th degree)
+    
+    Raises:
+        UT_TypeError: the passed argument is not a sequence, OR any of its
+            elements is not a sequence (nested) of real numbers (int or float),
+            OR a length of any of the sub-sequence is not 2
+        UT_ValueError: the passed argument is empty or contains only 1 element,
+            OR any of the X values is not unique (first element of the
+            sub-sequences)
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckXYGrid(XYGrid)
 
 
 def GetBernsteinPolynomial(Degree: int, Index: int) -> Union[Polynomial, int]:
     """
+    Calculates a single Bernstein polynomial of degree N >= 0 and index K, where
+    0 <= K <= N.
+    
     Signature:
-        int >= 0, int >= 0 -> Polynomial OR int
+        int >= 0 -> Polynomial OR int
+    
+    Args:
+        Degree: int >= 0; the requested degree of the polynomial
+        Index: int >= 0; the requested index, should not exceed the degree
+    
+    Returns:
+        Polynomial: instance of, degree > 0
+        int: value = 1, degree is 0
+    
+    Raises:
+        UT_TypeError: the first passed argument is not an integer number, OR the
+            second argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number, OR the
+            second argument is a negative integer number, OR the second argument
+            is greater than the first
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckDegree(Degree)
+    _CheckDegree(Index)
+    if Index > Degree:
+        raise UT_ValueError(Index,
+                f'<= {Degree}, index should not exceed degree', SkipFrames = 1)
 
 def GetBernsteinBasis(Degree: int) -> Union[List[Polynomial], List[int]]:
     """
+    Calculates a complete Bernstein polynomial base of degree N >= 0.
+    
     Signature:
-        int >= 0 -> list(Polynomial) OR list(int)
+        int >= 0 -> list(Polynomial OR int)
+    
+    Args:
+        Degree: int >= 0; the requested degree of the basis
+    
+    Returns:
+        list(Polynomial OR int): the basis, for the Degree 0 it is [1],
+            otherwise it contains N=Degree Polynomial class instances, each
+            being a polynomial of degree = Degree
+    
+    Raises:
+        UT_TypeError: the passed argument is not an integer number
+        UT_ValueError: the passed argument is a negative integer number
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckDegree(Degree)
 
 def InterpolateBernstein(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
+    Calculates an interpolatig polynomial of degree <= N - 1, where N is the
+    number of (X,Y) data points provided. The calculated polynomial goes
+    (almost) exactly through each of the provided data points. A constant
+    function (0-th degree polynomial) is represented by a real number, higher
+    degrees - by an instance of the math_extra_lib.polynomial.Polynomial class.
+    Bernstein polynomial basis is used in the calculations.
+    
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    
+    Returns:
+        Polynomial: instance of, interpolating polynomial of degree 1 or higher
+        int OR float: interpolating function is constant (0-th degree)
+    
+    Raises:
+        UT_TypeError: the passed argument is not a sequence, OR any of its
+            elements is not a sequence (nested) of real numbers (int or float),
+            OR a length of any of the sub-sequence is not 2
+        UT_ValueError: the passed argument is empty or contains only 1 element,
+            OR any of the X values is not unique (first element of the
+            sub-sequences)
+    
+    Version 1.0.0.0
     """
-    pass
+    _CheckXYGrid(XYGrid)
