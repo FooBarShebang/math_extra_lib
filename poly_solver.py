@@ -109,8 +109,14 @@ def _RoundAndConvert(Value: TNumber, *,
         Precision: (keyword) float; the desired precision of float -> int
             rounding, defaults to ALMOST_ZERO constant
     
+    Raises:
+        UT_TypeError: the passed argument is not a number
+    
     Version 1.0.0.0
     """
+    if ((not isinstance(Value, (int, float, complex))) or
+                                                    isinstance(Value, bool)):
+        raise UT_TypeError(Value, (int, float, complex), SkipFrames = 1)
     if isinstance(Value, complex):
         if abs(Value.imag) < Precision:
             Result = Value.real
@@ -395,8 +401,14 @@ def _ReducePolynomialDegree(Poly: Polynomial) -> Union[Polynomial, TReal]:
         Polynomial OR int OR float: polynomial of the same or lower degree, or
             even a real number (0-th degree)
     
+    Raises:
+        UT_TypeError: the passed argument in not an instance of the Polynomial
+            class
+    
     Version 1.0.0.0
     """
+    if not isinstance(Poly, Polynomial):
+        raise UT_TypeError(Poly, Polynomial, SkipFrames = 1)
     Coefficients = list(Poly.getCoefficients()) #from 0-th degree upwards
     while len(Coefficients):
         if abs(Coefficients[-1]) < ALMOST_ZERO:
@@ -495,6 +507,44 @@ def _CheckDegree(Value: Any, *, SkipFrames : int = 2) -> None:
         raise UT_TypeError(Value, int, SkipFrames = SkipFrames)
     if Value < 0:
         raise UT_ValueError(Value, '>= 0', SkipFrames = SkipFrames)
+
+def _GetGeneralizedBinomialCoefficient(n: TReal, k: int) -> TReal:
+    """
+    Calculates a generalized binomial coefficient 'n choose k', where the n
+    may be any real number, whilst k is a natural number (positive integer).
+    
+    Signature:
+        int OR float, int >= 0 -> int OR float
+    
+    Args:
+        n: int OR float; any real number as the 'population' size
+        k: int >= 0; natural (positive integer) number as the sample size
+    
+    Raises:
+        UT_TypeError: the first argument is not a real number, OR the second
+            argument is not an integer number
+        UT_ValueError: the second argument is negative
+    """
+    if (not isinstance(n, (int, float))) or isinstance(n, bool):
+        Error = UT_TypeError(n, (int, float), SkipFrames = 1)
+        Error.appendMessage('- the first argument')
+        raise Error
+    if (not isinstance(k, int)) or isinstance(k, bool):
+        Error = UT_TypeError(k, int, SkipFrames = 1)
+        Error.appendMessage('- the second argument')
+        raise Error
+    if k < 0:
+        raise UT_ValueError(k, '>= 0 - the second argument', SkipFrames = 1)
+    elif not k:
+        Result = 1
+    else:
+        Divident = n
+        Divisor = k
+        for i in range(1, k):
+            Divident *= (n-i)
+            Divisor *= (k-i)
+        Result = Divident / Divisor
+    return Result
 
 #+ public functions
 
@@ -687,24 +737,12 @@ def GetLegendrePolynomial(Degree: int) -> Union[Polynomial, int]:
     elif Degree == 1:
         Result = Polynomial(0, 1)
     else:
-        Next2Last = [0, 1]
-        Last = [1]
-        FoundDegree = 1
-        while FoundDegree < Degree:
-            Coefficient = (2 * FoundDegree + 1) / (FoundDegree + 1)
-            Next = [Coefficient * Item for Item in Next2Last]
-            Next.insert(0, 0)
-            Coefficient = - FoundDegree / (FoundDegree + 1)
-            for Index, Item in enumerate(Last):
-                Next[Index] += Coefficient * Item
-            del Last
-            Last = Next2Last
-            Next2Last = Next
-            FoundDegree += 1
-        Result = Polynomial(*Next)
-        del Last
-        del Next2Last
-        del Next
+        Func = _GetGeneralizedBinomialCoefficient
+        Coefficients = [pow(2, Degree) * Func(Degree, k) * Func(
+                                                    (Degree + k - 1)/2, Degree)
+                                                for k in range(0, Degree + 1)]
+        Result = Polynomial(*Coefficients)
+    print(Result)
     return Result
 
 def GetLegendreBasis(Degree: int) -> List[Union[Polynomial, int]]:
