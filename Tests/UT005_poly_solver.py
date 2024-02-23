@@ -6,7 +6,7 @@ Implements unit testing of the module math_extra_lib.poly_solver, see TE005.
 """
 
 __version__ = "1.0.0.0"
-__date__ = "20-02-2024"
+__date__ = "23-02-2024"
 __status__ = "Testing"
 
 #imports
@@ -761,10 +761,12 @@ class Test_GetLegendrePolynomial(unittest.TestCase):
             5 : [0, 1.875, 0, -8.75, 0, 7.875],
             6 : [-0.3125, 0, 6.5625, 0, -19.6875, 0, 14.4375],
             7 : [0, -2.1875, 0, 19.6875, 0, -43.3125, 0, 26.8125],
-            8 : [0.2734375, 0, -9.8438, 0, 54.1406, 0, -93.8437, 0, 50.2734],
-            9 : [0, 2.4609, 0, -36.0937, 0, 140.7656, 0, -201.0937, 0, 94.9609],
-            10 : [-0.2461, 0, 13.5352, 0, -117.3047, 0, 351.9141, 0,
-                                                        -427.3242, 0, 180.4258]
+            8 : [0.2734375, 0, -9.84375, 0, 54.140625, 0, -93.84375, 0,
+                    50.2734375],
+            9 : [0, 2.4609375, 0, -36.09375, 0, 140.765625, 0, -201.09375, 0,
+                    94.9609375],
+            10 : [-0.24609375, 0, 13.53515625, 0, -117.3046875, 0,
+                    351.9140625, 0, -427.3242187, 0, 180.42578125]
         }
     
     def test_TypeError(self):
@@ -868,7 +870,7 @@ class Test_GetLegendreBasis(unittest.TestCase):
                 else:
                     self.assertIsInstance(Item, Polynomial)
                     self.assertEqual(Item.Degree, Index)
-                    Check = testmodule.GetChebyshevPolynomial(Degree)
+                    Check = testmodule.GetLegendrePolynomial(Index)
                     CheckTuple = Check.getCoefficients()
                     del Check
                     TestTuple = Item.getCoefficients()
@@ -963,7 +965,7 @@ class Test_GetChebyshevBasis(Test_GetLegendreBasis):
                 else:
                     self.assertIsInstance(Item, Polynomial)
                     self.assertEqual(Item.Degree, Index)
-                    Check = testmodule.GetChebyshevPolynomial(Degree)
+                    Check = testmodule.GetChebyshevPolynomial(Index)
                     self.assertTupleEqual(Item.getCoefficients(),
                                                         Check.getCoefficients())
                     del Check

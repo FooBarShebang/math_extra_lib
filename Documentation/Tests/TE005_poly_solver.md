@@ -270,7 +270,7 @@ Check that the expected exception is raised each time.
 
 The values of the coefficients can be chosen arbitrary
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -286,7 +286,7 @@ The values of the coefficients can be chosen arbitrary
 
 **Test steps:** Try to generate the basis for the degree from N = 0 to 10 inclusively. Check that a list of N+1 elements is generated, with its elements forming the sequence of the first N Legendre polynomials - compare their coefficients to the [Wikipedia](https://en.wikipedia.org/wiki/Legendre_polynomials) table.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -302,7 +302,7 @@ The values of the coefficients can be chosen arbitrary
 
 **Test steps:** Try to generate ta base polynomial of the degree from N = 0 to 10 inclusively. Check that for N=0 the **int** value of 1 is returned, and for the higher degrees a corresponding Legendre polynomial of the same degree is returned - compare the coefficients to the [Wikipedia](https://en.wikipedia.org/wiki/Legendre_polynomials) table.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -344,7 +344,7 @@ The values of the coefficients can be chosen arbitrary
 
 **Test steps:** Try to generate the basis for the degree from N = 0 to 10 inclusively. Check that a list of N+1 elements is generated, with its elements forming the sequence of the first N Chebyshev polynomials - compare their coefficients to the [Wikipedia](https://en.wikipedia.org/wiki/Chebyshev_polynomials) table.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -360,7 +360,7 @@ The values of the coefficients can be chosen arbitrary
 
 **Test steps:** Try to generate ta base polynomial of the degree from N = 0 to 10 inclusively. Check that for N=0 the **int** value of 1 is returned, and for the higher degrees a corresponding Chebyshev polynomial of the same degree is returned - compare the coefficients to the [Wikipedia](https://en.wikipedia.org/wiki/Chebyshev_polynomials) table.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -402,7 +402,7 @@ The values of the coefficients can be chosen arbitrary
 
 **Test steps:** Try to generate the basis for the degree from N = 0 to 5 inclusively. Check that a list of N+1 elements is generated, with its elements forming the sequence of the $b_{0,N}(x)$ to $b_{N,N}(x)$ Bernstein polynomials - compare their coefficients to the [Wikipedia](https://en.wikipedia.org/wiki/Bernstein_polynomial) page.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -418,7 +418,7 @@ The values of the coefficients can be chosen arbitrary
 
 **Test steps:** Try to generate ta base polynomial of the degree from N = 0 to 5 inclusively and for all corresponding indexes 0 <= K <= N. Check that for N=0 the **int** value of 1 is returned, and for the higher degrees a corresponding Bernstein polynomial of the same degree (and corresponding index) is returned - compare the coefficients to the [Wikipedia](https://en.wikipedia.org/wiki/Bernstein_polynomial) page.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -507,15 +507,15 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-500        | TEST-A-500                                                   | NO                      |
 | REQ-FUN-510        | TEST-T-510                                                   | YES                     |
 | REQ-FUN-520        | TEST-T-520                                                   | YES                     |
-| REQ-FUN-530        | TEST-T-530                                                   | NO                      |
-| REQ-FUN-540        | TEST-T-540                                                   | NO                      |
-| REQ-FUN-541        | TEST-T-541                                                   | NO                      |
+| REQ-FUN-530        | TEST-T-530                                                   | YES                     |
+| REQ-FUN-540        | TEST-T-540                                                   | YES                     |
+| REQ-FUN-541        | TEST-T-541                                                   | YES                     |
 | REQ-FUN-550        | TEST-T-550                                                   | NO                      |
-| REQ-FUN-560        | TEST-T-560                                                   | NO                      |
-| REQ-FUN-561        | TEST-T-561                                                   | NO                      |
+| REQ-FUN-560        | TEST-T-560                                                   | YES                     |
+| REQ-FUN-561        | TEST-T-561                                                   | YES                     |
 | REQ-FUN-570        | TEST-T-570                                                   | NO                      |
-| REQ-FUN-580        | TEST-T-580                                                   | NO                      |
-| REQ-FUN-581        | TEST-T-581                                                   | NO                      |
+| REQ-FUN-580        | TEST-T-580                                                   | YES                     |
+| REQ-FUN-581        | TEST-T-581                                                   | YES                     |
 | REQ-FUN-590        | TEST-T-590                                                   | NO                      |
 | REQ-AWM-500        | TEST-T-500                                                   | YES                     |
 | REQ-AWM-501        | TEST-T-501                                                   | YES                     |

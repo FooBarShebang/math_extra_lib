@@ -35,7 +35,7 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '20-02-2024'
+__date__ = '23-02-2024'
 __status__ = 'Development'
 
 #imports
@@ -742,7 +742,6 @@ def GetLegendrePolynomial(Degree: int) -> Union[Polynomial, int]:
                                                     (Degree + k - 1)/2, Degree)
                                                 for k in range(0, Degree + 1)]
         Result = Polynomial(*Coefficients)
-    print(Result)
     return Result
 
 def GetLegendreBasis(Degree: int) -> List[Union[Polynomial, int]]:
@@ -767,6 +766,8 @@ def GetLegendreBasis(Degree: int) -> List[Union[Polynomial, int]]:
     Version 1.0.0.0
     """
     _CheckDegree(Degree)
+    Result = [GetLegendrePolynomial(Power) for Power in range(Degree + 1)]
+    return Result
 
 def InterpolateLegendre(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
@@ -863,6 +864,27 @@ def GetChebyshevBasis(Degree: int) -> List[Union[Polynomial, int]]:
     Version 1.0.0.0
     """
     _CheckDegree(Degree)
+    if not Degree:
+        Result = [1]
+    else:
+        Result = [1, Polynomial(0, 1)]
+        Next2Last = [0, 1]
+        Last = [1]
+        FoundDegree = 1
+        while FoundDegree < Degree:
+            Next = [2 * Item for Item in Next2Last]
+            Next.insert(0, 0)
+            for Index, Item in enumerate(Last):
+                Next[Index] -= Item
+            del Last
+            Last = Next2Last
+            Next2Last = Next
+            FoundDegree += 1
+            Result.append(Polynomial(*Next))
+            del Next
+        del Last
+        del Next2Last
+    return Result
 
 def InterpolateChebyshev(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
@@ -923,6 +945,22 @@ def GetBernsteinPolynomial(Degree: int, Index: int) -> Union[Polynomial, int]:
     if Index > Degree:
         raise UT_ValueError(Index,
                 f'<= {Degree}, index should not exceed degree', SkipFrames = 1)
+    if not Degree:
+        Result = 1
+    else:
+        Scale = _GetGeneralizedBinomialCoefficient(Degree, Index)
+        Coefficients = []
+        for Position, Item in enumerate(
+                                _GenerateBinomialCoefficients(Degree - Index)):
+            if Position % 2:
+                Sign = -1
+            else:
+                Sign = 1
+            Coefficients.append(Sign * Scale * Item)
+        for _ in range(Index):
+            Coefficients.insert(0, 0)
+        Result = Polynomial(*Coefficients)
+    return Result
 
 def GetBernsteinBasis(Degree: int) -> Union[List[Polynomial], List[int]]:
     """
@@ -946,6 +984,8 @@ def GetBernsteinBasis(Degree: int) -> Union[List[Polynomial], List[int]]:
     Version 1.0.0.0
     """
     _CheckDegree(Degree)
+    Result= [GetBernsteinPolynomial(Degree, Index) for Index in range(Degree+1)]
+    return Result
 
 def InterpolateBernstein(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     """
