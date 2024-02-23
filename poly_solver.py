@@ -45,7 +45,7 @@ __status__ = 'Development'
 import sys
 import os
 
-from typing import List, Union, Sequence, Tuple, Any
+from typing import List, Union, Sequence, Tuple, Any, Callable
 
 from math import sqrt, pi
 from cmath import rect
@@ -79,6 +79,8 @@ TCoordinates = Tuple[TReal, TReal] #replace by Annotated[Sequence[TReal], 2]
 # in Python 3.9 and later
 
 TGrid = Sequence[TCoordinates]
+
+TRealSequence = Sequence[TReal]
 
 #globals
 
@@ -546,6 +548,59 @@ def _GetGeneralizedBinomialCoefficient(n: TReal, k: int) -> TReal:
         Result = Divident / Divisor
     return Result
 
+def _FitPolynomialBase(XGrid: TRealSequence, YGrid: TRealSequence,
+                        Mapping: Tuple[TReal, TReal],
+                        PolyBase: Callable[[int],
+                                           Sequence[Union[Polynomial, TReal]]]
+                        ) -> Union[Polynomial, TReal]:
+    """
+    Helper function for calculation of the interpolating polynomial using
+    Legendre, Chebyshev and Bernstein basis. It does not perform any input data
+    sanity checks, thus, use with caution!
+
+    Signature:
+        seq(int OR float), seq(int OR float), tuple(int OR float, int OR float),
+            func(int >= 0) -> seq(int OR float OR Polynomial)
+                -> int OR float OR Polynomial
+
+    Args:
+        XGrid: seq(int OR float); original X-values (nodes)
+        YGrid: seq(int OR float); Y-values at the corresponding X-nodes
+        Mapping: tuple(int OR float, int OR float); tuple (a, b) describing the
+            X-coordinates mapping z = a + b * x onto the definition intervals
+            of the respective polynomial basis
+        PolyBase: func(int >= 0) -> seq(int OR float OR Polynomial); function
+            generating the respective polynomial base
+    
+    Returns:
+        Polynomial: instance of, interpolating polynomial of degree 1 or higher
+        int OR float: interpolating function is constant (0-th degree)
+    
+    Version 1.0.0.0
+    """
+    a, b = Mapping
+    Nodes = [b * Item + a for Item in XGrid]
+    NPoints = len(Nodes)
+    Basis = PolyBase(NPoints - 1)
+    if isinstance(Basis[0], (int, float)):
+        DataMatrix = []
+        for XValue in Nodes:
+            Temp = [1]
+            Temp.extend([Poly(XValue) for Poly in Basis[1:]])
+            DataMatrix.append(Temp)
+    else:
+        DataMatrix = [[Poly(XValue) for Poly in Basis] for XValue in Nodes]
+    Weights = SolveLinearSystem(DataMatrix, YGrid)
+    PolynomialSum = sum(w * BasePolynomial for w, BasePolynomial in
+                                                            zip(Weights, Basis))
+    if isinstance(PolynomialSum, Polynomial):
+        Result = _ReducePolynomialDegree(
+                                PolynomialSum.getConvolution(Polynomial(a, b)))
+        del PolynomialSum
+    else:
+        Result = PolynomialSum
+    return Result
+
 #+ public functions
 
 def FindRoots(Poly: Polynomial) -> List[TNumber]:
@@ -796,6 +851,15 @@ def InterpolateLegendre(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     Version 1.0.0.0
     """
     _CheckXYGrid(XYGrid)
+    XGrid, YGrid = zip(*XYGrid)
+    MinX = min(XGrid)
+    MaxX = max(XGrid)
+    MiddleX = 0.5 * (MinX + MaxX)
+    Scale = MaxX - MinX
+    a = -MiddleX / Scale
+    b = 1.0 / Scale
+    Result = _FitPolynomialBase(XGrid, YGrid, (a,b), GetLegendreBasis)
+    return Result
 
 def GetChebyshevPolynomial(Degree: int) -> Union[Polynomial, int]:
     """
@@ -833,6 +897,7 @@ def GetChebyshevPolynomial(Degree: int) -> Union[Polynomial, int]:
                 Next[Index] -= Item
             del Last
             Last = Next2Last
+            del Next2Last
             Next2Last = Next
             FoundDegree += 1
         Result = Polynomial(*Next)
@@ -878,6 +943,7 @@ def GetChebyshevBasis(Degree: int) -> List[Union[Polynomial, int]]:
                 Next[Index] -= Item
             del Last
             Last = Next2Last
+            del Next2Last
             Next2Last = Next
             FoundDegree += 1
             Result.append(Polynomial(*Next))
@@ -913,6 +979,15 @@ def InterpolateChebyshev(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     Version 1.0.0.0
     """
     _CheckXYGrid(XYGrid)
+    XGrid, YGrid = zip(*XYGrid)
+    MinX = min(XGrid)
+    MaxX = max(XGrid)
+    MiddleX = 0.5 * (MinX + MaxX)
+    Scale = MaxX - MinX
+    a = -MiddleX / Scale
+    b = 1.0 / Scale
+    Result = _FitPolynomialBase(XGrid, YGrid, (a,b), GetChebyshevBasis)
+    return Result
 
 
 def GetBernsteinPolynomial(Degree: int, Index: int) -> Union[Polynomial, int]:
@@ -1014,3 +1089,11 @@ def InterpolateBernstein(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     Version 1.0.0.0
     """
     _CheckXYGrid(XYGrid)
+    XGrid, YGrid = zip(*XYGrid)
+    MinX = min(XGrid)
+    MaxX = max(XGrid)
+    Scale = MaxX - MinX
+    a = -MinX / Scale
+    b = 1.0 / Scale
+    Result = _FitPolynomialBase(XGrid, YGrid, (a,b), GetBernsteinBasis)
+    return Result

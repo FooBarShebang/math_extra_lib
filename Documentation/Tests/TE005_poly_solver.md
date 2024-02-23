@@ -510,13 +510,13 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-530        | TEST-T-530                                                   | YES                     |
 | REQ-FUN-540        | TEST-T-540                                                   | YES                     |
 | REQ-FUN-541        | TEST-T-541                                                   | YES                     |
-| REQ-FUN-550        | TEST-T-550                                                   | NO                      |
+| REQ-FUN-550        | TEST-T-550                                                   | YES                     |
 | REQ-FUN-560        | TEST-T-560                                                   | YES                     |
 | REQ-FUN-561        | TEST-T-561                                                   | YES                     |
-| REQ-FUN-570        | TEST-T-570                                                   | NO                      |
+| REQ-FUN-570        | TEST-T-570                                                   | YES                     |
 | REQ-FUN-580        | TEST-T-580                                                   | YES                     |
 | REQ-FUN-581        | TEST-T-581                                                   | YES                     |
-| REQ-FUN-590        | TEST-T-590                                                   | NO                      |
+| REQ-FUN-590        | TEST-T-590                                                   | YES                     |
 | REQ-AWM-500        | TEST-T-500                                                   | YES                     |
 | REQ-AWM-501        | TEST-T-501                                                   | YES                     |
 | REQ-AWM-502        | TEST-T-502                                                   | YES                     |
