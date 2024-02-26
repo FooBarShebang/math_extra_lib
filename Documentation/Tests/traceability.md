@@ -28,10 +28,10 @@
 | REQ-FUN-003        | TEST-T-002                                                   | YES                     |
 | REQ-FUN-004        | TEST-T-002                                                   | YES                     |
 | REQ-FUN-005        | TEST-T-003                                                   | YES                     |
-| REQ-FUN-006        | TEST-T-004                                                   | NO                      |
-| REQ-FUN-007        | TEST-T-005                                                   | NO                      |
+| REQ-FUN-006        | TEST-T-004                                                   | YES                     |
+| REQ-FUN-007        | TEST-T-005                                                   | YES                     |
 | REQ-INT-000        | TEST-I-000                                                   | YES                     |
-| REQ-AWM-000        | TEST-D-000                                                   | NO                      |
+| REQ-AWM-000        | TEST-D-000                                                   | YES                     |
 | REQ-IAR-000        | TEST-T-006                                                   | NO                      |
 | REQ-IAR-001        | TEST-T-007                                                   | NO                      |
 | REQ-IAR-002        | TEST-T-006                                                   | NO                      |
@@ -96,7 +96,7 @@
 | REQ-AWM-410        | TEST-T-412                                                   | YES                     |
 | REQ-AWM-420        | TEST-T-422                                                   | YES                     |
 | REQ-AWM-421        | TEST-T-423                                                   | YES                     |
-| REQ-FUN-500        | TEST-A-500                                                   | NO                      |
+| REQ-FUN-500        | TEST-A-500                                                   | YES                     |
 | REQ-FUN-510        | TEST-T-510                                                   | YES                     |
 | REQ-FUN-520        | TEST-T-520                                                   | YES                     |
 | REQ-FUN-530        | TEST-T-530                                                   | YES                     |

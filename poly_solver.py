@@ -35,7 +35,7 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '23-02-2024'
+__date__ = '26-02-2024'
 __status__ = 'Development'
 
 #imports
@@ -720,15 +720,17 @@ def GetLagrangeBasis(XGrid: Sequence[TReal]) -> List[Polynomial]:
                                                                 SkipFrames = 1)
         _Roots.append(NewRoot)
     Result = list()
+    _XGrid = list(XGrid)
     for Index, Node in enumerate(XGrid):
         if not Index:
-            Roots = XGrid[1 : ]
+            Roots = _XGrid[1 : ]
         elif Index == NumberNodes - 1:
-            Roots = XGrid[ : -1]
+            Roots = _XGrid[ : -1]
         else:
-            Roots = XGrid[ : Index]
-            Roots.extend(XGrid[Index + 1 : ])
+            Roots = _XGrid[ : Index]
+            Roots.extend(_XGrid[Index + 1 : ])
         Result.append(GetLagrangePolynomial(Node, Roots))
+    del _XGrid
     return Result
 
 def InterpolateLagrange(XYGrid: TGrid) -> Union[Polynomial, TReal]:

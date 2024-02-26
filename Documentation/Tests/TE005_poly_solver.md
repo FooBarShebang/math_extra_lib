@@ -45,7 +45,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Analyze the source code of the module [poly_solver](../../poly_solver.py) as well as of the unit-test module [/Tests/UT005_poly_solver](../../Tests/UT005_poly_solver.py). Execute the mentioned unit-test module. Also execute the demonstration test [/Tests/DE005_poly_solver](../../Tests/DT005_poly_sover.py).
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Tests definition (Test)
 
@@ -328,7 +328,7 @@ The values of the coefficients can be chosen arbitrary
 
 The values of the coefficients can be chosen arbitrary
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -386,7 +386,7 @@ The values of the coefficients can be chosen arbitrary
 
 The values of the coefficients can be chosen arbitrary
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -496,7 +496,7 @@ Check that the expected exception is raised each time.
 
 The values of the coefficients can be chosen arbitrary
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Traceability
 
@@ -504,7 +504,7 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Requirement ID** | **Covered in test(s)**                                       | **Verified \[YES/NO\]** |
 | :----------------- | :----------------------------------------------------------- | :---------------------- |
-| REQ-FUN-500        | TEST-A-500                                                   | NO                      |
+| REQ-FUN-500        | TEST-A-500                                                   | YES                     |
 | REQ-FUN-510        | TEST-T-510                                                   | YES                     |
 | REQ-FUN-520        | TEST-T-520                                                   | YES                     |
 | REQ-FUN-530        | TEST-T-530                                                   | YES                     |
@@ -531,4 +531,4 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
-| NO                                           | Under development    |
+| YES                                          | All tests are passed |
