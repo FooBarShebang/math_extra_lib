@@ -7,7 +7,7 @@ interpolation using Lagrange, Legende, Chebyshev and Bernstein basis.
 
 Functions:
     FindRoots(Poly)
-        Polynomial -> list(int OR floar OR complex)
+        Polynomial -> list(int OR float OR complex)
     GetLagrangePolynomial(Node, Roots)
         int OR float, seq(int OR float) -> Polynomial
     GetLagrangeBasis(XGrid)
@@ -103,7 +103,7 @@ def _RoundAndConvert(Value: TNumber, *,
     possible.
     
     Signature:
-        int OR float OR complex /, float/ -> int OR floar OR complex
+        int OR float OR complex /, float/ -> int OR float OR complex
     
     Args:
         Value: int OR float OR complex; the value to be rounded and converted if
@@ -174,7 +174,7 @@ def _GetDerivative(Coefficients: List[TNumber]) -> List[TNumber]:
     class implementation.
     
     Signature:
-        list(int OR floar OR complex) -> list(int OR floar OR complex)
+        list(int OR float OR complex) -> list(int OR float OR complex)
     
     Raises:
         UT_TypeError: the passed argument is not a list of real or complex
@@ -205,13 +205,13 @@ def _EvaluatePolynomial(Coefficients: List[TNumber], Value: TNumber, *,
     value of its argument (including complex values).
     
     Signature:
-        list(int OR floar OR complex), int OR floar OR complex /, bool/
-            -> int OR floar OR complex
+        list(int OR float OR complex), int OR float OR complex /, bool/
+            -> int OR float OR complex
     
     Args:
-        Coefficients: list(int OR floar OR complex); coefficients of a
+        Coefficients: list(int OR float OR complex); coefficients of a
             polynomial to be evaluated, from zero to N-th power
-        Value: int OR floar OR complex; value of the argument
+        Value: int OR float OR complex; value of the argument
         DoNotRound: (keyword) bool; flag if the calcualted value should be
             rounded and / or converted from complex to real, defaults to False
     
@@ -252,8 +252,8 @@ def _ReduceByRoot(Coefficients: List[TNumber], Root: TNumber) -> List[TNumber]:
     Reduces a polynomial by removing one of its roots (in the factorized form).
     
     Signature:
-        list(int OR floar OR complex), int OR floar OR complex
-            -> list(int OR floar OR complex)
+        list(int OR float OR complex), int OR float OR complex
+            -> list(int OR float OR complex)
     
     Raises:
         UT_TypeError: the passed first argument is not a list of real or complex
@@ -294,7 +294,7 @@ def _FindAllRoots(Coefficients: List[TNumber]) -> List[TNumber]:
     roots are returned as a list of complex or real numbers.
     
     Signature:
-        list(int OR floar OR complex) -> list(int OR floar OR complex)
+        list(int OR float OR complex) -> list(int OR float OR complex)
     
     Raises:
         UT_TypeError: the passed argument is not a list of real or complex
@@ -607,11 +607,11 @@ def FindRoots(Poly: Polynomial) -> List[TNumber]:
     """
     Calculates all roots of a polynomial passed as an instance of Polynomial
     class using Alberth method, and returns them as a list of real or complex
-    numbers. Each root with multiplicity K is included exactly K time; thus for
+    numbers. Each root with multiplicity K is included exactly K times; thus for
     a polynomial of the degree N the length of the list is exactly N.
     
     Signature:
-        Polynomial -> list(int OR floar OR complex)
+        Polynomial -> list(int OR float OR complex)
     
     Raises:
         UT_TypeError: argument is not an instance of Polynomial class
@@ -745,6 +745,11 @@ def InterpolateLagrange(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
     
+    Args:
+        XYGrid: seq(seq(int OR float, int OR float)); a sequence of 2-elements
+            sub- sequences of real numbers, representing the X-Y values pairs of
+            the function to be interpolated
+    
     Returns:
         Polynomial: instance of, interpolating polynomial of degree 1 or higher
         int OR float: interpolating function is constant (0-th degree)
@@ -837,6 +842,11 @@ def InterpolateLegendre(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    
+    Args:
+        XYGrid: seq(seq(int OR float, int OR float)); a sequence of 2-elements
+            sub- sequences of real numbers, representing the X-Y values pairs of
+            the function to be interpolated
     
     Returns:
         Polynomial: instance of, interpolating polynomial of degree 1 or higher
@@ -966,6 +976,11 @@ def InterpolateChebyshev(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
     
+    Args:
+        XYGrid: seq(seq(int OR float, int OR float)); a sequence of 2-elements
+            sub- sequences of real numbers, representing the X-Y values pairs of
+            the function to be interpolated
+    
     Returns:
         Polynomial: instance of, interpolating polynomial of degree 1 or higher
         int OR float: interpolating function is constant (0-th degree)
@@ -1075,6 +1090,11 @@ def InterpolateBernstein(XYGrid: TGrid) -> Union[Polynomial, TReal]:
     
     Signature:
         seq(seq(int OR float, int OR float)) -> Polynomial OR int OR float
+    
+    Args:
+        XYGrid: seq(seq(int OR float, int OR float)); a sequence of 2-elements
+            sub- sequences of real numbers, representing the X-Y values pairs of
+            the function to be interpolated
     
     Returns:
         Polynomial: instance of, interpolating polynomial of degree 1 or higher

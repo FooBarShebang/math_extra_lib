@@ -2,7 +2,18 @@
 
 ## Purpose
 
-#TODO
+The purpose of this library is to provide the necessary tools for the numerical methods in the fields related to the *linear algebra*, *statistical analysis*, *regression data fitting* and *signal processing*. This is a *light-weight pure Python code* replacement for NumPy / SciPy in the situations when only a limited, specific functionality is required, and the calculation speed is not an issue.
+
+The library includes a number of classes and functions implementing the following functionality:
+
+* Special mathematical functions (beta, gamma, standard error function, etc.) commonly used in the statistical analysis (continuous distributions)
+* Polynomial evaluation and arithmetics on the field of the *rational* numbers (only integer and floating point types are supported)
+* Finding all *complex* roots of a polynomial with the *rational* coefficients
+* Polynomial interpolation of a real function of a single real argument (only integer and floating point types are supported)
+* Construction of an orthogonal polynomial basis (Legendre, Chebyshev of the first kind, Bernstein)
+* Matrix and vectors (row and column) arithmetics on the field of the rational numbers (only integer and floating point types are supported)
+* Calculation of the trace, the determinant, the inverse matrix, the LUP and LDUP decomposition, and the *real* eigenvalues / eigenvectors of a square matrix
+* Solution of a system of linear equations
 
 ## Installation
 
