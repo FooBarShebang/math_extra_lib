@@ -1,0 +1,62 @@
+@startuml roots_finding
+
+title Activity Diagram of the function math_extra_lib.poly_solver.FindRoots()
+
+start
+
+:Poly: Polynomial<
+
+:Result = [] # empty list;
+
+:Degree is the polynomial degree / max power;
+
+if (Degree is <= 2?) then (True)
+    :Calculate analytical solution(s);
+    
+    :Store them in the Result list;
+else (False)
+    :Calculate complex plane radius using Cauchy's bound;
+    
+    :Place initial guesses on a circle with this radius;
+    
+    :Calculate derivative of Poly - another polynomial;
+    
+    repeat
+        while (for each guess value z)
+            :Evaluate Poly at this guess value z;
+            
+            :Evaluate its derivate at thus guess value z;
+            
+            if (Poly != 0 AND\ndirivative !=0) then (True)
+                :Calculate shift;
+            elseif (Poly == 0 AND\ndirivative !=0) then (True)
+                :Set shift to 0;
+            elseif (Poly != 0 AND\ndirivative ==0) then (True)
+                :Set shift to\na random value\n ~ 0.5;
+            else
+                while (Poly(z) == 0 ?) is (Yes)
+                    :Append z to Result list;
+                    
+                    :Reduce Poly(x) = Poly(x) / (x -z) |
+                endwhile (No)
+                
+                :Make recursive call to itself with reduced polynomial]
+                
+                :Append all returned roots to the Result list;
+                
+                :Mark all roots as found;
+                
+                break
+            endif
+        
+        :Apply shift to the guess value z += shift;
+        
+        endwhile
+    repeat while (all roots found OR all shifts < 1E-12 ?) is (No) not (yes)
+endif
+
+:return Result>
+
+stop
+
+@enduml

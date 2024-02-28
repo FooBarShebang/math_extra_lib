@@ -27,9 +27,78 @@ The main purpose of this module is to enable:
 * Calculation of the (complex) roots of an arbitrary polynomial with real coefficients, and
 * Polynomial interpolation of a univariate function on the real numbers field
 
+Polynomial of the degree *N* is a univarite function, which is a weighted sum of the non-negative integer powers of its variable, i.e. $P_N(x) = a_0 + a_1*x + \dots + a_N*x^N = \sum_{i=0}^N{a_i*x^i} \; : \; a_N \neq 0$. With all coefficients being real numbers this function evaluates to a real number of the real numbers field of its variable, i.e. $P_N(x) \in \mathbb{R}\;\forall\;x\in\mathbb{R}$ if $a_i \in \mathbb{R} \; \forall \; i$. The roots of a polynomial are the values of the variable at which the polynomial evaluates to zero, i.e. $x_i:P_N(x_i)=0$, which are the solutions of the equation $a_0 + a_1*x + \dots + a_N*x^N = 0$. There are known analytical solutions for the degrees 1, 2 and 3, although for the degree 3 there is no single form expression but several different forms depending on the relations between the coefficients. For the higher degrees there is no generic analytical solution.
+
+Howevere, on the complex numbers field any real coefficients polynomial can be factorized as $P_N(x) = \sum_{i=0}^N{a_i*x^i} = a_N * \prod_j{(x-z_j)^{\mu_j}}$, where $z_j$ is a unique complex root value, $\mu_j \ge 1 \; \forall \; j$ is the multiplicity of the root, and $\sum_j{\mu_j} = N$. Hence, on the complex numbers fields any real polynomial of degree *N* has exactly *N* roots (accounting for the multiplicity), although not all roots are unique (single); some roots may be multiple, i.e. they appear more than once.
+
+For instance, consider an equation $x^3 + 2 x^2 +2x+1=(x^2+x+1)(x+1)=0$. This equation has the analytical solution $\{-1, -\frac{1}{2} - \frac{\sqrt{3}}{2}, -\frac{1}{2} + \frac{\sqrt{3}}{2}\}$, however it might not be obvious for an unexperienced person. Hence, one can use numerical method implemented in this library
+
+```python
+from math_extra_lib.poly_solver import Polynomial, FindRoots
+
+Problem = Polynomial(1, 2, 2, 1) #from the zero-th power to the N-th
+print(f'Problem is {Problem}=0')
+# >> Problem is x**3+2*x**2+2*x+1=0
+
+Solution = FindRoots(Problem)
+print(f'Solution (roots) is {Solution}')
+# >> Solution (roots) is [-1, (-0.5000000000000001+0.8660254037844385j), (-0.5-0.8660254037844386j)]
+```
+
+For a univariate real function $f(x)$ evaluating to $y_i=f(x_i)$ at *N* distinct points $\{x_i\}$ a polynomial interpolation $P_M(x)$ is a polynomial of the degee $M \le N-1$, which evaluates to exactly the same values at the respective x-values, i.e. $P_M(x_i)=y_i=f(x_i) \; \forall \; i$. The fundamental statement is that for *N* distinct points $\{x_i\}$ (i.e. $x_i \neq x_j \; \forall \; i \neq j \in \{1, 2, \dots, N\}$) there is one and only one polynomial of the degree $N-1$ or lower, which graph goes through all points $\{(x_i, y_i)\}$. Such a polynomial can be found directly by solving a system of linear equations reqarding its coefficients, or it can be constructed as a weighted sum (linear composition) of the base polynomials (see [DE004](../Design/DE004_poly_solver.md)). Either of the approches should yield the same polynomial in theory, with the inifinite precision of the calculations. In practice, due to the rounding error of the finite precision of the numerical calculations (double precision floating point) the calculated coefficients of the interpolating polynomial may differ slightly depending on the shape of the function and the chosen method.
+
+The first method, the direct calculation of the coefficients is not implemented in this module, since this functionality is already covered by the *math\_extra\_lib.matrix\_solver* module, as it is shown in the example below
+
+```python
+from math_extra_lib.matrix_solver import SolveLinearSystem
+from math_extra_lib.polynomial import Polynomial
+
+XGrid = [1, 2, 3]
+YGrid = [2, 1, 3] #sample (x,y) values
+
+Weights = [[pow(x, n) for n in range(3)] for x in XGrid]
+
+Coefficients = SolveLinearSystem(Weights, YGrid)
+
+Solution = Polynomial(*Coefficients)
+```
+
+In this module the second approach (using the base polynomials) is implemented, with 4 different bases available: Lagrange, Legendre, Chebyshev (of the 1st kind) and Bernstein polynomials. There are two reasons for inclusion of these four bases: a) the above mentioned finite precision of the calculations, depending on the function being interpolated some basis may yield more accurate results than others, and b) those polynomials are often encountered in other mathematical problems, specifically - solution of the differential equations; thus their generation is the additional value functionality of this module and the entire library. Considering the Legendre basis the same problem as above can be solved as
+
+```python
+from math_extra_lib.poly_solver import InterpolateLegendre
+
+XGrid = [1, 2, 3]
+YGrid = [2, 1, 3] #sample (x,y) values
+
+XYGrid = zip(XGrid, YGrid)
+
+Solution = InterpolateLegendre(XYGrid)
+```
+
 ## Design and Implementation
 
-![Library components](..\UML\poly_solver\poly_solver_components.png)
+The components diagram of the module is shown below
+
+![Library components](../UML/poly_solver/poly_solver_components.png)
+
+The function *FindRoots* uses a modified Alberth method (see [DE004](../Design/DE004_poly_solver.md)), such as
+
+* If the passed polynomial is of the degree 2 or 1, the analytical solution is used
+* For the higher degrees the numerical Alberth method is applied
+  * The initial quesses are disributed uniformly in the complex numbers plane along the circumference of a circle with the radius equal to the Cauchy's bound
+  * The displacement (shift) for each guess is calculated as:
+    * If the derivative of the polynomial is zero but the polynomial itself is not zero at the guess point - i.e local extremum, but not a root, the displacement is genereated as a random number
+    * If the derivative of the polynomial is not zero but the polynomial itself is zero at the guess point - i.e. single root is found, the displacement is set to zero
+    * If the derivative of the polynomial is not zero and the polynomial itself is not zero at the guess point - the displacement is calcualted according to the Alberth formula
+    * If the derivative of the polynomial is zero and the polynomial itself is zero at the guess point $z_i$ - i.e. multiple root, the polynomial is reduced in the degree by repeatitive division by $x-z_i$ until the resulting polynomial does not evaluate to zero at the same point $z_i$. The roots of the resulting reduced polynomial are found using recursive call to the function
+* The iterations stop when either all roots are found using recursion, or all calculated displacements are less than a threshold value (~$10^{-12}$) by the absolute value
+* The found roots are rounded and converted into real numbers if required:
+  * If the imaginary part is less than a threshold value (~$10^{-12}$) by the absolute value the found root is converted into a real number
+  * The real and imaginary parts are rounded to the nearest integer value if the absolute difference with it is less than a threshold value (~$10^{-12}$)
+* The length of the returned list of the found roots always equals the degree of the polynomial, where multiple roots are included several times according to their multiplicity
+
+![Roots finding activity diagram](../UML/poly_solver/roots_finding.png)
 
 ## API Reference
 
