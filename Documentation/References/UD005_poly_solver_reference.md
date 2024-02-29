@@ -1,4 +1,4 @@
-# Module math_extra_lib.special_functions Reference
+# Module math_extra_lib.poly_solver Reference
 
 ## Scope
 
@@ -80,7 +80,7 @@ Solution = InterpolateLegendre(XYGrid)
 
 The components diagram of the module is shown below
 
-![Library components](../UML/poly_solver/poly_solver_components.png)
+![Module components](../UML/poly_solver/poly_solver_components.png)
 
 The function *FindRoots* uses a modified Alberth method (see [DE004](../Design/DE004_poly_solver.md)), such as
 
@@ -99,6 +99,26 @@ The function *FindRoots* uses a modified Alberth method (see [DE004](../Design/D
 * The length of the returned list of the found roots always equals the degree of the polynomial, where multiple roots are included several times according to their multiplicity
 
 ![Roots finding activity diagram](../UML/poly_solver/roots_finding.png)
+
+Since the class **math\_extra\_lib.polynomial.Polynomial** is designed to support only real number coefficients and real number agrument, the polynomial evaluation, calculation of a derivative and division by another polynomial functionality is re-implemented as 'private' helper functions in the module.
+
+All other 'public' functions in the module belong to one of the following 3 groups:
+
+* Generation of a single base polynomial, e.g. Legendre polynomial of a specific degree - *GetLegendrePolynomial*()
+* Generation of the complete polynomial basis, e.g. Legendre polynomials of the degrees 0 to N - *GetLegendreBasis*()
+* Interpolation of a function presented by a set of $\{(x_i,y_i)\}$ values using a specific polynomial basis, e.g. *InterpolateLegendre*()
+
+Note, that all $x_i$ values must be unique, although neither equidistant distribution of the x-nodes nor the ordering of the x-values is required.
+
+In the case of the Lagrange polynomials each individual base polynomial is constructed from its roots (x values, at which it must evaluate tozero) directly using the *Polynomial.fromRoots*() method and then divided by its value at the node (x value, at which it evaluates to 1). The complete basis is created by iterating all provided x-grid values and using the current x value as the node, and the rest of the values in the sequence as the roots. The interpolating polynomial is constructed as a linear composition of all base polynomials weighted by the y-value at the corresponding x-value (node of this particular base polynomial).
+
+With the other 3 bases the algorithm is different. An individual Legendre or Bernstein base polynomial is contructed directly using an analytical formula based on the (generalized) binomial coefficients, thus the functions *GetLegendreBasis*() and *GetBernsteinBasis*() utilize the functions *GetLegendrePolynomial*() and *GetBernsteinPolynomial*() respectively to construct the complete basis. In the case of the Chebyshev polynomials of the first kind the recursive formula is simpler and faster since it relies only on the interger multiplication; thus the function *GetChebyshevBasis*() function does not call the *GetChebyshevPolynomial*() function, but re-implements the same calculation algorithm, whilst storing the intermediate steps (already calculated polynomials of the lower degrees).
+
+Also, the Legendre and Chebyshev bases are defined on the interval [-1, 1] and on the interval [0, 1] for the Bernstein basis. Therefore, the corresponding interpolation functions, at first, define the linear mapping $\varepsilon_i = a + b * x_i$, which maps $\min(x_i)$ and $\max(x_i)$ onto the respective definition intervals. The complete basis is constructed based on the number of the data points. Each j-th base polynomial $P^{(j)}(\varepsilon)$ is evaluated at each i-th data point $\varepsilon_i$, and the weighting coefficients $a_j$ are calculated from the requirement $\sum_{j=1}^N{a_j*P^{(j)}(\varepsilon_i)} = y_i \; \forall \; i \in [1, N]$, which produces a system of N linear equations for N varibles. The interpolating polynomial in the $(\varepsilon, y)$ coordinates is constructed as $P(\varepsilon) = \sum_{j=1}^N{a_j * P^{(j)}(\varepsilon)}$, which is then transformed into $(x,y)$ coordinates by convolution with $a+b*x$ polynomial, i.e. $P(\varepsilon) \rightarrow \hat{P}(x) \; : \; \hat{P}(x) = P(a+b*x)$.
+
+Finally, with all 4 bases the coefficients of the calculated polynomial are rounded to the nearest integer values, if the absolute difference does not exceed the threshold value (~ $10^{-12}$). The degree of the polynomial is reduced respectively if the highest degrees coefficients are set to zero. This approach reduces the artificial oscillations of the interpolating polynomial function due to rounding errors in the calculations in the cases when the actual function being interpolated itself is a low degree polynomial (lower than number of points - 1), or it is smooth enough to be well approximated by such a polynomial. **Note** that this simple precaution may not work properly if $Var(y) \gg Var(x)$ (ineffective oscillations suppession), and it may misfire if $Var(y) \ll Var(x)$ resulting in too low degree polynomial not properly following the data points. Consider X- or Y-axis rescaling before the interpolation in such cases.
+
+![Interpolation algorithm with mapping](../UML/poly_solver/mapped_interpolation.png)
 
 ## API Reference
 

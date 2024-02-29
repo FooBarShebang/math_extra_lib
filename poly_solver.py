@@ -35,8 +35,8 @@ Functions:
 """
 
 __version__= '1.0.0.0'
-__date__ = '26-02-2024'
-__status__ = 'Development'
+__date__ = '29-02-2024'
+__status__ = 'Production'
 
 #imports
 
@@ -411,9 +411,9 @@ def _ReducePolynomialDegree(Poly: Polynomial) -> Union[Polynomial, TReal]:
     """
     if not isinstance(Poly, Polynomial):
         raise UT_TypeError(Poly, Polynomial, SkipFrames = 1)
-    Coefficients = list(Poly.getCoefficients()) #from 0-th degree upwards
+    Coefficients = list(map(_RoundAndConvert, Poly.getCoefficients()))
     while len(Coefficients):
-        if abs(Coefficients[-1]) < ALMOST_ZERO:
+        if not Coefficients[-1]:
             Coefficients.pop()
         else:
             break

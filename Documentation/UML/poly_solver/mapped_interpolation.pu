@@ -1,0 +1,35 @@
+@startuml mapped_interpolation
+
+title Activity diagram of Legendre, Chebyshev and Bernstein interpolation.
+
+start
+
+:XYGrid: sequence of 2 real number pairs (sub-sequences) as (x,y) data points<
+
+:Split XYGrid into XGrid and YGrid lists;
+
+:Find min(XGrid) and max(XGrid);
+
+:Calculate mapping coefficients z = a + b * x;
+
+:Calculate mapped ZGrid from XGrid: z[i] = a * b * x[i];
+
+:Determine the base degree as len(XGrid) - 1;
+
+:Generate the polynomial basis|
+
+:Calculate the coefficients of the linear system matrix by evaluating all base polynomial at all z values]
+
+:Solve the system using YGrid as the free coefficients column -> weights list|
+
+:Construct interpolating polynomial on (z,y) space using base polynomials and the calculated weights;
+
+:Convolute the constructed polynomial with a + b * x polynomial -> bring it to (x,y) space;
+
+:Round the nearly integer coefficient to the respective integer values; reduce the polynomial degree if required;
+
+:Return the resulting polynomial (degree 1 or higher) or an integer / floating point number (degree 0)>
+
+stop
+
+@enduml
