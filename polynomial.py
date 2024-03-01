@@ -274,7 +274,7 @@ class Polynomial:
             raise UT_TypeError(Index, (int, ), SkipFrames = 1)
         Length = len(self._Coefficients)
         if Index >= Length or Index < - Length:
-            raise UT_IndexError(f'{self.__class__.__name}({Length})', Index,
+            raise UT_IndexError(f'{self.__class__.__name__}({Length})', Index,
                                                                 SkipFrames = 1)
         return self._Coefficients[Index]
     

@@ -8,6 +8,7 @@
   * 11x - class **RationalFunction**
 * module **special_functions** - 2xy
 * module **vectors_matrices** - 3xy
+  * 30x - multiple classes are concerned
   * 31x - class **Vector**
   * 32x - class **Column**
   * 33x - class **Row**
@@ -16,7 +17,16 @@
   * 41x - function *FindEigenvector*()
   * 42x - function *SolveLinearSystem*()
 * module **poly_solver** - 5xy
+  * 50x - multiple functions are concerned
   * 51x - function *FindRoots*()
+  * 52x - functions *GetLagrangePolynomial*() and *GetLagrangeBasis*()
+  * 53x - function *InterpolateLagrange*()
+  * 54x - functions *GetLegendrePolynomial*() and *GetLegendreBasis*()
+  * 55x - function *InterpolateLegendre*()
+  * 56x - functions *GetChebyshevPolynomial*() and *GetChebyshevBasis*()
+  * 57x - function *InterpolateChebyshev*()
+  * 58x - functions *GetBernsteinPolynomial*() and *GetBernsteinBasis*()
+  * 59x - function *InterpolateBernstein*()
 
 ## Requirements vs Tests Traceability
 
@@ -32,10 +42,10 @@
 | REQ-FUN-007        | TEST-T-005                                                   | YES                     |
 | REQ-INT-000        | TEST-I-000                                                   | YES                     |
 | REQ-AWM-000        | TEST-D-000                                                   | YES                     |
-| REQ-IAR-000        | TEST-T-006                                                   | NO                      |
-| REQ-IAR-001        | TEST-T-007                                                   | NO                      |
-| REQ-IAR-002        | TEST-T-006                                                   | NO                      |
-| REQ-UDR-000        | TEST-I-001                                                   | NO                      |
+| REQ-IAR-000        | TEST-T-006                                                   | YES                     |
+| REQ-IAR-001        | TEST-T-007                                                   | YES                     |
+| REQ-IAR-002        | TEST-T-006                                                   | YES                     |
+| REQ-UDR-000        | TEST-I-001                                                   | YES                     |
 | REQ-FUN-100        | TEST-T-100                                                   | YES                     |
 | REQ-FUN-101        | TEST-T-103                                                   | YES                     |
 | REQ-FUN-102        | TEST-T-100                                                   | YES                     |
@@ -121,6 +131,6 @@
 | REQ-AWM-580        | TEST-T-582                                                   | YES                     |
 | REQ-AWM-581        | TEST-T-583                                                   | YES                     |
 
-| **Software ready for production \[YES/NO\]** | **Rationale**                 |
-| :------------------------------------------: | :---------------------------- |
-| NO                                           | Under development             |
+| **Software ready for production \[YES/NO\]** | **Rationale**        |
+| :------------------------------------------: | :------------------- |
+| YES                                          | All tests are passed |

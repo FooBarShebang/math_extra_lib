@@ -61,7 +61,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Inspect the documentation bundled with the library. Check that all requirements are implemented and tested. Check that user reference documentation provides comprehensive description of the functionality and complete API reference.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Tests definition (Test)
 
@@ -171,9 +171,9 @@ The verification method for a requirement is given by a single letter according 
 
 **Expected result:** The library includes a special script to check the system requirements: version of the Python interpreter, presence and version of each declared dependency. This script reports the results onto the console. If no problems are reported, any module of the library can be used without import errors. Furthermore, the library can be installed using *pip* tool (wheel-format distrubition model), which checks for presence and fetches the dependencies automatically when required. By design, the *pip* tool installs the version of wheel-distribution compatible with the local Python interpreter version.
 
-**Test steps:** Install the library using *pip* tool on any system with Python 3.6+ interpreter. Check the console output, control that all declared dependencies are automatically fetched (if not yet present). Check that the intalled library includes a special Python script for the dependencies check. Execute this script and analyze the console output. Execute all demonstration tests modules, chech that import related exceptions are not raised, and the modules behave as expected.
+**Test steps:** Install the library using *pip* tool or clone it from the Git repository on any system with Python 3.6+ interpreter. Check the console output, control that all declared dependencies are automatically fetched (if not yet present). Check that the installed library includes a special Python script for the dependencies check. Execute this script and analyze the console output. Execute all demonstration tests modules, chech that import related exceptions are not raised, and the modules behave as expected.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ---
 
@@ -189,7 +189,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Intall the library on the different machines, run the demonstration tests. See [tested OS](./tested_OS.md) document for the description of the tested hardware + OS + Python version combinations.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Tests definition (Demonstration)
 
@@ -223,11 +223,11 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-007        | TEST-T-005                                                   | YES                     |
 | REQ-INT-000        | TEST-I-000                                                   | YES                     |
 | REQ-AWM-000        | TEST-D-000                                                   | YES                     |
-| REQ-IAR-000        | TEST-T-006                                                   | NO                      |
-| REQ-IAR-001        | TEST-T-007                                                   | NO                      |
-| REQ-IAR-002        | TEST-T-006                                                   | NO                      |
-| REQ-UDR-000        | TEST-I-001                                                   | NO                      |
+| REQ-IAR-000        | TEST-T-006                                                   | YES                     |
+| REQ-IAR-001        | TEST-T-007                                                   | YES                     |
+| REQ-IAR-002        | TEST-T-006                                                   | YES                     |
+| REQ-UDR-000        | TEST-I-001                                                   | YES                     |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**        |
 | :------------------------------------------: | :------------------- |
-| NO                                           | Under development    |
+| YES                                          | All tests are passed |
